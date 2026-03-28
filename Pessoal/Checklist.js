@@ -85,7 +85,13 @@ export const DISCIPLINAS_DATA = {
                 ]
             },
         ],
-        videos: []
+                videos: [
+            { label:'Vídeo Geral (todos os conteúdos)', url:'' },
+            { label:'Aula 1', url:'https://drive.google.com/file/d/1N0hkQumdf2MjUmJSfx4AyLK00ienkQk1/view?usp=drive_link' },
+            { label:'Aula 2', url:'https://drive.google.com/file/d/1dpnHSyPtOQDJj-ZYpudtVKhT_Oq0yKVP/view?usp=drive_link' },
+            { label:'Aula 3', url:'https://drive.google.com/file/d/1r9eoJy2tKvPfrEe5xb7OUQ730yH2joXt/view?usp=drive_link' },
+
+        ]
     },
 
     banco: {
