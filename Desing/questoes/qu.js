@@ -1002,16 +1002,39 @@ const originalQuizData = [
   }
 ];
 
-// ─── Variáveis do quiz ────────────────────────────────────────────────────────
+// ─── Função para separar texto e enunciado ─────────────────────────────────────
+function splitQuestionParts(questionText) {
+    const text = questionText.trim();
+    const sentencePattern = /^([\s\S]+?)\s{0,5}([A-ZÁÉÍÓÚÂÊÎÔÛÃÕÇ][^.!?]*[?:])$/;
+    const match = text.match(sentencePattern);
+    if (match) {
+        const contexto = match[1].trim();
+        const enunciado = match[2].trim();
+        if (contexto.length > 80 && enunciado !== text) {
+            return { context: contexto, statement: enunciado };
+        }
+    }
+    const lastSentenceMatch = text.match(/^([\s\S]+\.)(\s+[A-ZÁÉÍÓÚÂÊÎÔÛÃÕÇ][\s\S]*[?:])$/);
+    if (lastSentenceMatch) {
+        const contexto = lastSentenceMatch[1].trim();
+        const enunciado = lastSentenceMatch[2].trim();
+        if (contexto.length > 80) {
+            return { context: contexto, statement: enunciado };
+        }
+    }
+    return { context: null, statement: text };
+}
+
+// ─── Estado do quiz ───────────────────────────────────────────────────────────
 let quizData = [];
 let userAnswers = [];
-let quizSubmitted = false;
 let isFirstLoad = true;
 
+// ─── Mapeamento global de índice de questão → {subjectIndex, questionIndex} ───
+let questionMap = [];
+
 // ─── Elementos do DOM ─────────────────────────────────────────────────────────
-const quizContainer = document.getElementById("quiz-container");
-const submitButton = document.getElementById("submit");
-const restartButton = document.getElementById("restart");
+const quizContainer    = document.getElementById("quiz-container");
 const resultsContainer = document.getElementById("results");
 
 // ─── Utilitários ──────────────────────────────────────────────────────────────
@@ -1034,119 +1057,258 @@ function createShuffledQuizData() {
             const newCorrectAnswer = shuffledIndices.indexOf(question.answer);
             const correctLetter = String.fromCharCode(65 + newCorrectAnswer);
             const originalCorrectOption = question.options[question.answer];
-            const originalFeedback = question.feedback || '';
-            const explanationMatch = originalFeedback.match(/Por que está certa:<\/strong>\s*(.*)/s);
-            const explanation = explanationMatch ? explanationMatch[1].trim() : originalCorrectOption;
             return {
                 ...question,
                 options: shuffledOptions,
                 answer: newCorrectAnswer,
-                feedback: `<strong>✓ Resposta correta: ${correctLetter})</strong> ${originalCorrectOption}<br><br><strong>Por que está certa:</strong> ${explanation}`
+                feedback: `✓ Resposta correta: ${correctLetter}) ${originalCorrectOption}\n\n${extractWhyCorrect(question.feedback)}`
             };
         })
     }));
 }
 
+function extractWhyCorrect(feedback) {
+    const match = feedback.match(/Por que está certa:([\s\S]*)/);
+    return match ? `Por que está certa:${match[1]}` : '';
+}
+
 function createOriginalQuizData() {
-    return originalQuizData.map(subject => ({
-        ...subject,
-        questions: subject.questions.map(question => {
-            const correctLetter = String.fromCharCode(65 + question.answer);
-            const correctOption = question.options[question.answer];
-            const originalFeedback = question.feedback || '';
-            const explanationMatch = originalFeedback.match(/Por que está certa:<\/strong>\s*(.*)/s);
-            const explanation = explanationMatch ? explanationMatch[1].trim() : correctOption;
-            return {
-                ...question,
-                feedback: `<strong>✓ Resposta correta: ${correctLetter})</strong> ${correctOption}<br><br><strong>Por que está certa:</strong> ${explanation}`
-            };
-        })
-    }));
+    return originalQuizData.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
 }
 
 // ─── Inicialização ────────────────────────────────────────────────────────────
 function initializeQuiz() {
-    userAnswers = [];
-    quizSubmitted = false;
-
     if (isFirstLoad) {
         quizData = createOriginalQuizData();
         isFirstLoad = false;
     }
 
-    const allQuestions = [];
-    quizData.forEach(subject => allQuestions.push(...subject.questions));
-    userAnswers = new Array(allQuestions.length).fill(null);
-
-    showAllQuestions();
-}
-
-// ─── Renderização ─────────────────────────────────────────────────────────────
-function showAllQuestions() {
-    let questionsHTML = "";
-    let questionIndex = 0;
-
-    quizData.forEach(subject => {
-        questionsHTML += `<div class="subject-title">${subject.subject}</div>`;
-
-        subject.questions.forEach(question => {
-            // Separar texto base do enunciado pelo \n\n
-            const parts = question.question.split('\n\n');
-            let questionBodyHTML = '';
-            if (parts.length >= 2) {
-                const contexto = parts.slice(0, parts.length - 1).join('\n\n');
-                const enunciado = parts[parts.length - 1];
-                questionBodyHTML = `
-                    <div class="question-context">${contexto.replace(/\n/g, '<br>')}</div>
-                    <div class="question-divider"></div>
-                    <div class="question-statement">${enunciado}</div>
-                `;
-            } else {
-                questionBodyHTML = `<div class="question-text">${question.question}</div>`;
-            }
-
-            questionsHTML += `
-                <div class="question-container">
-                    <div class="question-number">Questão ${questionIndex + 1}</div>
-                    ${questionBodyHTML}
-                    ${question.image ? `<div class="question-image"><img src="${question.image}" alt="Imagem da questão"></div>` : ''}
-                    ${question.questionContinuation ? `<div class="question-text">${question.questionContinuation}</div>` : ''}
-                    <div class="options">
-                        ${question.options.map((option, optionIndex) => {
-                            let cls = "option";
-                            if (userAnswers[questionIndex] === optionIndex) cls += " selected";
-                            if (quizSubmitted) {
-                                if (optionIndex === question.answer) cls += " correct";
-                                else if (userAnswers[questionIndex] === optionIndex) cls += " incorrect";
-                            }
-                            return `<div class="${cls}" onclick="selectOption(${questionIndex}, ${optionIndex})">${String.fromCharCode(65 + optionIndex)}) ${option}</div>`;
-                        }).join("")}
-                    </div>
-                    ${quizSubmitted ? `
-                        <div class="feedback ${userAnswers[questionIndex] === question.answer || userAnswers[questionIndex] === null ? 'correct-feedback' : 'incorrect-feedback'}">
-                            ${question.feedback}
-                        </div>` : ''}
-                </div>`;
-            questionIndex++;
+    questionMap = [];
+    quizData.forEach((subject, sIdx) => {
+        subject.questions.forEach((_, qIdx) => {
+            questionMap.push({ sIdx, qIdx });
         });
     });
 
-    quizContainer.innerHTML = questionsHTML;
+    userAnswers = new Array(questionMap.length).fill(null);
+    showAllQuestions();
+    updateGlobalResults();
 }
 
-window.selectOption = function (questionIndex, optionIndex) {
-    if (quizSubmitted) return;
+// ─── Renderização completa ────────────────────────────────────────────────────
+function showAllQuestions() {
+    let html = "";
+    let globalIndex = 0;
 
-    userAnswers[questionIndex] = optionIndex;
+    quizData.forEach((subject, sIdx) => {
+        html += `<div class="subject-title">${subject.subject}</div>`;
 
-    const allContainers = document.querySelectorAll('.question-container');
-    const container = allContainers[questionIndex];
+        subject.questions.forEach((question, qIdx) => {
+            const gi = globalIndex;
+            const answered = userAnswers[gi] !== null;
+            const parts = splitQuestionParts(question.question);
+
+            let questionBodyHTML = parts.context
+                ? `<div class="question-context">${parts.context}</div>
+                   <div class="question-divider"></div>
+                   <div class="question-statement">${parts.statement}</div>`
+                : `<div class="question-text">${parts.statement}</div>`;
+
+            const optionsHTML = question.options.map((option, oi) => {
+                let cls = "option";
+                if (answered) {
+                    if (oi === question.answer) cls += " correct";
+                    else if (userAnswers[gi] === oi) cls += " incorrect";
+                    cls += " locked";
+                }
+                const clickHandler = answered ? '' : `onclick="selectOption(${gi}, ${oi})"`;
+                return `<div class="${cls}" ${clickHandler}>${String.fromCharCode(65 + oi)}) ${option}</div>`;
+            }).join("");
+
+            let feedbackHTML = "";
+            if (answered) {
+                const isCorrect = userAnswers[gi] === question.answer;
+                feedbackHTML = `<div class="feedback ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}">
+                    ${question.feedback.replace(/\n/g, '<br>')}
+                </div>`;
+            }
+
+            html += `<div class="question-container" id="q-${gi}">
+                <div class="question-number">Questão ${gi + 1}</div>
+                ${questionBodyHTML}
+                ${question.image ? `<div class="question-image"><img src="${question.image}" alt="Imagem da questão"></div>` : ''}
+                ${question.questionContinuation ? `<div class="question-text">${question.questionContinuation}</div>` : ''}
+                <div class="options">${optionsHTML}</div>
+                ${feedbackHTML}
+            </div>`;
+
+            globalIndex++;
+        });
+
+        html += renderSubjectResult(sIdx);
+    });
+
+    quizContainer.innerHTML = html;
+}
+
+// ─── Resultado por aula ───────────────────────────────────────────────────────
+function renderSubjectResult(sIdx) {
+    const subject = quizData[sIdx];
+    const total = subject.questions.length;
+
+    const globalIndices = questionMap
+        .map((m, gi) => m.sIdx === sIdx ? gi : -1)
+        .filter(gi => gi !== -1);
+
+    const answered = globalIndices.filter(gi => userAnswers[gi] !== null).length;
+    const correct  = globalIndices.filter(gi => userAnswers[gi] === quizData[sIdx].questions[questionMap[gi].qIdx].answer).length;
+    const pct      = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+    const allDone  = answered === total;
+
+    let colorClass = '';
+    if (allDone) {
+        if (pct >= 70) colorClass = 'subject-result--good';
+        else if (pct >= 50) colorClass = 'subject-result--mid';
+        else colorClass = 'subject-result--bad';
+    }
+
+    if (!allDone) {
+        const progressPct = Math.round((answered / total) * 100);
+        return `<div class="subject-result subject-result--progress" id="sr-${sIdx}">
+            <div class="sr-progress-label">${answered} de ${total} questões respondidas</div>
+            <div class="sr-progress-bar"><div class="sr-progress-fill" style="width:${progressPct}%"></div></div>
+        </div>`;
+    }
+
+    return `<div class="subject-result ${colorClass}" id="sr-${sIdx}">
+        <div class="sr-icon">${pct >= 70 ? '🎯' : pct >= 50 ? '📊' : '📚'}</div>
+        <div class="sr-content">
+            <div class="sr-title">Resultado da Aula</div>
+            <div class="sr-score">${correct} de ${total} questões corretas</div>
+            <div class="sr-pct">${pct}%</div>
+        </div>
+    </div>`;
+}
+
+// ─── Resultado global ─────────────────────────────────────────────────────────
+function updateGlobalResults() {
+    const total    = userAnswers.length;
+    const answered = userAnswers.filter(a => a !== null).length;
+
+    if (answered < total) {
+        resultsContainer.style.display = "none";
+        return;
+    }
+
+    let correct = 0;
+    questionMap.forEach((m, gi) => {
+        if (userAnswers[gi] === quizData[m.sIdx].questions[m.qIdx].answer) correct++;
+    });
+
+    const pct = Math.round((correct / total) * 100);
+    resultsContainer.innerHTML = `
+        <h2>Resultado Final</h2>
+        <div class="score">Você acertou ${correct} de ${total} questões</div>
+        <div class="percentage">${pct}%</div>
+        <p>${pct >= 70 ? "Parabéns! Excelente desempenho." : "Revise os conceitos para melhorar seu desempenho."}</p>`;
+    resultsContainer.style.display = "block";
+
+    const clearBtn  = document.getElementById('clear');
+    const revealBtn = document.getElementById('reveal');
+    if (clearBtn)  clearBtn.disabled  = true;
+    if (revealBtn) revealBtn.disabled = true;
+}
+
+// ─── Selecionar opção (feedback imediato) ─────────────────────────────────────
+window.selectOption = function(gi, oi) {
+    if (userAnswers[gi] !== null) return;
+
+    userAnswers[gi] = oi;
+
+    const container = document.getElementById(`q-${gi}`);
     if (!container) return;
 
+    const { sIdx, qIdx } = questionMap[gi];
+    const question = quizData[sIdx].questions[qIdx];
+    const isCorrect = oi === question.answer;
+
     container.querySelectorAll('.option').forEach((el, idx) => {
-        el.classList.toggle('selected', idx === optionIndex);
+        el.classList.remove('selected');
+        el.classList.add('locked');
+        el.removeAttribute('onclick');
+        if (idx === question.answer) el.classList.add('correct');
+        else if (idx === oi)         el.classList.add('incorrect');
     });
+
+    let feedbackEl = container.querySelector('.feedback');
+    if (!feedbackEl) {
+        feedbackEl = document.createElement('div');
+        container.querySelector('.options').after(feedbackEl);
+    }
+    feedbackEl.className = `feedback ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}`;
+    feedbackEl.innerHTML = question.feedback.replace(/\n/g, '<br>');
+
+    const srEl = document.getElementById(`sr-${sIdx}`);
+    if (srEl) srEl.outerHTML = renderSubjectResult(sIdx);
+
+    updateGlobalResults();
+
+    if (typeof storageInitialized !== 'undefined' && storageInitialized) {
+        setTimeout(saveCurrentProgress, 100);
+    }
 };
+
+// ─── Revelar todas as respostas ───────────────────────────────────────────────
+function revealAnswers() {
+    questionMap.forEach((m, gi) => {
+        if (userAnswers[gi] === null) {
+            userAnswers[gi] = quizData[m.sIdx].questions[m.qIdx].answer;
+        }
+    });
+    showAllQuestions();
+    updateGlobalResults();
+    smoothScrollToTop();
+}
+
+// ─── Limpar respostas ─────────────────────────────────────────────────────────
+function clearAnswers() {
+    const clearBtn = document.getElementById('clear');
+    if (clearBtn?.disabled) return;
+
+    userAnswers.fill(null);
+    showAllQuestions();
+
+    resultsContainer.style.display = "none";
+
+    const revealBtn = document.getElementById('reveal');
+    if (clearBtn)  clearBtn.disabled  = false;
+    if (revealBtn) revealBtn.disabled = false;
+
+    smoothScrollToTop();
+}
+
+// ─── Reiniciar com shuffle ────────────────────────────────────────────────────
+function restartQuiz() {
+    quizData = createShuffledQuizData();
+
+    questionMap = [];
+    quizData.forEach((subject, sIdx) => {
+        subject.questions.forEach((_, qIdx) => questionMap.push({ sIdx, qIdx }));
+    });
+
+    userAnswers = new Array(questionMap.length).fill(null);
+
+    showAllQuestions();
+
+    resultsContainer.style.display = "none";
+
+    const clearBtn  = document.getElementById('clear');
+    const revealBtn = document.getElementById('reveal');
+    if (clearBtn)  clearBtn.disabled  = false;
+    if (revealBtn) revealBtn.disabled = false;
+
+    smoothScrollToTop();
+}
 
 // ─── Scroll ───────────────────────────────────────────────────────────────────
 function smoothScrollTo(targetPosition, duration = 800) {
@@ -1154,178 +1316,56 @@ function smoothScrollTo(targetPosition, duration = 800) {
     const change = targetPosition - start;
     const startTime = performance.now();
     function animateScroll(currentTime) {
-        const elapsed = currentTime - startTime;
+        const elapsed  = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         window.scrollTo(0, start + change * progress);
         if (progress < 1) requestAnimationFrame(animateScroll);
     }
     requestAnimationFrame(animateScroll);
 }
-
 function smoothScrollToTop() { smoothScrollTo(0, 800); }
 
 // ─── Alerta ───────────────────────────────────────────────────────────────────
 function showAlertNotification(message) {
     const el = document.createElement('div');
     el.style.cssText = `
-        position: fixed; top: 20px; left: 50%;
-        transform: translateX(-50%) translateY(-100%);
-        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-        color: white; padding: 12px 24px; border-radius: 10px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 500;
-        z-index: 10000; opacity: 0; transition: all 0.4s ease;`;
+        position:fixed;top:20px;left:50%;
+        transform:translateX(-50%) translateY(-100%);
+        background:linear-gradient(135deg,#e74c3c 0%,#c0392b 100%);
+        color:white;padding:12px 24px;border-radius:10px;
+        box-shadow:0 4px 20px rgba(0,0,0,.3);
+        font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;
+        z-index:10000;opacity:0;transition:all .4s ease;`;
     el.textContent = message;
     document.body.appendChild(el);
-    setTimeout(() => { el.style.opacity = '1'; el.style.transform = 'translateX(-50%) translateY(0)'; }, 50);
+    setTimeout(() => { el.style.opacity='1'; el.style.transform='translateX(-50%) translateY(0)'; }, 50);
     setTimeout(() => {
-        el.style.opacity = '0'; el.style.transform = 'translateX(-50%) translateY(-100%)';
+        el.style.opacity='0'; el.style.transform='translateX(-50%) translateY(-100%)';
         setTimeout(() => el.parentNode && el.parentNode.removeChild(el), 400);
     }, 5000);
 }
 
-// ─── Enviar ───────────────────────────────────────────────────────────────────
-function showResults() {
-    const firstUnansweredIndex = userAnswers.findIndex(a => a === null);
-    if (firstUnansweredIndex !== -1) {
-        const containers = document.querySelectorAll('.question-container');
-        containers[firstUnansweredIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        showAlertNotification("⚠️ Por favor, responda todas as questões antes de enviar.");
-        return;
-    }
-
-    quizSubmitted = true;
-    showAllQuestions();
-
-    const clearBtn = document.getElementById('clear');
-    const revealBtn = document.getElementById('reveal');
-    if (clearBtn) { clearBtn.disabled = true; }
-    if (revealBtn) { revealBtn.disabled = true; }
-
-    let score = 0, questionIndex = 0;
-    quizData.forEach(subject => {
-        subject.questions.forEach(question => {
-            if (userAnswers[questionIndex] === question.answer) score++;
-            questionIndex++;
-        });
-    });
-
-    const total = questionIndex;
-    const pct = Math.round((score / total) * 100);
-
-    resultsContainer.innerHTML = `
-        <h2>Resultado</h2>
-        <div class="score">Você acertou ${score} de ${total} questões</div>
-        <div class="percentage">${pct}%</div>
-        <p>${pct >= 70 ? "Parabéns! Excelente desempenho." : "Revise os conceitos para melhorar seu desempenho."}</p>`;
-    resultsContainer.style.display = "block";
-    submitButton.style.display = "none";
-    restartButton.style.display = "inline-flex";
-}
-
-// ─── Reiniciar ────────────────────────────────────────────────────────────────
-function restartQuiz() {
-    userAnswers = [];
-    quizSubmitted = false;
-    quizData = createShuffledQuizData();
-
-    const allQuestions = [];
-    quizData.forEach(s => allQuestions.push(...s.questions));
-    userAnswers = new Array(allQuestions.length).fill(null);
-
-    showAllQuestions();
-    resultsContainer.style.display = "none";
-    submitButton.style.display = "inline-flex";
-    restartButton.style.display = "none";
-
-    const clearBtn = document.getElementById('clear');
-    const revealBtn = document.getElementById('reveal');
-    if (clearBtn) { clearBtn.disabled = false; }
-    if (revealBtn) { revealBtn.disabled = false; }
-
-    smoothScrollToTop();
-}
-
-// ─── Limpar ───────────────────────────────────────────────────────────────────
-function clearAnswers() {
-    const clearBtn = document.getElementById('clear');
-    if (clearBtn?.disabled) return;
-
-    userAnswers.fill(null);
-    quizSubmitted = false;
-    showAllQuestions();
-    resultsContainer.style.display = "none";
-    submitButton.style.display = "inline-flex";
-    restartButton.style.display = "none";
-    smoothScrollToTop();
-}
-
-// ─── Revelar ──────────────────────────────────────────────────────────────────
-function revealAnswers() {
-    quizSubmitted = true;
-    showAllQuestions();
-
-    const clearBtn = document.getElementById('clear');
-    const revealBtn = document.getElementById('reveal');
-    if (clearBtn) { clearBtn.disabled = true; }
-    if (revealBtn) { revealBtn.disabled = true; }
-
-    submitButton.style.display = "none";
-    restartButton.style.display = "inline-flex";
-    smoothScrollToTop();
-}
-
-// ─── Event Listeners (botões principais) ─────────────────────────────────────
+// ─── Event Listeners ─────────────────────────────────────────────────────────
 document.getElementById('clear').addEventListener('click', clearAnswers);
 document.getElementById('reveal').addEventListener('click', revealAnswers);
-submitButton.addEventListener("click", showResults);
-restartButton.addEventListener("click", restartQuiz);
+document.getElementById('restart').addEventListener('click', restartQuiz);
 
-// ─── Navegação flutuante ──────────────────────────────────────────────────────
-document.getElementById('btn-up').addEventListener('click', () => smoothScrollTo(0, 1000));
+document.getElementById('btn-up').addEventListener('click',   () => smoothScrollTo(0, 1000));
 document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../desing.html'; });
 document.getElementById('btn-down').addEventListener('click', () => smoothScrollTo(document.body.scrollHeight, 1000));
 
-function updateSubmitButtonIcon() {
-    const icon = document.querySelector('#submitButton i');
-    if (!icon) return;
-    if (quizSubmitted) {
-        icon.className = 'fas fa-redo';
-        document.getElementById('submitButton').title = 'Reiniciar Quiz';
-    } else {
-        icon.className = 'fas fa-paper-plane';
-        document.getElementById('submitButton').title = 'Enviar Quiz';
-    }
-}
+document.getElementById('clearButton').addEventListener('click', clearAnswers);
+document.getElementById('restartButton').addEventListener('click', restartQuiz);
+document.getElementById('revealButton').addEventListener('click', revealAnswers);
 
-document.getElementById('clearButton').addEventListener('click', () => { clearAnswers(); updateSubmitButtonIcon(); });
-document.getElementById('submitButton').addEventListener('click', () => {
-    if (quizSubmitted) restartQuiz(); else showResults();
-    setTimeout(updateSubmitButtonIcon, 100);
-});
-document.getElementById('revealButton').addEventListener('click', () => { revealAnswers(); updateSubmitButtonIcon(); });
-
-// ─── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
     initializeQuiz();
-    setTimeout(updateSubmitButtonIcon, 150);
 });
 
-
-// =============================================================================
-// SISTEMA DE AUTO-SAVE — não modificar abaixo
-// =============================================================================
-
-const QUIZ_ID = 'questoes_ihc_design';
-
-const AUTO_SAVE_CONFIG = {
-    enabled: true,
-    interval: 10000,
-    saveOnAnswer: true,
-    clearOnSubmit: false
-};
-
-let autoSaveInterval = null;
+// ─── Auto-Save ────────────────────────────────────────────────────────────────
+const QUIZ_ID = 'questoes_banco_de_dados';
+const AUTO_SAVE_CONFIG = { enabled: true, interval: 10000, saveOnAnswer: true };
+let autoSaveInterval   = null;
 let storageInitialized = false;
 
 function initializeStorage() {
@@ -1346,6 +1386,7 @@ function loadSavedProgress() {
             if (hasAnswers) {
                 userAnswers = [...saved.respostas];
                 showAllQuestions();
+                updateGlobalResults();
                 const count = saved.respostas.filter(a => a !== null && a !== undefined).length;
                 showProgressNotification(`Progresso restaurado! 📚 (${count} questões respondidas)`);
             }
@@ -1359,7 +1400,7 @@ function saveCurrentProgress() {
         storage.saveProgress(QUIZ_ID, userAnswers, {
             totalQuestions: userAnswers.length,
             answeredCount: userAnswers.filter(a => a !== null).length,
-            isCompleted: quizSubmitted || false
+            isCompleted: userAnswers.every(a => a !== null)
         });
     } catch (e) { console.error('[Storage] Erro ao salvar:', e); }
 }
@@ -1372,6 +1413,7 @@ function startAutoSave() {
 function stopAutoSave() {
     if (autoSaveInterval) { clearInterval(autoSaveInterval); autoSaveInterval = null; }
 }
+
 
 function showProgressNotification(message) {
     // 1. Gerenciador de Container (evita sobreposição)
@@ -1429,18 +1471,11 @@ function showProgressNotification(message) {
     }, 4000);
 }
 
-const _origSelect = window.selectOption;
-window.selectOption = function (qi, oi) {
-    _origSelect(qi, oi);
-    if (AUTO_SAVE_CONFIG.saveOnAnswer && storageInitialized)
-        setTimeout(saveCurrentProgress, 100);
-};
-
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) { saveCurrentProgress(); stopAutoSave(); }
     else if (AUTO_SAVE_CONFIG.enabled && storageInitialized) startAutoSave();
 });
-
 window.addEventListener('beforeunload', () => { if (storageInitialized) saveCurrentProgress(); });
 
 setTimeout(initializeStorage, 500);
+

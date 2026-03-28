@@ -544,3 +544,114 @@ h1 {
         font-size: 0.78rem;
     }
 }
+
+
+
+
+/* ── Resultado por Aula ────────────────────────────────────────────────────── */
+.subject-result {
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    margin: 0.5rem 0 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    animation: fadeInUp 0.5s ease-out both;
+    transition: all 0.4s ease;
+}
+
+/* Progresso parcial */
+.subject-result--progress {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.9rem 1.2rem;
+}
+
+.sr-progress-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.5px;
+}
+
+.sr-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.sr-progress-fill {
+    height: 100%;
+    background: rgba(55, 138, 221, 0.5);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+/* Aula completa — bom (≥70%) */
+.subject-result--good {
+    background: rgba(29, 158, 117, 0.1);
+    border: 1px solid rgba(29, 158, 117, 0.3);
+}
+
+/* Aula completa — médio (50–69%) */
+.subject-result--mid {
+    background: rgba(243, 156, 18, 0.08);
+    border: 1px solid rgba(243, 156, 18, 0.25);
+}
+
+/* Aula completa — ruim (<50%) */
+.subject-result--bad {
+    background: rgba(231, 76, 60, 0.08);
+    border: 1px solid rgba(231, 76, 60, 0.25);
+}
+
+.sr-icon {
+    font-size: 1.7rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.sr-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1;
+}
+
+.sr-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.sr-score {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.sr-pct {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.subject-result--good  .sr-pct { color: #3ecfa0; }
+.subject-result--mid   .sr-pct { color: #f5c46a; }
+.subject-result--bad   .sr-pct { color: #e07a73; }
+
+/* Opções bloqueadas após resposta */
+.option.locked {
+    cursor: not-allowed;
+    pointer-events: none;
+}
