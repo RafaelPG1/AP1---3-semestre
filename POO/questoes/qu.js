@@ -872,7 +872,7 @@ document.getElementById('reveal').addEventListener('click', revealAnswers);
 document.getElementById('restart').addEventListener('click', restartQuiz);
 
 document.getElementById('btn-up').addEventListener('click',   () => smoothScrollTo(0, 1000));
-document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../desing.html'; });
+document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../POO.html'; });
 document.getElementById('btn-down').addEventListener('click', () => smoothScrollTo(document.body.scrollHeight, 1000));
 
 document.getElementById('clearButton').addEventListener('click', clearAnswers);
