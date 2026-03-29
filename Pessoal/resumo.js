@@ -363,14 +363,416 @@ export const resumoData = {
     },
 
     // ── PROGRAMAÇÃO ORIENTADA A OBJETOS ─────────────────────────────────
-    poo: {
-        resumos: [],
-    },
+poo: {
+    resumos: [
+        {
+            id: 'poo_aula1',
+            titulo: 'Aula 1 — Fundamentos da POO e Anatomia de Classes',
+            conteudo: [
+                {
+                    subtitulo: 'Paradigma',
+                    texto: 'A POO surge como solução para a complexidade procedural, unificando dados e funções em unidades coesas chamadas objetos.'
+                },
+                {
+                    subtitulo: 'Atributos e Métodos',
+                    texto: 'Atributos representam o estado interno (o que o objeto conhece), enquanto métodos representam o comportamento ou serviços (o que o objeto faz).'
+                },
+                {
+                    subtitulo: 'Abstração',
+                    texto: 'Processo de isolar apenas as características essenciais para um contexto, ignorando detalhes irrelevantes para reduzir a carga cognitiva.'
+                },
+                {
+                    subtitulo: 'Nomenclatura',
+                    texto: 'Java utiliza PascalCase para nomes de classes e camelCase para membros (atributos e métodos).'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'poo_aula2',
+            titulo: 'Aula 2 — Sintaxe, Tipagem e Memória',
+            conteudo: [
+                {
+                    subtitulo: 'Tipagem Forte',
+                    texto: 'Java exige a declaração de tipos. Tipos primitivos incluem int, long, double, boolean e char.'
+                },
+                {
+                    subtitulo: 'Inferência de Tipo',
+                    texto: 'A partir do Java 10, a palavra-chave var permite que o compilador deduza o tipo com base no valor atribuído.'
+                },
+                {
+                    subtitulo: 'Gestão de Memória',
+                    texto: 'Stack (Pilha): Memória rápida para variáveis locais e referências. Heap (Monte): Onde residem todos os objetos criados com o operador new.'
+                },
+                {
+                    subtitulo: 'Strings',
+                    texto: 'São imutáveis e gerenciadas em um String Pool para eficiência. A comparação de conteúdo deve ser feita com .equals() e não com ==.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'poo_aula3',
+            titulo: 'Aula 3 — Métodos e Comportamento',
+            conteudo: [
+                {
+                    subtitulo: 'Princípio DRY',
+                    texto: 'Métodos evitam a repetição de lógica (Don\'t Repeat Yourself).'
+                },
+                {
+                    subtitulo: 'Passagem de Parâmetros',
+                    texto: 'Em Java, é sempre por valor (uma cópia). Para primitivos, a variável original não muda; para objetos, a cópia da referência permite alterar o estado do objeto original.'
+                },
+                {
+                    subtitulo: 'Sobrecarga (Overloading)',
+                    texto: 'Capacidade de definir múltiplos métodos com o mesmo nome na mesma classe, desde que possuam parâmetros diferentes.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'poo_aula4',
+            titulo: 'Aula 4 — Encapsulamento e Modificadores',
+            conteudo: [
+                {
+                    subtitulo: 'Encapsulamento',
+                    texto: 'Protege o estado do objeto contra modificações externas imprevistas e valores inválidos.'
+                },
+                {
+                    subtitulo: 'Modificadores de Acesso',
+                    texto: 'public: Acesso total por qualquer classe. private: Acesso apenas dentro da própria classe. protected: Acesso pela classe, subclasses e classes do mesmo pacote.'
+                },
+                {
+                    subtitulo: 'Getters e Setters',
+                    texto: 'Métodos "guardiões" que permitem ler e validar a alteração de atributos privados.'
+                },
+                {
+                    subtitulo: 'Palavra-chave this',
+                    texto: 'Refere-se à instância atual do objeto, sendo útil para diferenciar atributos de variáveis locais.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'poo_aula5',
+            titulo: 'Aula 5 — Construtores e Membros Estáticos',
+            conteudo: [
+                {
+                    subtitulo: 'Construtores',
+                    texto: 'Métodos que garantem que um objeto nasça com um estado válido. Devem ter o mesmo nome da classe e não possuem tipo de retorno.'
+                },
+                {
+                    subtitulo: 'Membros static',
+                    texto: 'Pertencem à classe (forma) e não à instância. Variáveis estáticas são compartilhadas entre todos os objetos da classe, e métodos estáticos não podem acessar membros de instância diretamente.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'poo_aula6',
+            titulo: 'Aula 6 — Herança e Polimorfismo',
+            conteudo: [
+                {
+                    subtitulo: 'Herança (extends)',
+                    texto: 'Relação "É-UM" que permite o reuso de código e a especialização de classes. Java não permite herança múltipla de classes.'
+                },
+                {
+                    subtitulo: 'Sobrescrita (@Override)',
+                    texto: 'Redefinição de um método herdado da classe pai para fornecer um comportamento mais específico no filho.'
+                },
+                {
+                    subtitulo: 'Palavra-chave super',
+                    texto: 'Usada para referenciar o construtor ou métodos da superclasse.'
+                },
+                {
+                    subtitulo: 'Polimorfismo',
+                    texto: 'Capacidade de diferentes objetos responderem ao mesmo método de formas distintas, permitindo tratar subclasses como sua classe base.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'poo_aula7',
+            titulo: 'Aula 7 — Abstração Avançada e Interfaces',
+            conteudo: [
+                {
+                    subtitulo: 'Classes Abstratas',
+                    texto: 'Modelos incompletos que não podem ser instanciados. Servem como base obrigatória para outras classes.'
+                },
+                {
+                    subtitulo: 'Interfaces',
+                    texto: 'Definem contratos de software (comportamentos obrigatórios). Uma classe pode implementar múltiplas interfaces, promovendo o desacoplamento.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'poo_aula8',
+            titulo: 'Aula 8 — Tratamento de Exceções',
+            conteudo: [
+                {
+                    subtitulo: 'Exceções',
+                    texto: 'Erros em tempo de execução que interrompem o fluxo normal.'
+                },
+                {
+                    subtitulo: 'Estrutura de Controle',
+                    texto: 'try: Código que pode gerar erro. catch: Captura e trata a falha. finally: Bloco que sempre executa, ideal para fechar recursos.'
+                },
+                {
+                    subtitulo: 'Tipos',
+                    texto: 'Checked (Checadas): Verificadas na compilação, o tratamento é obrigatório. Unchecked (Não checadas): Erros de lógica ou de execução (ex: ArithmeticException).'
+                },
+                {
+                    subtitulo: 'Lançamento',
+                    texto: 'throw dispara uma exceção manualmente, enquanto throws declara na assinatura do método que ele pode gerar um erro.'
+                }
+            ],
+            lida: false
+        }
+    ],
+},
 
     // ── REDES DE COMPUTADORES ────────────────────────────────────────────
-    redes: {
-        resumos: [],
-    },
+redes: {
+    resumos: [
+        {
+            id: 'redes_aula1',
+            titulo: 'Aula 01/02 — Introdução a Redes de Computadores',
+            conteudo: [
+                {
+                    subtitulo: '1.1 Contexto da Era da Informação',
+                    texto: 'O avanço tecnológico do século XX foi marcado principalmente pelo desenvolvimento na área de informação, incluindo: Aquisição de dados, Processamento, Armazenamento e Distribuição. No século XXI, essas áreas passaram por um processo de convergência tecnológica, ou seja, começaram a se integrar completamente, eliminando diferenças práticas entre elas. Conceitos-chave: Revolução da Informação (surgimento de redes globais, crescimento da indústria da informática); Convergência Tecnológica (integração entre computação e comunicação, sistemas antes separados passam a funcionar juntos); Demanda por Sofisticação (quanto maior o poder de processamento, maior a necessidade de sistemas complexos de distribuição de dados).'
+                },
+                {
+                    subtitulo: '2.1 O que é uma Rede de Computadores?',
+                    texto: 'Uma rede de computadores é um conjunto de computadores autônomos interconectados por uma tecnologia, capazes de trocar informações. Características fundamentais: Autonomia (cada computador funciona de forma independente), Interconexão (comunicação entre máquinas), Diversidade de meios (comunicação pode ocorrer via cabos de cobre, fibra óptica ou ondas eletromagnéticas como Wi-Fi e satélite).'
+                },
+                {
+                    subtitulo: '3.1 Redes vs Sistemas Distribuídos',
+                    texto: 'Diferença principal: em Redes de Computadores o usuário vê várias máquinas, com baixa transparência e sem software intermediário obrigatório. Em Sistemas Distribuídos o usuário vê um único sistema, com alta transparência e middleware essencial. Conceitos importantes: Middleware (software que cria a ilusão de um sistema único), Coesão e Transparência (características dos sistemas distribuídos), Visibilidade do Hardware (em redes, o usuário percebe diferentes máquinas e sistemas).'
+                },
+                {
+                    subtitulo: '4.1 Aplicações Comerciais — Compartilhamento de Recursos',
+                    texto: 'Objetivo principal: disponibilizar recursos independentemente da localização. Benefícios: Economia de escala (compartilhamento de impressoras, servidores e armazenamento), Disponibilidade de dados (acesso remoto a informações como sistemas financeiros), VPN — Virtual Private Network (conecta redes separadas como se fossem uma só).'
+                },
+                {
+                    subtitulo: '4.2 Modelo Cliente-Servidor',
+                    texto: 'Estrutura: Servidor (fornece serviços ou dados) e Cliente (solicita serviços). Características: comunicação baseada em requisições, alta escalabilidade (um servidor atende muitos clientes). Representação: um servidor central conectado a vários clientes, comunicação ocorre via rede.'
+                },
+                {
+                    subtitulo: '4.3 Comunicação Empresarial',
+                    texto: 'Tecnologias: VoIP — Voice over IP (ligações pela internet), Videoconferência (comunicação visual em tempo real), Compartilhamento de desktop (controle remoto de telas) e E-commerce (comércio eletrônico).'
+                },
+                {
+                    subtitulo: '5.1 e 5.2 Aplicações Domésticas',
+                    texto: 'Uso da Internet: acesso à informação, comunicação e entretenimento. Lei de Metcalfe: o valor de uma rede cresce proporcionalmente ao quadrado do número de usuários. Tipos de Conteúdo: Bibliotecas digitais (e-books, artigos científicos), Conteúdo colaborativo (Wikis como a Wikipedia), Entretenimento digital (música MP3, vídeos HD, IPTV).'
+                },
+                {
+                    subtitulo: '6.1 Comunicação Peer-to-Peer (P2P)',
+                    texto: 'Modelo onde não há hierarquia fixa e todos podem ser cliente e servidor. Características: Descentralização e Compartilhamento direto. Exemplos: BitTorrent e redes sociais. Vários computadores conectados diretamente entre si, sem servidor central.'
+                },
+                {
+                    subtitulo: '7.1 Computação Ubíqua (IoT) — Internet das Coisas',
+                    texto: 'Integração de dispositivos do cotidiano com a internet. Tecnologias: Sensores inteligentes (monitoramento em tempo real), RFID — Radio Frequency Identification (tecnologia sem fio que usa ondas de rádio para identificar, rastrear e gerenciar objetos, produtos ou pessoas, substitui códigos de barras), Monitoramento remoto (segurança e saúde).'
+                },
+                {
+                    subtitulo: '8.1 Questões Sociais e Éticas',
+                    texto: 'Problemas principais: Privacidade (uso de cookies e rastreamento), Segurança (ataques: Phishing, Vírus, Botnets), Anonimato vs Responsabilidade (liberdade vs controle), Neutralidade da rede (debate sobre tratamento igual de dados).'
+                },
+                {
+                    subtitulo: '10.1 e 10.2 Tecnologias de Transmissão',
+                    texto: 'Broadcast: canal único compartilhado, todos recebem a mensagem. Tipos: Unicast (um → um) e Multicast (um → grupo). Analogia: como falar em uma sala onde todos escutam, mas só um responde. Ponto a Ponto: conexão direta entre pares. Características: uso de roteamento, pode passar por vários nós, maior eficiência (menos colisões).'
+                },
+                {
+                    subtitulo: '11. Classificação por Escala',
+                    texto: 'PAN (Personal Area Network): alcance ~1 metro. Tecnologias: Bluetooth, RFID, Smartcards. Aplicações: periféricos e dispositivos médicos. LAN (Local Area Network): alcance até 1 km, alta velocidade (100 Mbps a 10 Gbps), baixo atraso. Tecnologias: Wi-Fi (802.11) e Ethernet (switches). Recursos: VLAN (segmentação lógica). MAN (Metropolitan Area Network): alcance cidade (~10 km). Exemplos: TV a cabo e internet urbana. Tecnologia: WiMAX (802.16). WAN (Wide Area Network): alcance países/continentes. Componentes: Hosts, Roteadores e Backbone. Características: longas distâncias e uso de sub-redes.'
+                },
+                {
+                    subtitulo: '12. Topologias de WAN',
+                    texto: 'Tipos: WAN dedicada (linhas exclusivas) e VPN (rede virtual sobre a internet). Vantagens da VPN: menor custo e maior flexibilidade.'
+                },
+                {
+                    subtitulo: '13. Redes Sem Fio e Móveis',
+                    texto: 'Diferença importante: Sem fio (não usa cabos) e Móvel (dispositivo pode se mover). Tecnologias: redes celulares (3G/4G), satélites e Bluetooth vs Wi-Fi. Combinações possíveis: Desktop (não sem fio, não móvel), Notebook (não sem fio, móvel), Prédio sem fio (sem fio, não móvel), Dispositivo móvel (sem fio e móvel).'
+                },
+                {
+                    subtitulo: '14.1 Redes Interligadas (Internets)',
+                    texto: 'Uma internet (minúsculo) é um conjunto de redes diferentes interligadas. Elementos: Gateway (faz a conexão entre redes diferentes), Heterogeneidade (integra tecnologias distintas) e A Internet (maior exemplo mundial).'
+                },
+                {
+                    subtitulo: '📝 Resumo Final Simplificado',
+                    texto: 'Redes permitem compartilhar dados e recursos. Existem diferentes modelos e arquiteturas. A classificação depende de: Tecnologia (broadcast vs ponto a ponto) e Escala (PAN → WAN). A internet é uma rede de redes. Redes impactam empresas, pessoas e a sociedade.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_aula2',
+            titulo: 'Aula 03/04 — Meios de Transmissão e Dispositivos de Rede',
+            conteudo: [
+                {
+                    subtitulo: '1.1 Camada Física e Transmissão de Bits',
+                    texto: 'A camada física é responsável por transmitir bits puros (0 e 1) através de um meio de comunicação. Objetivo central: garantir que um bit enviado seja recebido corretamente. Trabalha com aspectos físicos, não lógicos. Elementos envolvidos: sinais elétricos ou ópticos, tempo de transmissão (nanosegundos) e sentido da comunicação (simplex, half-duplex, full-duplex). Componentes fundamentais: Representação Digital (bits são representados por níveis de tensão), Interfaces Mecânicas (define conectores, cabos e pinagem) e Transmissão Bruta (apenas transporte de sinais, sem interpretação de dados).'
+                },
+                {
+                    subtitulo: '1.2.1 Meios Guiados — Fio de Cobre',
+                    texto: 'Muito usado em redes locais (LANs). Características: tecnologia madura, limitação de distância por atenuação do sinal. Aplicações: Ethernet clássica (um único cabo compartilhado — broadcast) e DSL — Digital Subscriber Line (usa linha telefônica para dados). Limitações: atraso, erros de transmissão e perda de sinal com distância.'
+                },
+                {
+                    subtitulo: '1.2.2 Meios Guiados — Fibra Óptica',
+                    texto: 'Tecnologia moderna de alta velocidade. Características: muito maior desempenho que o cobre, usa luz para transmitir dados. Aplicações: FTTH — Fiber to the Home (fibra diretamente na casa do usuário) e Backbones de Internet (conectam grandes redes globais). Vantagens: imune a interferência eletromagnética, baixíssimo atraso e alta largura de banda (Mbps → Gbps).'
+                },
+                {
+                    subtitulo: '1.3.1 Meios Não Guiados — Rádio e Wi-Fi',
+                    texto: 'Base das redes wireless modernas. Características: usa frequências de rádio, comunicação compartilhada. Aplicações: Wi-Fi (IEEE 802.11) e redes locais sem fio. Vantagens: mobilidade e flexibilidade.'
+                },
+                {
+                    subtitulo: '1.3.2 e 1.3.3 Redes Celulares e Satélites',
+                    texto: 'Redes Celulares: redes WAN sem fio, controladas por estações-base. Satélites de Comunicação: comunicação via satélite em órbita, cada estação terrestre envia e recebe dados. Características: comunicação do tipo broadcast, cobertura de grandes áreas. Uso: regiões remotas e redes globais.'
+                },
+                {
+                    subtitulo: '2.1 Dispositivos de Rede — Modems',
+                    texto: 'Dispositivo que converte sinais. Tipos: DSL (usa linha telefônica), Cabo (usa rede de TV) e Dial-up (conexão antiga, até 56 kbps). Função: converter sinal digital ↔ analógico.'
+                },
+                {
+                    subtitulo: '2.2 Ponto de Acesso (Access Point - AP)',
+                    texto: 'Função: atua como estação-base Wi-Fi. Responsabilidades: conectar dispositivos sem fio à rede e encaminhar pacotes. Modos: Infraestrutura (com AP) e Ad hoc (P2P, sem AP).'
+                },
+                {
+                    subtitulo: '2.3 Switches (Camada 2)',
+                    texto: 'Função: encaminhar pacotes para o destino correto. Características: conexões ponto a ponto e usa endereço de destino. Vantagens: evita colisões e escalabilidade.'
+                },
+                {
+                    subtitulo: '2.4 Roteadores (Camada 3)',
+                    texto: 'Função: conectar redes diferentes. Características: escolhe o melhor caminho (roteamento) e usa tabelas de roteamento. Responsabilidades: controle de tráfego e interligação de LANs e WANs.'
+                },
+                {
+                    subtitulo: '2.5 Gateways',
+                    texto: 'Função: conectar redes incompatíveis. Características: tradução de protocolos e conversão de hardware/software.'
+                },
+                {
+                    subtitulo: '3.1 Modelos de Referência — Arquitetura em Camadas',
+                    texto: 'Objetivo: reduzir complexidade. Conceitos: Camada (função específica), Interface (comunicação entre camadas) e Entidades pares (comunicação entre sistemas).'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_aula3',
+            titulo: 'Aula 05 — Topologias de Rede, Métricas e Padronização',
+            conteudo: [
+                {
+                    subtitulo: '1.1 Topologias de Rede — Conceito Geral',
+                    texto: 'A topologia de rede define como os dispositivos (computadores, roteadores, switches) estão organizados física e logicamente. Impactos da topologia: Escalabilidade (facilidade de crescimento da rede), Custo (quantidade de cabos e equipamentos) e Tolerância a falhas (capacidade de continuar funcionando).'
+                },
+                {
+                    subtitulo: '1.2.1 Topologia em Barramento',
+                    texto: 'Definição: todos os dispositivos compartilham um único cabo central (backbone). Funcionamento: comunicação em broadcast (difusão), todos recebem os dados e apenas o destino processa, os outros ignoram. Características: meio compartilhado, necessidade de verificar se o canal está livre e uso histórico na Ethernet antiga. Problema crítico: ponto único de falha — se o cabo quebra, toda a rede cai.'
+                },
+                {
+                    subtitulo: '1.2.2 Topologia Ponto a Ponto',
+                    texto: 'Definição: conexão direta entre dois dispositivos apenas. Funcionamento: comunicação exclusiva (unicast). Características: simples e eficiente, sem colisões e base das redes WAN. Aplicação: conexões entre cidades (ex: redes SONET).'
+                },
+                {
+                    subtitulo: '1.2.3 Topologia em Estrela',
+                    texto: 'Definição: todos os dispositivos conectados a um nó central (switch). Funcionamento: o switch decide para onde enviar os dados. Características: isolamento de falhas (um cabo quebrado afeta só um dispositivo), fácil expansão e muito usada em redes atuais (LANs).'
+                },
+                {
+                    subtitulo: '1.2.4 Topologia em Anel',
+                    texto: 'Definição: dispositivos conectados formando um circuito fechado. Funcionamento: dados circulam em um único sentido e cada nó atua como repetidor. Características: regeneração de sinal, uso de token (controle de acesso) e latência previsível. Importante: ideal para sistemas que precisam de tempo real.'
+                },
+                {
+                    subtitulo: '1.2.5 Topologia em Árvore',
+                    texto: 'Definição: estrutura hierárquica baseada na estrela. Funcionamento: switches conectados em níveis (cascata). Características: organização por setores (ex: departamentos), facilita gerenciamento e permite segmentação da rede. Atenção: muitos níveis geram aumento da latência.'
+                },
+                {
+                    subtitulo: '1.2.6 Topologia em Malha (Mesh)',
+                    texto: 'Definição: dispositivos com múltiplas conexões redundantes. Funcionamento: dados podem seguir vários caminhos. Características: alta disponibilidade, roteamento dinâmico e base da Internet. Trade-off: alta confiabilidade (vantagem) vs alto custo e complexidade (desvantagem).'
+                },
+                {
+                    subtitulo: '2.1 Métricas de Desempenho — Vazão (Throughput)',
+                    texto: 'Definição: quantidade de dados transmitidos por unidade de tempo. Unidades: Mbps (1.000.000 bits/s) e Gbps (1.000.000.000 bits/s). Observações: redes cabeadas têm desempenho superior às redes sem fio.'
+                },
+                {
+                    subtitulo: '2.2 Atraso (Delay / Latência)',
+                    texto: 'Definição: tempo que os dados levam para chegar ao destino. Tipos: Atraso de propagação (tempo no meio físico) e Atraso de processamento (tempo em roteadores). Medidas: microssegundos (µs) e nanossegundos (ns). Importância: crítico para jogos online, streaming e chamadas de vídeo.'
+                },
+                {
+                    subtitulo: '2.3 Congestionamento e Perda de Dados',
+                    texto: 'Definição: ocorre quando a rede não suporta o volume de tráfego. Consequências: aumento de atraso e perda de pacotes. Elementos: Gargalos (caminhos sobrecarregados) e Buffers cheios (descarte de pacotes). Solução: sistemas reduzem envio automaticamente.'
+                },
+                {
+                    subtitulo: '2.4 Qualidade de Serviço (QoS)',
+                    texto: 'Definição: mecanismos que priorizam determinados tipos de tráfego. Componentes: Jitter (variação do atraso) e prioridade de tráfego. Aplicações: voz e vídeo precisam de baixa latência; downloads precisam de alta vazão.'
+                },
+                {
+                    subtitulo: '2.5 Eficiência — Multiplexação Estatística',
+                    texto: 'Definição: compartilhamento dinâmico do canal de comunicação. Comparação: Estática (recursos fixos, ineficiente) vs Dinâmica (uso sob demanda, eficiente). Vantagem: evita desperdício de banda.'
+                },
+                {
+                    subtitulo: '3.1 e 3.2 Padronização de Redes',
+                    texto: 'Objetivo: garantir que dispositivos diferentes consigam se comunicar. Benefícios: interoperabilidade, compatibilidade e evolução tecnológica. Principais organizações: ISO (criadora do modelo OSI, foco em modelos teóricos) e IEEE (foco em hardware e redes locais — IEEE 802.3 → Ethernet e IEEE 802.11 → Wi-Fi).'
+                },
+                {
+                    subtitulo: '3.3 Padronização da Internet',
+                    texto: 'IETF: define padrões da Internet. RFC: documentos oficiais dos protocolos. Exemplos: TCP e IP. Característica: desenvolvimento aberto e colaborativo.'
+                },
+                {
+                    subtitulo: '4.1 e 4.2 Métricas de Erro (Confiabilidade)',
+                    texto: 'Problema: transmissão pode sofrer interferências de ruído elétrico e alteração de bits. Soluções — técnicas: Detecção de erros (identifica falhas), Correção de erros (recupera dados) e Retransmissão (reenvio de dados).'
+                },
+                {
+                    subtitulo: '📝 Resumo Final',
+                    texto: 'Topologias definem a estrutura da rede. Desempenho envolve vazão, latência e congestionamento. QoS garante priorização de tráfego. Padronização garante comunicação global. Erros são detectados e corrigidos automaticamente.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_aula4',
+            titulo: 'Aula 06 — Representação de Dados e Fluxo de Transmissão',
+            conteudo: [
+                {
+                    subtitulo: '1.1 Conceito Fundamental — Representação de Dados',
+                    texto: 'Na comunicação de dados, toda informação é convertida em bits (0 e 1). Isso permite que diferentes tipos de dados sejam transmitidos no mesmo sistema. Computadores não entendem texto, imagem ou som diretamente — eles trabalham apenas com dois estados: ligado (1) e desligado (0).'
+                },
+                {
+                    subtitulo: '1.2 Texto e Codificação',
+                    texto: 'O texto é representado por padrões binários, utilizando sistemas de codificação. Principais padrões: ASCII (7 bits → 128 símbolos) e Unicode (até 32 bits → suporta praticamente todos os idiomas). Representação de números: diferente do texto, convertidos diretamente para binário. Exemplo: 6 → 110.'
+                },
+                {
+                    subtitulo: '1.3 Imagens e Digitalização',
+                    texto: 'Imagens são representadas por uma matriz de pixels. Pixel: menor unidade da imagem, define a resolução. Cores: Monocromático (1 bit, preto/branco) e Colorido (sistema RGB). Profundidade de cor: número de bits por pixel, define a quantidade de cores possíveis. Representação: imagem dividida em grade (matriz), cada célula = pixel, cada pixel = valor binário de cor.'
+                },
+                {
+                    subtitulo: '1.4 Áudio e Vídeo',
+                    texto: 'São sinais contínuos (analógicos) que precisam ser convertidos para digital. Áudio — processo: captura do som (analógico), amostragem e conversão para binário. Cada amostra representa o valor do som em um instante. Vídeo: sequência de imagens (frames). Taxa de quadros (FPS): 24 (cinema), 30 (TV) e 60 (alta fluidez). Representação: sinal contínuo sendo "quebrado" em pontos (amostras) e depois convertido em números binários.'
+                },
+                {
+                    subtitulo: '1.5 Analogia: Alfabeto de Dois Símbolos',
+                    texto: 'Toda informação pode ser reduzida a dois estados: 0 e 1. Analogia: comunicação como piscar de lanterna, padrões de piscadas formam mensagens. Conceitos-chave: Unificação (todos os dados viram bits) e Eficiência (permite compressão).'
+                },
+                {
+                    subtitulo: '2.1 e 2.2 Fluxo de Dados',
+                    texto: 'Define como os dados trafegam entre dispositivos. Tipos de comunicação: Simplex (uma direção, sem simultaneidade — só envia), Half-Duplex (duas direções, não simultâneo — envia e recebe, mas alternado) e Full-Duplex (duas direções simultâneas — comunicação ao mesmo tempo).'
+                },
+                {
+                    subtitulo: '3.1 e 3.2 Deficiências na Transmissão',
+                    texto: 'Durante a transmissão, o sinal pode sofrer alterações e perdas. Principais problemas: Atenuação (perda de energia do sinal; solução: amplificadores), Distorção (alteração na forma do sinal; ocorre quando frequências chegam em tempos diferentes) e Ruído (interferência externa). Tipos de ruído: térmico, induzido, crosstalk e impulso.'
+                },
+                {
+                    subtitulo: '3.3 Relação Sinal-Ruído (SNR)',
+                    texto: 'Define a qualidade da comunicação. Interpretação: SNR Alta = boa qualidade; SNR Baixa = má qualidade. Representação: sinal limpo → alta SNR; sinal distorcido → baixa SNR.'
+                },
+                {
+                    subtitulo: '📝 Conclusão da Aula',
+                    texto: 'Toda informação é convertida em bits (0 e 1). Dados podem ser texto, imagem, áudio ou vídeo. Comunicação depende do fluxo de dados (simplex, half-duplex, full-duplex). Sinais sofrem problemas como atenuação, distorção e ruído. A qualidade da transmissão depende da SNR.'
+                }
+            ],
+            lida: false
+        }
+    ],
+},
 
     // ── BANCO DE DADOS ───────────────────────────────────────────────────
     banco: {
