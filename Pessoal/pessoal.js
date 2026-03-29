@@ -15,7 +15,7 @@ import {
     atualizarProgressoPainel,
     atualizarProgressoTab,
     atualizarTodasAsTabs
-} from './checklist.js';
+} from './Checklist.js';
 
 import {
     listarResumos,
@@ -365,12 +365,29 @@ function _exibirResumos(discId, panelEl) {
     });
 }
 
-// ── RENDER DO CARD ────────────────────────────────────────────────────
+// ── RENDER DO CARD v3 — substituir a função _renderCard em pessoal.js ──
+// O chip usa o emoji/ícone que já vem no subtitulo do resumo.js
+// (ex: "🎯 Objetivos da Aula") — mantemos o texto inteiro como label do chip.
+
+function _renderizarTexto(texto) {
+  if (typeof texto === 'string') return `<p class="resumo-bloco-texto">${texto}</p>`;
+  
+  return texto.map(item => {
+    if (Array.isArray(item)) {
+      return `<ul class="resumo-lista">${item.map(li => `<li>${li}</li>`).join('')}</ul>`;
+    }
+    return `<p class="resumo-bloco-texto">${item}</p>`;
+  }).join('');
+}
+
 function _renderCard(resumo, discId) {
     const blocos = resumo.conteudo.map(bloco => `
         <div class="resumo-bloco">
-            <p class="resumo-bloco-titulo">${bloco.subtitulo}</p>
-            <p class="resumo-bloco-texto">${bloco.texto}</p>
+            <span class="resumo-bloco-titulo">
+                <i class="fas fa-circle-dot"></i>
+                ${bloco.subtitulo}
+            </span>
+            ${_renderizarTexto(bloco.texto)}
         </div>
     `).join('');
 
@@ -395,7 +412,9 @@ function _renderCard(resumo, discId) {
                 <i class="fas fa-chevron-down resumo-chevron"></i>
             </div>
             <div class="resumo-card-body">
-                ${blocos}
+                <div class="resumo-body-inner">
+                    ${blocos}
+                </div>
                 <div class="resumo-card-actions">
                     <button class="resumo-action-btn btn-lida ${lidaBtnClass}">
                         ${lidaBtnText}
@@ -408,7 +427,6 @@ function _renderCard(resumo, discId) {
         </div>
     `;
 }
-
 // ── UTILITÁRIOS DOS RESUMOS ───────────────────────────────────────────
 function _atualizarContadorLeitura(discId, panelEl) {
     const { lidos, total } = progressoLeitura(discId);
