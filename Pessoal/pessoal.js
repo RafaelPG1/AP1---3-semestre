@@ -1,38 +1,30 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   pessoal.js — Orquestrador principal  (v9)
-   ✦ Responsabilidade: login, sessão, navegação entre tabs
-   ✦ Auto-save via criarSalvador (debounce 800ms + throttle máximo 3s)
-   ✦ Fallback em localStorage: protege contra fechamento abrupto da aba
-   ✦ Auto-save por visibilitychange (flush imediato)
-   ✦ Tela de login oculta até verificação de sessão concluída
-   ✦ Toda a lógica de checklist delegada a checklist.js
-   ✦ Logs detalhados com prefixo [CHECKLIST]
+   pessoal.js — Área Pessoal  (v12 — resumo-ui integrado)
+   ✦ Login, sessão e navegação de disciplinas
+   ✦ Integração com checklist.js (renderização + progresso)
+   ✦ Sistema de Resumos embutido (era resumo-ui.js)
 ════════════════════════════════════════════════════════════════════════ */
 
-import { salvarNoFirebase, carregarDoFirebase } from './firebase.js';
 import {
     DISCIPLINAS_DATA,
     criarSalvador,
-    totalItensDisciplina,
     renderizarPainel,
     coletarCheckboxes,
     restaurarCheckboxes,
     restaurarVideos,
     atualizarProgressoPainel,
     atualizarProgressoTab,
-    atualizarProgressoGeral,
-    atualizarTodasAsTabs,
+    atualizarTodasAsTabs
 } from './checklist.js';
 
-// ── 1. CONFIGURAÇÃO ──────────────────────────────────────────────────────
-const SESSION_KEY  = 'pessoal_sessao_usuario';
-const FALLBACK_KEY = 'pessoal_fallback_estado';   // localStorage de emergência
+import {
+    listarResumos,
+    marcarComoLida,
+    progressoLeitura,
+    getResumoPorId
+} from './resumo.js';
 
-/** Janela de debounce (ms sem interação antes de enviar). */
-const DEBOUNCE_MS  = 800;
-/** Tempo máximo sem salvar no Firebase (throttle). */
-const MAX_SEM_SALVAR_MS = 3000;
-
+// ── CREDENCIAIS ───────────────────────────────────────────────────────
 const USUARIOS = [
     { nome: 'Rafael',   senha: '288' },
     { nome: 'Cid',      senha: '285' },
@@ -41,367 +33,423 @@ const USUARIOS = [
     { nome: 'Isaac',    senha: '234' }
 ];
 
-// ── 2. ESTADO ────────────────────────────────────────────────────────────
-let usuarioAtual = null;
-let discAtiva    = 'design';
+// ── ESTADO ────────────────────────────────────────────────────────────
+let usuarioAtual    = null;
+let discSelecionada = null;
+let checklistCompleto = {};
+let videosCompletos   = {};
 
-/**
- * Fonte de verdade em memória.
- * Sincronizada com Firebase (via criarSalvador) e com localStorage (fallback).
- */
-let estado = {
-    checklist:        {},
-    videosAssistidos: {}
-};
+// ── ESTADO DOS RESUMOS (era resumo-ui.js) ─────────────────────────────
+let modoAtual = 'checklist'; // 'checklist' | 'resumos'
+let discAtual = null;
+let _toastEl  = null;
+let _toastTimer = null;
 
-// ── 3. ELEMENTOS DO DOM ──────────────────────────────────────────────────
-const loginScreen     = document.getElementById('login-screen');
-const dashScreen      = document.getElementById('dashboard-screen');
-const inputNome       = document.getElementById('input-nome');
-const inputSenha      = document.getElementById('input-senha');
-const btnEntrar       = document.getElementById('btn-entrar');
-const loginError      = document.getElementById('login-error');
-const toggleSenha     = document.querySelector('.toggle-senha');
-const dashNomeUsuario = document.getElementById('dash-nome-usuario');
-const btnSair         = document.getElementById('btn-sair');
-const discTabs        = document.getElementById('disc-tabs');
-const discPanel       = document.getElementById('disc-panel');
+// ── DOM ───────────────────────────────────────────────────────────────
+const loginScreen  = document.getElementById('login-screen');
+const dashScreen   = document.getElementById('dashboard-screen');
+const inputNome    = document.getElementById('input-nome');
+const inputSenha   = document.getElementById('input-senha');
+const btnEntrar    = document.getElementById('btn-entrar');
+const btnSair      = document.getElementById('btn-sair');
+const loginError   = document.getElementById('login-error');
+const dashNome     = document.getElementById('dash-nome-usuario');
+const discTabsEl   = document.getElementById('disc-tabs');
+const discPanel    = document.getElementById('disc-panel');
 
-// ── 4. PERSISTÊNCIA DA SESSÃO (localStorage via storage.js) ──────────────
-function salvarSessao(nome) {
-    try { storage.saveProgress(SESSION_KEY, { nome }, { tipo: 'sessao' }); } catch {}
-}
-function limparSessao() {
-    try { storage.clearProgress(SESSION_KEY); } catch {}
-}
-function lerSessao() {
-    try {
-        const s = storage.loadProgress(SESSION_KEY);
-        return s?.respostas?.nome ?? null;
-    } catch { return null; }
-}
-
-// ── 5. FALLBACK LOCAL (localStorage de emergência) ───────────────────────
-/**
- * Salva o estado completo no localStorage.
- * Funciona como "seguro": mesmo que o Firebase não seja chamado a tempo,
- * ao reabrir a página o estado local é usado como fallback.
- */
-function salvarFallbackLocal() {
-    if (!usuarioAtual) return;
-    try {
-        const chave = `${FALLBACK_KEY}_${usuarioAtual.toLowerCase()}`;
-        localStorage.setItem(chave, JSON.stringify({
-            checklist:        estado.checklist,
-            videosAssistidos: estado.videosAssistidos,
-            ts:               Date.now()
-        }));
-        console.log('[CHECKLIST] 💾 Fallback local salvo');
-    } catch (err) {
-        console.warn('[CHECKLIST] ⚠️ Não foi possível salvar fallback local:', err);
-    }
-}
-
-function lerFallbackLocal(nome) {
-    try {
-        const chave = `${FALLBACK_KEY}_${nome.toLowerCase()}`;
-        const raw   = localStorage.getItem(chave);
-        return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
-}
-
-function limparFallbackLocal(nome) {
-    try {
-        localStorage.removeItem(`${FALLBACK_KEY}_${nome.toLowerCase()}`);
-    } catch {}
-}
-
-// ── 6. AUTO-SAVE ──────────────────────────────────────────────────────────
-
-/**
- * Envia o estado completo para o Firebase.
- * Também limpa o fallback local ao confirmar o salvamento.
- */
-async function sincronizarFirebase() {
-    if (!usuarioAtual) return;
-    console.log('[CHECKLIST] 🔄 Iniciando sincronização com Firebase...');
-
-    // Salva fallback local ANTES de tentar o Firebase (proteção extra)
-    salvarFallbackLocal();
-
-    try {
-        await salvarNoFirebase(usuarioAtual, estado.checklist, estado.videosAssistidos);
-        // Sucesso: fallback local não é mais necessário
-        limparFallbackLocal(usuarioAtual);
-        console.log('[CHECKLIST] ✅ Sincronização com Firebase concluída');
-    } catch (err) {
-        // Firebase falhou, mas o fallback local já está salvo — dados não serão perdidos
-        console.error('[CHECKLIST] ❌ Falha na sincronização com Firebase. Fallback local mantido.', err);
-    }
-}
-
-/**
- * criarSalvador: debounce 800ms + throttle máximo 3s.
- * Garante que, mesmo com cliques contínuos, o Firebase é chamado
- * no máximo a cada 3 segundos — sem depender de pausa do usuário.
- * .flush() força chamada imediata (usado no visibilitychange e logout).
- */
-const salvarComDebounce = criarSalvador(sincronizarFirebase, DEBOUNCE_MS, MAX_SEM_SALVAR_MS);
-
-// Salva ao minimizar / trocar aba (flush imediato — sem debounce)
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden' && usuarioAtual) {
-        console.log('[CHECKLIST] 👁️ Aba ocultada — coletando painel e fazendo flush imediato');
-        coletarPainelAtivo();
-        // flush() garante que não esperamos o debounce ao sair da aba
-        salvarComDebounce.flush();
-    }
+// ── TOGGLE SENHA ──────────────────────────────────────────────────────
+document.querySelector('.toggle-senha')?.addEventListener('click', function () {
+    const type = inputSenha.type === 'password' ? 'text' : 'password';
+    inputSenha.type = type;
+    this.querySelector('i').className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
 });
 
-// ── 7. VERIFICAÇÃO DE SESSÃO (sem flash de login) ─────────────────────────
-async function inicializar() {
-    const nomeSalvo = lerSessao();
-
-    if (nomeSalvo) {
-        usuarioAtual = nomeSalvo;
-        console.log(`[CHECKLIST] 🔑 Sessão encontrada — usuário: ${nomeSalvo}`);
-
-        let dados = null;
-        try {
-            dados = await carregarDoFirebase(usuarioAtual);
-        } catch (err) {
-            console.warn('[CHECKLIST] ⚠️ Erro ao carregar Firebase na inicialização:', err);
-        }
-
-        // Se Firebase falhou ou não tem dados, tenta o fallback local
-        if (!dados) {
-            const fallback = lerFallbackLocal(nomeSalvo);
-            if (fallback) {
-                console.log('[CHECKLIST] 🔄 Usando fallback local (Firebase indisponível ou sem dados)');
-                dados = fallback;
-            }
-        }
-
-        aplicarDados(dados);
-        mostrarDashboard();
-    } else {
-        mostrarLogin();
+// ── LOGIN ─────────────────────────────────────────────────────────────
+function tentarLogin() {
+    const nome  = inputNome.value.trim();
+    const senha = inputSenha.value;
+    const user  = USUARIOS.find(u =>
+        u.nome.toLowerCase() === nome.toLowerCase() && u.senha === senha
+    );
+    if (!user) {
+        loginError.classList.remove('hidden');
+        inputNome.focus();
+        return;
     }
+    loginError.classList.add('hidden');
+    usuarioAtual = user.nome;
+    localStorage.setItem('sessao_usuario', user.nome);
+    entrarNoDashboard();
 }
 
-function mostrarLogin() {
-    loginScreen.classList.add('active');
-    dashScreen.classList.remove('active');
-}
+btnEntrar.addEventListener('click', tentarLogin);
 
-function mostrarDashboard() {
+inputNome.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); inputSenha.focus(); }
+});
+inputSenha.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); tentarLogin(); }
+});
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────
+function entrarNoDashboard() {
     loginScreen.classList.remove('active');
     dashScreen.classList.add('active');
-    dashNomeUsuario.textContent = usuarioAtual;
-    discAtiva = 'design';
-    construirTabs();
-    ativarDisc(discAtiva);
-    console.log(`[CHECKLIST] 🏠 Dashboard exibido — usuário: ${usuarioAtual}`);
+    dashNome.textContent = usuarioAtual;
+
+    carregarDados().then(() => {
+        construirTabs();
+        _criarToast();
+        selecionarDisc(Object.keys(DISCIPLINAS_DATA)[0]);
+    });
 }
 
-function aplicarDados(dados) {
-    if (!dados) return;
-    estado.checklist        = dados.checklist        || {};
-    estado.videosAssistidos = dados.videosAssistidos || {};
-}
-
-// ── 8. LOGIN / LOGOUT ─────────────────────────────────────────────────────
-btnEntrar.addEventListener('click', tentarLogin);
-inputNome.addEventListener ('keydown', e => { if (e.key === 'Enter') inputSenha.focus(); });
-inputSenha.addEventListener('keydown', e => { if (e.key === 'Enter') tentarLogin(); });
-
-toggleSenha.addEventListener('click', () => {
-    const oculta = inputSenha.type === 'password';
-    inputSenha.type = oculta ? 'text' : 'password';
-    toggleSenha.querySelector('i').className = oculta ? 'fas fa-eye-slash' : 'fas fa-eye';
-});
-
-async function tentarLogin() {
-    const nome  = inputNome.value.trim();
-    const senha = inputSenha.value.trim();
-
-    if (!nome || !senha) { exibirErroLogin('Preencha nome e senha.'); return; }
-
-    const usuario = USUARIOS.find(
-        u => u.nome.toLowerCase() === nome.toLowerCase() && u.senha === senha
-    );
-
-    if (!usuario) { exibirErroLogin('Nome ou senha incorretos.'); return; }
-
-    loginError.classList.add('hidden');
-    setBtnEntrar(true);
-
-    let dados = null;
-    try {
-        dados = await carregarDoFirebase(usuario.nome);
-    } catch (err) {
-        console.warn('[CHECKLIST] ⚠️ Erro ao carregar Firebase no login:', err);
-    }
-
-    // Fallback local se Firebase falhou
-    if (!dados) {
-        const fallback = lerFallbackLocal(usuario.nome);
-        if (fallback) {
-            console.log('[CHECKLIST] 🔄 Login: usando fallback local');
-            dados = fallback;
-        }
-    }
-
-    aplicarDados(dados);
-    setBtnEntrar(false);
-
-    usuarioAtual = usuario.nome;
-    salvarSessao(usuarioAtual);
-    console.log(`[CHECKLIST] 🔓 Login efetuado — usuário: ${usuarioAtual}`);
-    mostrarDashboard();
-}
-
-function exibirErroLogin(msg) {
-    loginError.querySelector('span').textContent = msg;
-    loginError.classList.remove('hidden');
-    loginError.style.animation = 'none';
-    loginError.offsetHeight;
-    loginError.style.animation = '';
-}
-
-function setBtnEntrar(carregando) {
-    btnEntrar.disabled = carregando;
-    btnEntrar.innerHTML = carregando
-        ? '<i class="fas fa-spinner fa-spin"></i> Carregando...'
-        : 'Entrar <i class="fas fa-arrow-right"></i>';
-}
-
-btnSair.addEventListener('click', async () => {
-    console.log(`[CHECKLIST] 🚪 Saindo — usuário: ${usuarioAtual}. Salvando estado final...`);
-
-    // Coleta e envia de forma síncrona antes de limpar
-    coletarPainelAtivo();
-    await salvarComDebounce.flush();
-
-    limparSessao();
-    limparFallbackLocal(usuarioAtual);
-    estado        = { checklist: {}, videosAssistidos: {} };
-    usuarioAtual  = null;
-
+btnSair.addEventListener('click', () => {
+    salvarDados.flush();
+    usuarioAtual    = null;
+    discSelecionada = null;
+    discAtual       = null;
+    modoAtual       = 'checklist';
+    checklistCompleto = {};
+    videosCompletos   = {};
+    localStorage.removeItem('sessao_usuario');
+    dashScreen.classList.remove('active');
+    loginScreen.classList.add('active');
     inputNome.value  = '';
     inputSenha.value = '';
-    discTabs.innerHTML  = '';
-    discPanel.innerHTML = '';
-
-    mostrarLogin();
-    console.log('[CHECKLIST] 👋 Logout concluído');
+    discPanel.innerHTML  = '';
+    discTabsEl.innerHTML = '';
 });
 
-// ── 9. TABS / SIDEBAR ────────────────────────────────────────────────────
+// ── STORAGE ───────────────────────────────────────────────────────────
+async function carregarDados() {
+    try {
+        const raw = await window.Storage?.get?.(`checklist_${usuarioAtual}`);
+        if (raw?.checklist) checklistCompleto = raw.checklist;
+        if (raw?.videos)    videosCompletos   = raw.videos;
+    } catch (_) { /* primeiro acesso */ }
+}
+
+const salvarDados = criarSalvador(async () => {
+    try {
+        await window.Storage?.set?.(`checklist_${usuarioAtual}`, {
+            checklist: checklistCompleto,
+            videos:    videosCompletos
+        });
+    } catch (_) { /* silencioso */ }
+}, 800, 3000);
+
+// ── TABS ──────────────────────────────────────────────────────────────
 function construirTabs() {
-    discTabs.innerHTML = '';
+    discTabsEl.innerHTML = '';
     Object.entries(DISCIPLINAS_DATA).forEach(([id, disc]) => {
-        const total = totalItensDisciplina(id);
-        const btn   = document.createElement('button');
-        btn.className    = `disc-tab${id === discAtiva ? ' active' : ''}`;
-        btn.dataset.disc = id;
-        btn.innerHTML = `
+        const tab = document.createElement('button');
+        tab.className    = 'disc-tab';
+        tab.dataset.disc = id;
+        tab.innerHTML = `
             <div class="tab-icon tab-icon-${id}">
                 <i class="fas ${disc.icone}"></i>
             </div>
             <div class="tab-info">
                 <span class="tab-name">${disc.label}</span>
-                <span class="tab-prog" id="tabprog-${id}">0 de ${total}</span>
+                <span class="tab-prog" id="tabprog-${id}">0 de — </span>
                 <div class="tab-bar">
                     <div class="tab-bar-fill tab-bar-fill-${id}" id="tabfill-${id}" style="width:0%"></div>
                 </div>
             </div>
         `;
-        btn.addEventListener('click', () => trocarDisc(id));
-        discTabs.appendChild(btn);
+        tab.addEventListener('click', () => selecionarDisc(id));
+        discTabsEl.appendChild(tab);
     });
-
-    atualizarTodasAsTabs(estado.checklist);
+    atualizarTodasAsTabs(checklistCompleto);
 }
 
-function trocarDisc(id) {
-    if (id === discAtiva) return;
-    coletarPainelAtivo();
-    discAtiva = id;
-    discTabs.querySelectorAll('.disc-tab').forEach(
-        t => t.classList.toggle('active', t.dataset.disc === id)
+// ── SELEÇÃO DE DISCIPLINA ─────────────────────────────────────────────
+function selecionarDisc(discId) {
+    discSelecionada = discId;
+    discAtual       = discId;
+
+    discTabsEl.querySelectorAll('.disc-tab').forEach(t =>
+        t.classList.toggle('active', t.dataset.disc === discId)
     );
-    ativarDisc(id);
-    console.log(`[CHECKLIST] 📚 Disciplina ativa: ${id}`);
-}
 
-// ── 10. PAINEL ATIVO ──────────────────────────────────────────────────────
-
-function ativarDisc(discId) {
-    renderizarPainel(discId, discPanel);
-    restaurarCheckboxes(estado.checklist[discId], discPanel);
-    restaurarVideos(discId, estado.videosAssistidos[discId], discPanel);
-
-    const { marcados, total } = atualizarProgressoPainel(discId, discPanel);
-    atualizarProgressoTab(discId, marcados, total);
-    atualizarProgressoGeral(estado.checklist);
-
-    ativarListenersPainel(discId);
-}
-
-function ativarListenersPainel(discId) {
-    discPanel.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-        cb.addEventListener('change', () => aoMarcarCheckbox(discId, cb));
-    });
-
-    discPanel.querySelectorAll('.vbtn').forEach(btn => {
-        btn.addEventListener('click', () =>
-            aoClicarVideo(discId, Number(btn.dataset.idx))
-        );
-    });
-}
-
-function aoMarcarCheckbox(discId, cb) {
-    const itemId = cb.dataset.item;
-    const valor  = cb.checked;
-    console.log(`[CHECKLIST] ☑️ Checkbox alterada — disc: ${discId} | item: ${itemId} | marcado: ${valor}`);
-
-    // 1. Atualiza progresso visual imediatamente
-    const { marcados, total } = atualizarProgressoPainel(discId, discPanel);
-    atualizarProgressoTab(discId, marcados, total);
-
-    // 2. Persiste estado em memória
-    estado.checklist[discId] = coletarCheckboxes(discId, discPanel);
-    atualizarProgressoGeral(estado.checklist);
-
-    // 3. Salva fallback local imediatamente (proteção contra fechamento abrupto)
-    salvarFallbackLocal();
-
-    // 4. Agenda sync com Firebase (debounce + throttle)
-    salvarComDebounce();
-}
-
-function aoClicarVideo(discId, idx) {
-    const btn = discPanel.querySelector(`#vbtn-${discId}-${idx}`);
-    if (btn) btn.classList.add('watched');
-
-    if (!estado.videosAssistidos[discId]) estado.videosAssistidos[discId] = [];
-    if (!estado.videosAssistidos[discId].includes(idx)) {
-        estado.videosAssistidos[discId].push(idx);
-        console.log(`[CHECKLIST] 🎬 Vídeo assistido — disc: ${discId} | idx: ${idx}`);
-        salvarFallbackLocal();
-        salvarComDebounce();
+    if (modoAtual === 'resumos') {
+        _renderizarChecklistCompleto(discId, discPanel);
+        _injetarModeToggle(discId, discPanel);
+        discPanel.querySelector('[data-mode="resumos"]')?.click();
+    } else {
+        _renderizarChecklistCompleto(discId, discPanel);
+        _injetarModeToggle(discId, discPanel);
     }
 }
 
-function coletarPainelAtivo() {
-    if (!usuarioAtual) return;
-    estado.checklist[discAtiva] = coletarCheckboxes(discAtiva, discPanel);
+// ── CHECKLIST ─────────────────────────────────────────────────────────
+function _renderizarChecklistCompleto(discId, panelEl) {
+    renderizarPainel(discId, panelEl);
+
+    restaurarCheckboxes(checklistCompleto[discId], panelEl);
+    restaurarVideos(discId, videosCompletos[discId], panelEl);
+
+    const { marcados, total } = atualizarProgressoPainel(discId, panelEl);
+    atualizarProgressoTab(discId, marcados, total);
+
+    panelEl.addEventListener('change', e => {
+        if (e.target.type !== 'checkbox') return;
+        const disc = e.target.dataset.disc;
+        if (!disc) return;
+        if (!checklistCompleto[disc]) checklistCompleto[disc] = {};
+        checklistCompleto[disc] = coletarCheckboxes(disc, panelEl);
+
+        const { marcados: m, total: t } = atualizarProgressoPainel(disc, panelEl);
+        atualizarProgressoTab(disc, m, t);
+        atualizarProgressoGeral();
+        salvarDados();
+    });
+
+    panelEl.addEventListener('click', e => {
+        const vbtn = e.target.closest('.vbtn');
+        if (!vbtn) return;
+        const disc = vbtn.dataset.disc;
+        const idx  = parseInt(vbtn.dataset.idx, 10);
+        if (!videosCompletos[disc]) videosCompletos[disc] = [];
+        if (!videosCompletos[disc].includes(idx)) {
+            videosCompletos[disc].push(idx);
+            vbtn.classList.add('watched');
+            salvarDados();
+        }
+    });
 }
 
-// ── 11. BOOTSTRAP ─────────────────────────────────────────────────────────
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializar);
+function atualizarProgressoGeral() {
+    let totalG = 0, marcadosG = 0;
+    Object.entries(DISCIPLINAS_DATA).forEach(([id, disc]) => {
+        disc.modulos.forEach(mod => mod.itens.forEach(item => {
+            totalG++;
+            if (checklistCompleto[id]?.[item.id]) marcadosG++;
+        }));
+    });
+    const pct    = totalG > 0 ? Math.round((marcadosG / totalG) * 100) : 0;
+    const opFill = document.getElementById('op-fill');
+    const opText = document.getElementById('op-text');
+    if (opFill) opFill.style.width = `${pct}%`;
+    if (opText) opText.textContent = `${pct}%`;
+}
+
+// ── MODE TOGGLE (era resumo-ui.js) ────────────────────────────────────
+function _injetarModeToggle(discId, panelEl) {
+    panelEl.querySelector('.mode-toggle')?.remove();
+
+    const toggle = document.createElement('div');
+    toggle.className = 'mode-toggle';
+    toggle.innerHTML = `
+        <button class="mode-btn ${modoAtual === 'checklist' ? 'active' : ''}" data-mode="checklist">
+            <i class="fas fa-list-check"></i> Checklist
+        </button>
+        <button class="mode-btn ${modoAtual === 'resumos' ? 'active' : ''}" data-mode="resumos">
+            <i class="fas fa-book-open"></i> Resumos
+        </button>
+    `;
+
+    const anchor = panelEl.querySelector('.panel-videos') ?? panelEl.querySelector('.panel-modules');
+    if (anchor) {
+        anchor.parentNode.insertBefore(toggle, anchor);
+    } else {
+        panelEl.appendChild(toggle);
+    }
+
+    toggle.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modo = btn.dataset.mode;
+            if (modo === modoAtual) return;
+            modoAtual = modo;
+
+            toggle.querySelectorAll('.mode-btn').forEach(b =>
+                b.classList.toggle('active', b.dataset.mode === modoAtual)
+            );
+
+            if (modoAtual === 'resumos') {
+                _exibirResumos(discId, panelEl);
+            } else {
+                _exibirChecklist(discId, panelEl);
+            }
+        });
+    });
+}
+
+// ── EXIBIÇÃO DOS MODOS ────────────────────────────────────────────────
+function _exibirChecklist(discId, panelEl) {
+    _renderizarChecklistCompleto(discId, panelEl);
+    _injetarModeToggle(discId, panelEl);
+}
+
+function _exibirResumos(discId, panelEl) {
+    const resumos = listarResumos(discId);
+    const { lidos, total } = progressoLeitura(discId);
+
+    panelEl.querySelector('.panel-videos')?.remove();
+    panelEl.querySelector('.panel-modules')?.remove();
+    panelEl.querySelector('.panel-resumos')?.remove();
+
+    if (resumos.length === 0) {
+        const vazio = document.createElement('div');
+        vazio.className = 'panel-resumos';
+        vazio.innerHTML = `
+            <div style="text-align:center;padding:3rem 1rem;color:rgba(255,255,255,.3);">
+                <i class="fas fa-book" style="font-size:2rem;margin-bottom:.8rem;display:block;"></i>
+                <p style="font-size:.85rem;">Nenhum resumo disponível ainda.</p>
+            </div>
+        `;
+        panelEl.appendChild(vazio);
+        return;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'panel-resumos';
+    wrapper.innerHTML = `
+        <div class="resumo-header-bar">
+            <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
+            <span class="rh-progress" id="rh-prog-${discId}">
+                <strong>${lidos}</strong> de ${total} lidos
+            </span>
+        </div>
+        ${resumos.map(r => _renderCard(r, discId)).join('')}
+    `;
+    panelEl.appendChild(wrapper);
+
+    resumos.forEach(r => {
+        const card = panelEl.querySelector(`[data-resumo-id="${r.id}"]`);
+        if (card && r.lida) card.classList.add('lida');
+    });
+
+    wrapper.querySelectorAll('.resumo-card').forEach(card => {
+        const rid = card.dataset.resumoId;
+
+        card.querySelector('.resumo-card-header').addEventListener('click', () => {
+            card.classList.toggle('expanded');
+        });
+
+        card.querySelector('.btn-lida')?.addEventListener('click', e => {
+            e.stopPropagation();
+            const r = getResumoPorId(rid);
+            if (!r) return;
+            r.lida = !r.lida;
+            marcarComoLida(rid, r.lida);
+            card.classList.toggle('lida', r.lida);
+            const btn = card.querySelector('.btn-lida');
+            if (r.lida) {
+                btn.classList.add('ativa');
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Lido';
+            } else {
+                btn.classList.remove('ativa');
+                btn.innerHTML = '<i class="far fa-circle-check"></i> Marcar como lido';
+            }
+            _atualizarContadorLeitura(discId, panelEl);
+        });
+
+        card.querySelector('.btn-copiar')?.addEventListener('click', e => {
+            e.stopPropagation();
+            const r = getResumoPorId(rid);
+            if (!r) return;
+            const texto = _resumoParaTexto(r);
+            navigator.clipboard.writeText(texto).then(() => {
+                const btn = card.querySelector('.btn-copiar');
+                btn.classList.add('copied');
+                btn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                _mostrarToast('Resumo copiado para a área de transferência');
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<i class="far fa-copy"></i> Copiar';
+                }, 2000);
+            }).catch(() => _mostrarToast('Não foi possível copiar automaticamente'));
+        });
+    });
+}
+
+// ── RENDER DO CARD ────────────────────────────────────────────────────
+function _renderCard(resumo, discId) {
+    const blocos = resumo.conteudo.map(bloco => `
+        <div class="resumo-bloco">
+            <p class="resumo-bloco-titulo">${bloco.subtitulo}</p>
+            <p class="resumo-bloco-texto">${bloco.texto}</p>
+        </div>
+    `).join('');
+
+    const numBlocos    = resumo.conteudo.length;
+    const lidaClass    = resumo.lida ? 'lida' : '';
+    const lidaBtnClass = resumo.lida ? 'ativa' : '';
+    const lidaBtnText  = resumo.lida
+        ? '<i class="fas fa-check-circle"></i> Lido'
+        : '<i class="far fa-circle-check"></i> Marcar como lido';
+
+    return `
+        <div class="resumo-card disc-${discId} ${lidaClass}" data-resumo-id="${resumo.id}">
+            <div class="resumo-card-header">
+                <div class="resumo-card-icon">
+                    <i class="fas fa-file-lines"></i>
+                </div>
+                <div class="resumo-card-meta">
+                    <span class="resumo-card-titulo">${resumo.titulo}</span>
+                    <span class="resumo-card-sub">${numBlocos} tópico${numBlocos !== 1 ? 's' : ''}</span>
+                </div>
+                <span class="resumo-lida-badge"><i class="fas fa-check"></i> Lido</span>
+                <i class="fas fa-chevron-down resumo-chevron"></i>
+            </div>
+            <div class="resumo-card-body">
+                ${blocos}
+                <div class="resumo-card-actions">
+                    <button class="resumo-action-btn btn-lida ${lidaBtnClass}">
+                        ${lidaBtnText}
+                    </button>
+                    <button class="resumo-action-btn btn-copiar">
+                        <i class="far fa-copy"></i> Copiar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// ── UTILITÁRIOS DOS RESUMOS ───────────────────────────────────────────
+function _atualizarContadorLeitura(discId, panelEl) {
+    const { lidos, total } = progressoLeitura(discId);
+    const el = panelEl.querySelector(`#rh-prog-${discId}`);
+    if (el) el.innerHTML = `<strong>${lidos}</strong> de ${total} lidos`;
+}
+
+function _resumoParaTexto(resumo) {
+    let txt = `${resumo.titulo}\n${'─'.repeat(50)}\n\n`;
+    resumo.conteudo.forEach(bloco => {
+        txt += `▸ ${bloco.subtitulo}\n${bloco.texto}\n\n`;
+    });
+    return txt.trim();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+function _criarToast() {
+    _toastEl = document.createElement('div');
+    _toastEl.className = 'resumo-toast';
+    _toastEl.innerHTML = '<i class="fas fa-check-circle"></i> <span></span>';
+    document.body.appendChild(_toastEl);
+}
+
+function _mostrarToast(msg) {
+    if (!_toastEl) return;
+    _toastEl.querySelector('span').textContent = msg;
+    _toastEl.classList.add('show');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => _toastEl.classList.remove('show'), 2800);
+}
+
+// ── INICIALIZAÇÃO ─────────────────────────────────────────────────────
+const sessaoSalva = localStorage.getItem('sessao_usuario');
+const userSalvo   = sessaoSalva
+    ? USUARIOS.find(u => u.nome === sessaoSalva)
+    : null;
+
+if (userSalvo) {
+    usuarioAtual = userSalvo.nome;
+    entrarNoDashboard();
 } else {
-    inicializar();
+    loginScreen.classList.add('active');
+    inputNome.focus();
 }
