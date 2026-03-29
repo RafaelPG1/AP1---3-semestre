@@ -16,7 +16,7 @@ import {
     atualizarProgressoPainel,
     atualizarProgressoTab,
     atualizarTodasAsTabs
-} from './check.js.js';
+} from './check.js';
 
 import {
     listarResumos,
