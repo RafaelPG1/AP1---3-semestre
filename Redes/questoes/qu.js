@@ -917,13 +917,10 @@ function showAllQuestions() {
         subject.questions.forEach((question, qIdx) => {
             const gi = globalIndex;
             const answered = userAnswers[gi] !== null;
-            const parts = splitQuestionParts(question.question);
-
-            let questionBodyHTML = parts.context
-                ? `<div class="question-context">${parts.context}</div>
-                   <div class="question-divider"></div>
-                   <div class="question-statement">${parts.statement}</div>`
-                : `<div class="question-text">${parts.statement}</div>`;
+let questionBodyHTML = question.texto
+    ? `<div class="question-texto">${question.texto}</div>
+       <div class="question-enunciado">${question.question}</div>`
+    : `<div class="question-text">${question.question}</div>`;
 
             const optionsHTML = question.options.map((option, oi) => {
                 let cls = "option";
