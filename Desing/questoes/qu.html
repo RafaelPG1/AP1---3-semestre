@@ -14,7 +14,6 @@
 
 <body>
 
-    <!-- Header -->
     <div class="page-wrapper">
 
         <div class="quiz-header">
@@ -29,21 +28,13 @@
             </div>
         </div>
 
-        <!-- Quiz Container -->
-        <div class="quiz-container" id="quiz-container">
-            <!-- Questões serão inseridas aqui pelo JavaScript -->
-        </div>
+        <div class="quiz-container" id="quiz-container"></div>
 
-        <!-- Botões principais -->
         <div class="submit-container">
             <div class="buttons-container">
-                
                 <a href="../desing.html" class="btn-back">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </a>
-                <button id="clear" class="action-button clear-button">
-                    <i class="fas fa-eraser"></i> Limpar
-                </button>
                 <button id="restart" class="action-button restart-button">
                     <i class="fas fa-redo"></i> Reiniciar
                 </button>
@@ -53,27 +44,23 @@
             </div>
         </div>
 
-        <!-- Resultados -->
         <div id="results" class="results"></div>
 
         <div class="page-footer">Questões Personalizadas · SO</div>
 
     </div>
 
-    <!-- Navegação flutuante -->
     <div class="nav-float">
         <button id="btn-up" class="nav-btn" title="Ir ao topo"><i class="fas fa-arrow-up"></i></button>
         <button id="btn-left" class="nav-btn" title="Voltar"><i class="fas fa-rotate-left"></i></button>
         <button id="btn-down" class="nav-btn" title="Ir ao final"><i class="fas fa-arrow-down"></i></button>
         <div class="nav-divider"></div>
-        <button id="clearButton" class="nav-btn" title="Limpar respostas"><i class="fas fa-eraser"></i></button>
         <button id="restartButton" class="nav-btn" title="Reiniciar quiz"><i class="fas fa-redo"></i></button>
         <button id="revealButton" class="nav-btn" title="Revelar respostas"><i class="fas fa-eye"></i></button>
     </div>
 
     <script src="qu.js"></script>
     <script>
-        // Carrega storage.js sem bloquear o quiz caso o arquivo não exista
         var s = document.createElement('script');
         s.src = '../../../storage.js';
         s.onerror = function() { console.warn('storage.js não encontrado — auto-save desativado.'); };

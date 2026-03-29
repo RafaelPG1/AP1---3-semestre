@@ -522,7 +522,6 @@ const originalQuizData = [
   }
 ];
 
-
 // ─── Função para separar texto e enunciado ─────────────────────────────────────
 function splitQuestionParts(questionText) {
     const text = questionText.trim();
@@ -568,6 +567,7 @@ function shuffleArray(array) {
     return shuffled;
 }
 
+// ─── Shuffle: apenas embaralha opções e atualiza índice correto ───────────────
 function createShuffledQuizData() {
     return originalQuizData.map(subject => ({
         ...subject,
@@ -576,25 +576,29 @@ function createShuffledQuizData() {
             const shuffledIndices = shuffleArray(optionIndices);
             const shuffledOptions = shuffledIndices.map(index => question.options[index]);
             const newCorrectAnswer = shuffledIndices.indexOf(question.answer);
-            const correctLetter = String.fromCharCode(65 + newCorrectAnswer);
-            const originalCorrectOption = question.options[question.answer];
             return {
                 ...question,
                 options: shuffledOptions,
-                answer: newCorrectAnswer,
-                feedback: `✓ Resposta correta: ${correctLetter}) ${originalCorrectOption}\n\n${extractWhyCorrect(question.feedback)}`
+                answer: newCorrectAnswer
             };
         })
     }));
 }
 
-function extractWhyCorrect(feedback) {
-    const match = feedback.match(/Por que está certa:([\s\S]*)/);
-    return match ? `Por que está certa:${match[1]}` : '';
-}
-
 function createOriginalQuizData() {
     return originalQuizData.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
+}
+
+// ─── Monta o feedback dinamicamente (evita duplicação) ───────────────────────
+function buildFeedbackHTML(question, isCorrect) {
+    const letters = ['A', 'B', 'C', 'D', 'E'];
+    const correctLetter = letters[question.answer];
+    const correctOptionText = question.options[question.answer];
+    const correctLine = `<strong>✓ Resposta correta:</strong> ${correctLetter}) ${correctOptionText}<br><br>`;
+    const body = question.feedback.replace(/\n/g, '<br>');
+    return `<div class="feedback ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}">
+        ${correctLine}${body}
+    </div>`;
 }
 
 // ─── Inicialização ────────────────────────────────────────────────────────────
@@ -649,9 +653,7 @@ function showAllQuestions() {
             let feedbackHTML = "";
             if (answered) {
                 const isCorrect = userAnswers[gi] === question.answer;
-                feedbackHTML = `<div class="feedback ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}">
-                    ${question.feedback.replace(/\n/g, '<br>')}
-                </div>`;
+                feedbackHTML = buildFeedbackHTML(question, isCorrect);
             }
 
             html += `<div class="question-container" id="q-${gi}">
@@ -734,9 +736,7 @@ function updateGlobalResults() {
         <p>${pct >= 70 ? "Parabéns! Excelente desempenho." : "Revise os conceitos para melhorar seu desempenho."}</p>`;
     resultsContainer.style.display = "block";
 
-    const clearBtn  = document.getElementById('clear');
     const revealBtn = document.getElementById('reveal');
-    if (clearBtn)  clearBtn.disabled  = true;
     if (revealBtn) revealBtn.disabled = true;
 }
 
@@ -766,8 +766,12 @@ window.selectOption = function(gi, oi) {
         feedbackEl = document.createElement('div');
         container.querySelector('.options').after(feedbackEl);
     }
-    feedbackEl.className = `feedback ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}`;
-    feedbackEl.innerHTML = question.feedback.replace(/\n/g, '<br>');
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = buildFeedbackHTML(question, isCorrect);
+    const built = tempDiv.firstElementChild;
+    feedbackEl.className = built.className;
+    feedbackEl.innerHTML = built.innerHTML;
 
     const srEl = document.getElementById(`sr-${sIdx}`);
     if (srEl) srEl.outerHTML = renderSubjectResult(sIdx);
@@ -791,23 +795,6 @@ function revealAnswers() {
     smoothScrollToTop();
 }
 
-// ─── Limpar respostas ─────────────────────────────────────────────────────────
-function clearAnswers() {
-    const clearBtn = document.getElementById('clear');
-    if (clearBtn?.disabled) return;
-
-    userAnswers.fill(null);
-    showAllQuestions();
-
-    resultsContainer.style.display = "none";
-
-    const revealBtn = document.getElementById('reveal');
-    if (clearBtn)  clearBtn.disabled  = false;
-    if (revealBtn) revealBtn.disabled = false;
-
-    smoothScrollToTop();
-}
-
 // ─── Reiniciar com shuffle ────────────────────────────────────────────────────
 function restartQuiz() {
     quizData = createShuffledQuizData();
@@ -823,9 +810,7 @@ function restartQuiz() {
 
     resultsContainer.style.display = "none";
 
-    const clearBtn  = document.getElementById('clear');
     const revealBtn = document.getElementById('reveal');
-    if (clearBtn)  clearBtn.disabled  = false;
     if (revealBtn) revealBtn.disabled = false;
 
     smoothScrollToTop();
@@ -867,7 +852,6 @@ function showAlertNotification(message) {
 }
 
 // ─── Event Listeners ─────────────────────────────────────────────────────────
-document.getElementById('clear').addEventListener('click', clearAnswers);
 document.getElementById('reveal').addEventListener('click', revealAnswers);
 document.getElementById('restart').addEventListener('click', restartQuiz);
 
@@ -875,7 +859,6 @@ document.getElementById('btn-up').addEventListener('click',   () => smoothScroll
 document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../POO.html'; });
 document.getElementById('btn-down').addEventListener('click', () => smoothScrollTo(document.body.scrollHeight, 1000));
 
-document.getElementById('clearButton').addEventListener('click', clearAnswers);
 document.getElementById('restartButton').addEventListener('click', restartQuiz);
 document.getElementById('revealButton').addEventListener('click', revealAnswers);
 
@@ -934,8 +917,6 @@ function startAutoSave() {
 function stopAutoSave() {
     if (autoSaveInterval) { clearInterval(autoSaveInterval); autoSaveInterval = null; }
 }
-
-
 
 function showProgressNotification(message) {
     // 1. Gerenciador de Container (empilhamento vertical)
@@ -1002,6 +983,5 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('beforeunload', () => { if (storageInitialized) saveCurrentProgress(); });
 
 setTimeout(initializeStorage, 500);
-
 
 

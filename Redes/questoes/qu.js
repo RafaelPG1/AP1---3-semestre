@@ -813,6 +813,7 @@ const originalQuizData = [
 ];
 
 
+
 // ─── Função para separar texto e enunciado ─────────────────────────────────────
 function splitQuestionParts(questionText) {
     const text = questionText.trim();
@@ -880,7 +881,15 @@ function createShuffledQuizData() {
 
 function extractWhyCorrect(feedback) {
     const match = feedback.match(/Por que está certa:([\s\S]*)/);
-    return match ? `Por que está certa:${match[1]}` : '';
+    return match ? `Por que está certa:${match[1].trim()}` : '';
+}
+
+// ─── Formata o feedback: negrito nos títulos, linha em branco entre seções ───
+function formatFeedback(feedback) {
+    return feedback
+        .replace(/\n/g, '<br>')
+        .replace(/(✓ Resposta correta:)/g, '<strong>$1</strong>')
+        .replace(/(<br>)*(Por que está certa:)(<br>)*/g, '<br><br><strong>Por que está certa:</strong> ');
 }
 
 function createOriginalQuizData() {
@@ -937,7 +946,7 @@ let questionBodyHTML = question.texto
             if (answered) {
                 const isCorrect = userAnswers[gi] === question.answer;
                 feedbackHTML = `<div class="feedback ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}">
-                    ${question.feedback.replace(/\n/g, '<br>')}
+                    ${formatFeedback(question.feedback)}
                 </div>`;
             }
 
@@ -1054,7 +1063,7 @@ window.selectOption = function(gi, oi) {
         container.querySelector('.options').after(feedbackEl);
     }
     feedbackEl.className = `feedback ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}`;
-    feedbackEl.innerHTML = question.feedback.replace(/\n/g, '<br>');
+    feedbackEl.innerHTML = formatFeedback(question.feedback);
 
     const srEl = document.getElementById(`sr-${sIdx}`);
     if (srEl) srEl.outerHTML = renderSubjectResult(sIdx);
@@ -1288,6 +1297,3 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('beforeunload', () => { if (storageInitialized) saveCurrentProgress(); });
 
 setTimeout(initializeStorage, 500);
-
-
-
