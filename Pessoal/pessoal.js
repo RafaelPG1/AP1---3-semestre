@@ -19,7 +19,6 @@ import {
 
 import {
     listarResumos,
-    marcarComoLida,
     progressoLeitura,
     getResumoPorId
 } from './resumo.js';
@@ -174,9 +173,11 @@ function selecionarDisc(discId) {
     );
 
     if (modoAtual === 'resumos') {
-        _renderizarChecklistCompleto(discId, discPanel);
+        renderizarPainel(discId, discPanel);
+        discPanel.querySelector('.panel-videos')?.remove();
+        discPanel.querySelector('.panel-modules')?.remove();
         _injetarModeToggle(discId, discPanel);
-        discPanel.querySelector('[data-mode="resumos"]')?.click();
+        _exibirResumos(discId, discPanel);
     } else {
         _renderizarChecklistCompleto(discId, discPanel);
         _injetarModeToggle(discId, discPanel);
@@ -235,7 +236,7 @@ function atualizarProgressoGeral() {
     if (opText) opText.textContent = `${pct}%`;
 }
 
-// ── MODE TOGGLE (era resumo-ui.js) ────────────────────────────────────
+// ── MODE TOGGLE ───────────────────────────────────────────────────────
 function _injetarModeToggle(discId, panelEl) {
     panelEl.querySelector('.mode-toggle')?.remove();
 
@@ -284,7 +285,6 @@ function _exibirChecklist(discId, panelEl) {
 
 function _exibirResumos(discId, panelEl) {
     const resumos = listarResumos(discId);
-    const { lidos, total } = progressoLeitura(discId);
 
     panelEl.querySelector('.panel-videos')?.remove();
     panelEl.querySelector('.panel-modules')?.remove();
@@ -308,42 +308,17 @@ function _exibirResumos(discId, panelEl) {
     wrapper.innerHTML = `
         <div class="resumo-header-bar">
             <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
-            <span class="rh-progress" id="rh-prog-${discId}">
-                <strong>${lidos}</strong> de ${total} lidos
-            </span>
+            <span class="rh-count">${resumos.length} aula${resumos.length !== 1 ? 's' : ''}</span>
         </div>
         ${resumos.map(r => _renderCard(r, discId)).join('')}
     `;
     panelEl.appendChild(wrapper);
-
-    resumos.forEach(r => {
-        const card = panelEl.querySelector(`[data-resumo-id="${r.id}"]`);
-        if (card && r.lida) card.classList.add('lida');
-    });
 
     wrapper.querySelectorAll('.resumo-card').forEach(card => {
         const rid = card.dataset.resumoId;
 
         card.querySelector('.resumo-card-header').addEventListener('click', () => {
             card.classList.toggle('expanded');
-        });
-
-        card.querySelector('.btn-lida')?.addEventListener('click', e => {
-            e.stopPropagation();
-            const r = getResumoPorId(rid);
-            if (!r) return;
-            r.lida = !r.lida;
-            marcarComoLida(rid, r.lida);
-            card.classList.toggle('lida', r.lida);
-            const btn = card.querySelector('.btn-lida');
-            if (r.lida) {
-                btn.classList.add('ativa');
-                btn.innerHTML = '<i class="fas fa-check-circle"></i> Lido';
-            } else {
-                btn.classList.remove('ativa');
-                btn.innerHTML = '<i class="far fa-circle-check"></i> Marcar como lido';
-            }
-            _atualizarContadorLeitura(discId, panelEl);
         });
 
         card.querySelector('.btn-copiar')?.addEventListener('click', e => {
@@ -365,19 +340,16 @@ function _exibirResumos(discId, panelEl) {
     });
 }
 
-// ── RENDER DO CARD v3 — substituir a função _renderCard em pessoal.js ──
-// O chip usa o emoji/ícone que já vem no subtitulo do resumo.js
-// (ex: "🎯 Objetivos da Aula") — mantemos o texto inteiro como label do chip.
-
+// ── RENDER DO CARD ────────────────────────────────────────────────────
 function _renderizarTexto(texto) {
-  if (typeof texto === 'string') return `<p class="resumo-bloco-texto">${texto}</p>`;
-  
-  return texto.map(item => {
-    if (Array.isArray(item)) {
-      return `<ul class="resumo-lista">${item.map(li => `<li>${li}</li>`).join('')}</ul>`;
-    }
-    return `<p class="resumo-bloco-texto">${item}</p>`;
-  }).join('');
+    if (typeof texto === 'string') return `<p class="resumo-bloco-texto">${texto}</p>`;
+
+    return texto.map(item => {
+        if (Array.isArray(item)) {
+            return `<ul class="resumo-lista">${item.map(li => `<li>${li}</li>`).join('')}</ul>`;
+        }
+        return `<p class="resumo-bloco-texto">${item}</p>`;
+    }).join('');
 }
 
 function _renderCard(resumo, discId) {
@@ -391,15 +363,10 @@ function _renderCard(resumo, discId) {
         </div>
     `).join('');
 
-    const numBlocos    = resumo.conteudo.length;
-    const lidaClass    = resumo.lida ? 'lida' : '';
-    const lidaBtnClass = resumo.lida ? 'ativa' : '';
-    const lidaBtnText  = resumo.lida
-        ? '<i class="fas fa-check-circle"></i> Lido'
-        : '<i class="far fa-circle-check"></i> Marcar como lido';
+    const numBlocos = resumo.conteudo.length;
 
     return `
-        <div class="resumo-card disc-${discId} ${lidaClass}" data-resumo-id="${resumo.id}">
+        <div class="resumo-card disc-${discId}" data-resumo-id="${resumo.id}">
             <div class="resumo-card-header">
                 <div class="resumo-card-icon">
                     <i class="fas fa-file-lines"></i>
@@ -408,7 +375,6 @@ function _renderCard(resumo, discId) {
                     <span class="resumo-card-titulo">${resumo.titulo}</span>
                     <span class="resumo-card-sub">${numBlocos} tópico${numBlocos !== 1 ? 's' : ''}</span>
                 </div>
-                <span class="resumo-lida-badge"><i class="fas fa-check"></i> Lido</span>
                 <i class="fas fa-chevron-down resumo-chevron"></i>
             </div>
             <div class="resumo-card-body">
@@ -416,9 +382,6 @@ function _renderCard(resumo, discId) {
                     ${blocos}
                 </div>
                 <div class="resumo-card-actions">
-                    <button class="resumo-action-btn btn-lida ${lidaBtnClass}">
-                        ${lidaBtnText}
-                    </button>
                     <button class="resumo-action-btn btn-copiar">
                         <i class="far fa-copy"></i> Copiar
                     </button>
@@ -427,13 +390,8 @@ function _renderCard(resumo, discId) {
         </div>
     `;
 }
-// ── UTILITÁRIOS DOS RESUMOS ───────────────────────────────────────────
-function _atualizarContadorLeitura(discId, panelEl) {
-    const { lidos, total } = progressoLeitura(discId);
-    const el = panelEl.querySelector(`#rh-prog-${discId}`);
-    if (el) el.innerHTML = `<strong>${lidos}</strong> de ${total} lidos`;
-}
 
+// ── UTILITÁRIOS DOS RESUMOS ───────────────────────────────────────────
 function _resumoParaTexto(resumo) {
     let txt = `${resumo.titulo}\n${'─'.repeat(50)}\n\n`;
     resumo.conteudo.forEach(bloco => {

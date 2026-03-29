@@ -621,6 +621,9 @@ body {
 /* ═══════════════════════════════════════════════════════════════════════
    resumo.css — Sistema de Resumos  (v3 — cards por tópico + chip)
 ════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════
+   resumo.css — Sistema de Resumos  (v4 — sem controle de leitura)
+════════════════════════════════════════════════════════════════════════ */
 
 /* ── Toggle de modo ──────────────────────────────────────────────────── */
 .mode-toggle {
@@ -680,8 +683,10 @@ body {
     text-transform: uppercase;
     color: #b8b8b8;
 }
-.resumo-header-bar .rh-progress { font-size: .72rem; color: #b8b8b8; }
-.rh-progress strong { color: rgba(255,255,255,.74); font-weight: 600; }
+.resumo-header-bar .rh-count {
+    font-size: .72rem;
+    color: #b8b8b8;
+}
 
 
 /* ── Card da AULA (wrapper externo) ─────────────────────────────────── */
@@ -699,7 +704,6 @@ body {
 .resumo-card:nth-child(5) { animation-delay: .16s; }
 .resumo-card:nth-child(6) { animation-delay: .20s; }
 .resumo-card:hover { border-color: rgba(255,255,255,.11); }
-.resumo-card.lida  { border-color: rgba(16,185,129,.22); }
 
 /* Cabeçalho da aula */
 .resumo-card-header {
@@ -745,21 +749,6 @@ body {
 }
 .resumo-card-sub { font-size: .68rem; color: rgba(255,255,255,.38); margin-top: 2px; }
 
-.resumo-lida-badge {
-    display: none;
-    align-items: center;
-    gap: .3rem;
-    font-size: .65rem; font-weight: 600;
-    color: #34d399;
-    background: rgba(16,185,129,.1);
-    border: 1px solid rgba(16,185,129,.2);
-    border-radius: 20px;
-    padding: 2px 9px;
-    flex-shrink: 0;
-}
-.resumo-lida-badge i { font-size: .58rem; }
-.resumo-card.lida .resumo-lida-badge { display: flex; }
-
 .resumo-chevron {
     color: rgba(255,255,255,.25);
     font-size: .72rem;
@@ -784,9 +773,7 @@ body {
 }
 
 
-/* ══════════════════════════════════════════════════════════════════════
-   GRID DE TÓPICOS — cada tópico = card independente
-══════════════════════════════════════════════════════════════════════ */
+/* ── Grid de tópicos ─────────────────────────────────────────────────── */
 .resumo-body-inner {
     display: flex;
     flex-direction: column;
@@ -794,7 +781,6 @@ body {
     padding: 16px 16px 6px;
 }
 
-/* Card individual de tópico */
 .resumo-bloco {
     background: rgba(255,255,255,.03);
     border: 1px solid rgba(255,255,255,.06);
@@ -810,7 +796,6 @@ body {
     border-color: rgba(255,255,255,.1);
 }
 
-/* Chip colorido com o título do tópico */
 .resumo-bloco-titulo {
     display: inline-flex;
     align-items: center;
@@ -828,7 +813,6 @@ body {
 }
 .resumo-bloco-titulo i { font-size: .56rem; opacity: .8; }
 
-/* Cores do chip por disciplina */
 .resumo-card.disc-design .resumo-bloco-titulo {
     background: rgba(231,133,176,.1);
     border-color: rgba(231,133,176,.22);
@@ -850,7 +834,6 @@ body {
     color: #f5b84c;
 }
 
-/* Texto do tópico */
 .resumo-bloco-texto {
     font-size: .875rem;
     line-height: 1.7;
@@ -869,7 +852,6 @@ body {
     gap: .5rem;
     padding: 12px 16px 16px;
     border-top: 1px solid rgba(255,255,255,.04);
-    flex-wrap: wrap;
 }
 
 .resumo-action-btn {
@@ -889,11 +871,16 @@ body {
     white-space: nowrap;
 }
 .resumo-action-btn i { font-size: .64rem; }
-.resumo-action-btn:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.15); color: rgba(255,255,255,.8); }
-.resumo-action-btn.btn-lida { border-color: rgba(16,185,129,.18); color: rgba(0,255,170,.7); }
-.resumo-action-btn.btn-lida:hover { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.35); color: #34d399; }
-.resumo-action-btn.btn-lida.ativa { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.3); color: #34d399; }
-.resumo-action-btn.btn-copiar.copied { background: rgba(124,90,243,.1); border-color: rgba(124,90,243,.3); color: #a78bfa; }
+.resumo-action-btn:hover {
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.15);
+    color: rgba(255,255,255,.8);
+}
+.resumo-action-btn.btn-copiar.copied {
+    background: rgba(124,90,243,.1);
+    border-color: rgba(124,90,243,.3);
+    color: #a78bfa;
+}
 
 
 /* ── Toast ───────────────────────────────────────────────────────────── */
@@ -929,17 +916,17 @@ body {
 }
 
 .resumo-lista {
-  margin: 0;
-  padding-left: 1.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+    margin: 0;
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .resumo-lista li {
-  font-size: .875rem;
-  line-height: 1.65;
-  color: rgba(255,255,255,.78);
-  font-family: 'DM Sans', sans-serif;
-  padding-left: 0.2rem;
+    font-size: .875rem;
+    line-height: 1.65;
+    color: rgba(255,255,255,.78);
+    font-family: 'DM Sans', sans-serif;
+    padding-left: 0.2rem;
 }
