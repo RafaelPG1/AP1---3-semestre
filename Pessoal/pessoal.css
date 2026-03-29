@@ -930,3 +930,560 @@ body {
     font-family: 'DM Sans', sans-serif;
     padding-left: 0.2rem;
 }
+
+
+
+/*Anotacoes.css*/
+
+/* ═══════════════════════════════════════════════════════════════════════
+   anotacao.css — Sistema de Anotações v2 (múltiplas notas)
+   Cole no final do seu CSS principal
+════════════════════════════════════════════════════════════════════════ */
+
+/* ── Wrapper ─────────────────────────────────────────────────────────── */
+.panel-anotacao {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    animation: ckFadeUp .3s ease both;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LISTA DE ANOTAÇÕES
+════════════════════════════════════════════════════════════════════════ */
+
+.anot-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .65rem 1rem;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.anot-list-header-left {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+.anot-list-label {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #b8b8b8;
+}
+.anot-list-label i { margin-right: .25rem; }
+
+.anot-list-count {
+    font-size: .72rem;
+    color: rgba(255,255,255,.3);
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 99px;
+    padding: 1px 8px;
+}
+
+/* Botão Nova anotação */
+.anot-btn-nova {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .35rem .85rem;
+    border-radius: 8px;
+    border: 1px solid rgba(124,90,243,.3);
+    background: rgba(124,90,243,.1);
+    color: #a78bfa;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .18s, border-color .18s, transform .15s;
+    white-space: nowrap;
+}
+.anot-btn-nova i { font-size: .7rem; }
+.anot-btn-nova:hover {
+    background: rgba(124,90,243,.2);
+    border-color: rgba(124,90,243,.5);
+    transform: translateY(-1px);
+}
+.anot-btn-nova:active { transform: translateY(0); }
+
+/* Lista */
+.anot-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Estado vazio */
+.anot-vazio {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    color: rgba(255,255,255,.2);
+}
+.anot-vazio i    { font-size: 2rem; display: block; margin-bottom: .8rem; }
+.anot-vazio p    { font-size: .88rem; margin-bottom: .3rem; color: rgba(255,255,255,.3); }
+.anot-vazio span { font-size: .78rem; color: rgba(255,255,255,.18); }
+
+
+/* ── Card de anotação ────────────────────────────────────────────────── */
+.anot-card {
+    background: rgba(255,255,255,.025);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color .2s, opacity .25s, transform .25s;
+    animation: ckFadeUp .3s ease both;
+}
+.anot-card:nth-child(1) { animation-delay: .00s; }
+.anot-card:nth-child(2) { animation-delay: .04s; }
+.anot-card:nth-child(3) { animation-delay: .08s; }
+.anot-card:nth-child(4) { animation-delay: .12s; }
+.anot-card:nth-child(5) { animation-delay: .16s; }
+
+.anot-card:hover { border-color: rgba(255,255,255,.12); }
+
+/* Animação de saída (ao deletar) */
+.anot-card-saindo {
+    opacity: 0;
+    transform: translateX(-12px);
+    pointer-events: none;
+}
+
+/* Linha principal clicável */
+.anot-card-main {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background .15s;
+}
+.anot-card-main:hover { background: rgba(255,255,255,.03); }
+
+/* Ícone */
+.anot-card-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(124,90,243,.1);
+    border: 1px solid rgba(124,90,243,.18);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.anot-card-icon i { font-size: .72rem; color: #a78bfa; }
+
+/* Textos */
+.anot-card-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.anot-card-titulo {
+    font-size: .855rem;
+    font-weight: 700;
+    color: #eaeaea;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -.01em;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.anot-card-preview {
+    font-size: .72rem;
+    color: rgba(255,255,255,.32);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.anot-card-data {
+    font-size: .67rem;
+    color: rgba(255,255,255,.25);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Ações do card */
+.anot-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-top: 1px solid rgba(255,255,255,.04);
+    background: rgba(255,255,255,.015);
+}
+
+.anot-card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    padding: .28rem .6rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: rgba(255,255,255,.3);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .7rem;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+    white-space: nowrap;
+}
+.anot-card-btn i { font-size: .62rem; }
+.anot-card-btn:hover {
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.75);
+}
+
+.anot-card-btn.btn-deletar:hover {
+    background: rgba(239,68,68,.08);
+    border-color: rgba(239,68,68,.2);
+    color: #fca5a5;
+}
+
+/* Confirmação inline de deletar */
+.anot-confirm-txt {
+    font-size: .72rem;
+    color: rgba(255,255,255,.4);
+    margin-right: 4px;
+}
+.anot-card-btn.btn-confirmar-sim:hover {
+    background: rgba(239,68,68,.1);
+    border-color: rgba(239,68,68,.25);
+    color: #fca5a5;
+}
+.anot-card-btn.btn-confirmar-nao:hover {
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.12);
+    color: rgba(255,255,255,.7);
+}
+
+/* Input de renomear no card */
+.anot-rename-input {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .855rem;
+    font-weight: 700;
+    color: #eaeaea;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(124,90,243,.35);
+    border-radius: 6px;
+    padding: 2px 8px;
+    outline: none;
+    width: 100%;
+    letter-spacing: -.01em;
+}
+.anot-rename-input:focus { border-color: rgba(124,90,243,.6); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EDITOR
+════════════════════════════════════════════════════════════════════════ */
+
+/* Topbar do editor */
+.anot-editor-topbar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .4rem .8rem;
+    margin-bottom: 2px;
+}
+
+.anot-btn-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .32rem .7rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.45);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .76rem;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.anot-btn-voltar i { font-size: .65rem; }
+.anot-btn-voltar:hover {
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.15);
+    color: rgba(255,255,255,.8);
+}
+
+.anot-editor-titulo-display {
+    flex: 1;
+    font-size: .92rem;
+    font-weight: 700;
+    color: #eaeaea;
+    letter-spacing: -.01em;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 2px 6px;
+    transition: background .15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.anot-editor-titulo-display:hover { background: rgba(255,255,255,.05); }
+
+.anot-editor-status {
+    font-size: .68rem;
+    color: rgba(255,255,255,.25);
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color .3s;
+}
+.anot-editor-status.saved { color: #34d399; }
+
+/* Input de renomear no topbar */
+.anot-rename-topbar {
+    flex: 1;
+    font-size: .92rem !important;
+}
+
+/* Toolbar */
+.anot-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 8px 10px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px 12px 0 0;
+    border-bottom: none;
+    backdrop-filter: blur(10px);
+    user-select: none;
+}
+
+.anot-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.anot-toolbar-right { margin-left: auto; }
+
+.anot-sep {
+    width: 1px;
+    height: 18px;
+    background: rgba(255,255,255,.1);
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+
+/* Botões da toolbar */
+.anot-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+    width: 30px; height: 30px;
+    padding: 0;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: rgba(255,255,255,.45);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .72rem;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+    white-space: nowrap;
+}
+.anot-btn i { font-size: .7rem; }
+.anot-btn:hover {
+    background: rgba(255,255,255,.07);
+    border-color: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.85);
+}
+.anot-btn.active {
+    background: rgba(124,90,243,.15);
+    border-color: rgba(124,90,243,.3);
+    color: #a78bfa;
+}
+
+/* Botão Salvar */
+.anot-btn-save {
+    width: auto;
+    padding: 0 .75rem;
+    background: rgba(124,90,243,.12);
+    border-color: rgba(124,90,243,.25);
+    color: rgba(167,139,250,.8);
+    font-weight: 600;
+}
+.anot-btn-save:hover {
+    background: rgba(124,90,243,.22);
+    border-color: rgba(124,90,243,.45);
+    color: #a78bfa;
+}
+
+/* Select de bloco */
+.anot-select {
+    height: 30px;
+    padding: 0 .5rem;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 7px;
+    color: rgba(255,255,255,.65);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .75rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color .15s;
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 100px;
+}
+.anot-select:hover, .anot-select:focus {
+    border-color: rgba(255,255,255,.2);
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.9);
+}
+.anot-select option { background: #1a1a1a; color: rgba(255,255,255,.85); }
+
+/* Área editável */
+.anot-editor {
+    min-height: 340px;
+    padding: 20px 22px;
+    background: rgba(255,255,255,.02);
+    border: 1px solid rgba(255,255,255,.08);
+    border-top: none;
+    border-bottom: none;
+    color: rgba(255,255,255,.85);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .9rem;
+    line-height: 1.75;
+    outline: none;
+    caret-color: #a78bfa;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+.anot-editor:empty::before {
+    content: attr(data-placeholder);
+    color: rgba(255,255,255,.18);
+    pointer-events: none;
+    display: block;
+}
+
+/* Tipografia interna */
+.anot-editor h1 { font-size: 1.7rem; font-weight: 800; color: #f0f0f0; margin: .6rem 0 .3rem; line-height: 1.25; letter-spacing: -.02em; }
+.anot-editor h2 { font-size: 1.25rem; font-weight: 700; color: #e8e8e8; margin: .5rem 0 .25rem; }
+.anot-editor h3 { font-size: 1rem; font-weight: 700; color: #ddd; margin: .45rem 0 .2rem; }
+.anot-editor p  { margin: .25rem 0; }
+.anot-editor ul, .anot-editor ol { padding-left: 1.4rem; margin: .3rem 0; }
+.anot-editor li { margin: .2rem 0; line-height: 1.65; }
+
+.anot-editor blockquote {
+    border-left: 3px solid rgba(167,139,250,.5);
+    background: rgba(124,90,243,.06);
+    margin: .5rem 0;
+    padding: .6rem 1rem .6rem 1.1rem;
+    border-radius: 0 8px 8px 0;
+    color: rgba(255,255,255,.6);
+    font-style: italic;
+    font-size: .88rem;
+}
+
+.anot-editor pre, .anot-code-block {
+    background: rgba(0,0,0,.35);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: .5rem 0;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: .82rem;
+    line-height: 1.6;
+    color: #c9d1d9;
+    white-space: pre;
+}
+
+.anot-inline-code, .anot-editor code:not(pre code) {
+    background: rgba(124,90,243,.12);
+    border: 1px solid rgba(124,90,243,.2);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: .82em;
+    color: #c4a7fa;
+    white-space: nowrap;
+}
+
+.anot-editor a { color: #60aef5; text-decoration: underline; text-decoration-color: rgba(96,174,245,.35); text-underline-offset: 2px; }
+.anot-editor a:hover { color: #93c5fd; }
+.anot-editor hr { border: none; border-top: 1px solid rgba(255,255,255,.1); margin: 1rem 0; }
+
+/* Checklist */
+.anot-checklist { list-style: none; padding-left: 0; margin: .35rem 0; display: flex; flex-direction: column; gap: 4px; }
+.anot-checklist-item { display: flex; align-items: flex-start; gap: 8px; padding: 4px 6px; border-radius: 7px; transition: background .15s; }
+.anot-checklist-item:hover { background: rgba(255,255,255,.03); }
+.anot-checklist-item input[type="checkbox"] { width: 15px; height: 15px; min-width: 15px; margin-top: 3px; cursor: pointer; accent-color: #7c5af3; flex-shrink: 0; }
+.anot-checklist-item span { flex: 1; line-height: 1.55; font-size: .875rem; color: rgba(255,255,255,.82); outline: none; }
+.anot-checklist-item input:checked + span { color: rgba(255,255,255,.35); text-decoration: line-through; text-decoration-color: rgba(255,255,255,.15); }
+
+.anot-editor ::selection { background: rgba(124,90,243,.28); }
+
+/* Statusbar */
+.anot-statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 16px;
+    background: rgba(255,255,255,.02);
+    border: 1px solid rgba(255,255,255,.08);
+    border-top: 1px solid rgba(255,255,255,.05);
+    border-radius: 0 0 12px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .68rem;
+    color: rgba(255,255,255,.25);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════════════════════ */
+.anot-toast {
+    position: fixed;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(30px);
+    background: rgba(20,20,20,.95);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 10px;
+    padding: .55rem 1.1rem;
+    font-size: .8rem;
+    color: rgba(255,255,255,.85);
+    display: flex; align-items: center; gap: .5rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .25s, transform .25s;
+    z-index: 1000;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+}
+.anot-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.anot-toast i { color: #a78bfa; font-size: .75rem; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVO
+════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 720px) {
+    .anot-toolbar { gap: 2px; padding: 6px 8px; }
+    .anot-sep { display: none; }
+    .anot-select { min-width: 80px; font-size: .7rem; }
+    .anot-editor { padding: 14px; font-size: .865rem; min-height: 260px; }
+    .anot-editor h1 { font-size: 1.4rem; }
+    .anot-toolbar-right { margin-left: 0; }
+    .anot-editor-topbar { padding: .5rem .2rem .6rem; gap: .5rem; }
+    .anot-list-header { flex-wrap: wrap; gap: .5rem; }
+}

@@ -1,8 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   pessoal.js — Área Pessoal  (v12 — resumo-ui integrado)
+   pessoal.js — Área Pessoal  (v13 — anotações integradas)
    ✦ Login, sessão e navegação de disciplinas
    ✦ Integração com checklist.js (renderização + progresso)
-   ✦ Sistema de Resumos embutido (era resumo-ui.js)
+   ✦ Sistema de Resumos embutido
+   ✦ Sistema de Anotações (rich text editor)
 ════════════════════════════════════════════════════════════════════════ */
 
 import {
@@ -15,13 +16,19 @@ import {
     atualizarProgressoPainel,
     atualizarProgressoTab,
     atualizarTodasAsTabs
-} from './Checklist.js';
+} from './check.js.js';
 
 import {
     listarResumos,
-    progressoLeitura,
     getResumoPorId
 } from './resumo.js';
+
+import {
+    initAnotacoes,
+    exibirAnotacao,
+    removerAnotacao
+} from './anotacao.js';
+
 
 // ── CREDENCIAIS ───────────────────────────────────────────────────────
 const USUARIOS = [
@@ -32,29 +39,31 @@ const USUARIOS = [
     { nome: 'Isaac',    senha: '234' }
 ];
 
+
 // ── ESTADO ────────────────────────────────────────────────────────────
-let usuarioAtual    = null;
-let discSelecionada = null;
+let usuarioAtual      = null;
+let discSelecionada   = null;
 let checklistCompleto = {};
 let videosCompletos   = {};
 
-// ── ESTADO DOS RESUMOS (era resumo-ui.js) ─────────────────────────────
-let modoAtual = 'checklist'; // 'checklist' | 'resumos'
-let discAtual = null;
-let _toastEl  = null;
+let modoAtual  = 'checklist'; // 'checklist' | 'resumos' | 'anotacao'
+let discAtual  = null;
+let _toastEl   = null;
 let _toastTimer = null;
 
+
 // ── DOM ───────────────────────────────────────────────────────────────
-const loginScreen  = document.getElementById('login-screen');
-const dashScreen   = document.getElementById('dashboard-screen');
-const inputNome    = document.getElementById('input-nome');
-const inputSenha   = document.getElementById('input-senha');
-const btnEntrar    = document.getElementById('btn-entrar');
-const btnSair      = document.getElementById('btn-sair');
-const loginError   = document.getElementById('login-error');
-const dashNome     = document.getElementById('dash-nome-usuario');
-const discTabsEl   = document.getElementById('disc-tabs');
-const discPanel    = document.getElementById('disc-panel');
+const loginScreen = document.getElementById('login-screen');
+const dashScreen  = document.getElementById('dashboard-screen');
+const inputNome   = document.getElementById('input-nome');
+const inputSenha  = document.getElementById('input-senha');
+const btnEntrar   = document.getElementById('btn-entrar');
+const btnSair     = document.getElementById('btn-sair');
+const loginError  = document.getElementById('login-error');
+const dashNome    = document.getElementById('dash-nome-usuario');
+const discTabsEl  = document.getElementById('disc-tabs');
+const discPanel   = document.getElementById('disc-panel');
+
 
 // ── TOGGLE SENHA ──────────────────────────────────────────────────────
 document.querySelector('.toggle-senha')?.addEventListener('click', function () {
@@ -63,9 +72,13 @@ document.querySelector('.toggle-senha')?.addEventListener('click', function () {
     this.querySelector('i').className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
 });
 
-// ── LOGIN ─────────────────────────────────────────────────────────────
+
+// ═════════════════════════════════════════════════════════════════════
+//  LOGIN
+// ═════════════════════════════════════════════════════════════════════
+
 function tentarLogin() {
-    const nome  = inputNome.value.trim();
+    const nome = inputNome.value.trim();
     const senha = inputSenha.value;
     const user  = USUARIOS.find(u =>
         u.nome.toLowerCase() === nome.toLowerCase() && u.senha === senha
@@ -82,45 +95,48 @@ function tentarLogin() {
 }
 
 btnEntrar.addEventListener('click', tentarLogin);
+inputNome.addEventListener('keydown',  e => { if (e.key === 'Enter') { e.preventDefault(); inputSenha.focus(); } });
+inputSenha.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); tentarLogin(); } });
 
-inputNome.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); inputSenha.focus(); }
-});
-inputSenha.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); tentarLogin(); }
-});
 
-// ── DASHBOARD ─────────────────────────────────────────────────────────
-function entrarNoDashboard() {
+// ═════════════════════════════════════════════════════════════════════
+//  DASHBOARD
+// ═════════════════════════════════════════════════════════════════════
+
+async function entrarNoDashboard() {
     loginScreen.classList.remove('active');
     dashScreen.classList.add('active');
     dashNome.textContent = usuarioAtual;
 
-    carregarDados().then(() => {
-        construirTabs();
-        _criarToast();
-        selecionarDisc(Object.keys(DISCIPLINAS_DATA)[0]);
-    });
+    await carregarDados();
+    await initAnotacoes(usuarioAtual);
+    construirTabs();
+    _criarToast();
+    selecionarDisc(Object.keys(DISCIPLINAS_DATA)[0]);
 }
 
 btnSair.addEventListener('click', () => {
     salvarDados.flush();
-    usuarioAtual    = null;
-    discSelecionada = null;
-    discAtual       = null;
-    modoAtual       = 'checklist';
+    usuarioAtual      = null;
+    discSelecionada   = null;
+    discAtual         = null;
+    modoAtual         = 'checklist';
     checklistCompleto = {};
     videosCompletos   = {};
     localStorage.removeItem('sessao_usuario');
     dashScreen.classList.remove('active');
     loginScreen.classList.add('active');
-    inputNome.value  = '';
-    inputSenha.value = '';
+    inputNome.value      = '';
+    inputSenha.value     = '';
     discPanel.innerHTML  = '';
     discTabsEl.innerHTML = '';
 });
 
-// ── STORAGE ───────────────────────────────────────────────────────────
+
+// ═════════════════════════════════════════════════════════════════════
+//  STORAGE
+// ═════════════════════════════════════════════════════════════════════
+
 async function carregarDados() {
     try {
         const raw = await window.Storage?.get?.(`checklist_${usuarioAtual}`);
@@ -138,7 +154,11 @@ const salvarDados = criarSalvador(async () => {
     } catch (_) { /* silencioso */ }
 }, 800, 3000);
 
-// ── TABS ──────────────────────────────────────────────────────────────
+
+// ═════════════════════════════════════════════════════════════════════
+//  TABS
+// ═════════════════════════════════════════════════════════════════════
+
 function construirTabs() {
     discTabsEl.innerHTML = '';
     Object.entries(DISCIPLINAS_DATA).forEach(([id, disc]) => {
@@ -163,7 +183,11 @@ function construirTabs() {
     atualizarTodasAsTabs(checklistCompleto);
 }
 
-// ── SELEÇÃO DE DISCIPLINA ─────────────────────────────────────────────
+
+// ═════════════════════════════════════════════════════════════════════
+//  SELEÇÃO DE DISCIPLINA
+// ═════════════════════════════════════════════════════════════════════
+
 function selecionarDisc(discId) {
     discSelecionada = discId;
     discAtual       = discId;
@@ -178,13 +202,23 @@ function selecionarDisc(discId) {
         discPanel.querySelector('.panel-modules')?.remove();
         _injetarModeToggle(discId, discPanel);
         _exibirResumos(discId, discPanel);
+    } else if (modoAtual === 'anotacao') {
+        renderizarPainel(discId, discPanel);
+        discPanel.querySelector('.panel-videos')?.remove();
+        discPanel.querySelector('.panel-modules')?.remove();
+        _injetarModeToggle(discId, discPanel);
+        exibirAnotacao(discId, discPanel);
     } else {
         _renderizarChecklistCompleto(discId, discPanel);
         _injetarModeToggle(discId, discPanel);
     }
 }
 
-// ── CHECKLIST ─────────────────────────────────────────────────────────
+
+// ═════════════════════════════════════════════════════════════════════
+//  CHECKLIST
+// ═════════════════════════════════════════════════════════════════════
+
 function _renderizarChecklistCompleto(discId, panelEl) {
     renderizarPainel(discId, panelEl);
 
@@ -236,7 +270,11 @@ function atualizarProgressoGeral() {
     if (opText) opText.textContent = `${pct}%`;
 }
 
-// ── MODE TOGGLE ───────────────────────────────────────────────────────
+
+// ═════════════════════════════════════════════════════════════════════
+//  MODE TOGGLE
+// ═════════════════════════════════════════════════════════════════════
+
 function _injetarModeToggle(discId, panelEl) {
     panelEl.querySelector('.mode-toggle')?.remove();
 
@@ -248,6 +286,9 @@ function _injetarModeToggle(discId, panelEl) {
         </button>
         <button class="mode-btn ${modoAtual === 'resumos' ? 'active' : ''}" data-mode="resumos">
             <i class="fas fa-book-open"></i> Resumos
+        </button>
+        <button class="mode-btn ${modoAtual === 'anotacao' ? 'active' : ''}" data-mode="anotacao">
+            <i class="fas fa-pen-to-square"></i> Anotações
         </button>
     `;
 
@@ -269,18 +310,33 @@ function _injetarModeToggle(discId, panelEl) {
             );
 
             if (modoAtual === 'resumos') {
+                removerAnotacao(panelEl);
                 _exibirResumos(discId, panelEl);
+            } else if (modoAtual === 'anotacao') {
+                _exibirAnotacaoWrapper(discId, panelEl);
             } else {
+                removerAnotacao(panelEl);
                 _exibirChecklist(discId, panelEl);
             }
         });
     });
 }
 
-// ── EXIBIÇÃO DOS MODOS ────────────────────────────────────────────────
+
+// ═════════════════════════════════════════════════════════════════════
+//  EXIBIÇÃO DOS MODOS
+// ═════════════════════════════════════════════════════════════════════
+
 function _exibirChecklist(discId, panelEl) {
     _renderizarChecklistCompleto(discId, panelEl);
     _injetarModeToggle(discId, panelEl);
+}
+
+function _exibirAnotacaoWrapper(discId, panelEl) {
+    panelEl.querySelector('.panel-videos')?.remove();
+    panelEl.querySelector('.panel-modules')?.remove();
+    panelEl.querySelector('.panel-resumos')?.remove();
+    exibirAnotacao(discId, panelEl);
 }
 
 function _exibirResumos(discId, panelEl) {
@@ -340,7 +396,11 @@ function _exibirResumos(discId, panelEl) {
     });
 }
 
-// ── RENDER DO CARD ────────────────────────────────────────────────────
+
+// ═════════════════════════════════════════════════════════════════════
+//  RENDER DE CARDS DE RESUMO
+// ═════════════════════════════════════════════════════════════════════
+
 function _renderizarTexto(texto) {
     if (typeof texto === 'string') return `<p class="resumo-bloco-texto">${texto}</p>`;
 
@@ -353,7 +413,7 @@ function _renderizarTexto(texto) {
 }
 
 function _renderCard(resumo, discId) {
-    const blocos = resumo.conteudo.map(bloco => `
+    const blocos    = resumo.conteudo.map(bloco => `
         <div class="resumo-bloco">
             <span class="resumo-bloco-titulo">
                 <i class="fas fa-circle-dot"></i>
@@ -362,7 +422,6 @@ function _renderCard(resumo, discId) {
             ${_renderizarTexto(bloco.texto)}
         </div>
     `).join('');
-
     const numBlocos = resumo.conteudo.length;
 
     return `
@@ -391,7 +450,6 @@ function _renderCard(resumo, discId) {
     `;
 }
 
-// ── UTILITÁRIOS DOS RESUMOS ───────────────────────────────────────────
 function _resumoParaTexto(resumo) {
     let txt = `${resumo.titulo}\n${'─'.repeat(50)}\n\n`;
     resumo.conteudo.forEach(bloco => {
@@ -400,7 +458,11 @@ function _resumoParaTexto(resumo) {
     return txt.trim();
 }
 
-// ── TOAST ─────────────────────────────────────────────────────────────
+
+// ═════════════════════════════════════════════════════════════════════
+//  TOAST
+// ═════════════════════════════════════════════════════════════════════
+
 function _criarToast() {
     _toastEl = document.createElement('div');
     _toastEl.className = 'resumo-toast';
@@ -416,11 +478,13 @@ function _mostrarToast(msg) {
     _toastTimer = setTimeout(() => _toastEl.classList.remove('show'), 2800);
 }
 
-// ── INICIALIZAÇÃO ─────────────────────────────────────────────────────
+
+// ═════════════════════════════════════════════════════════════════════
+//  INICIALIZAÇÃO
+// ═════════════════════════════════════════════════════════════════════
+
 const sessaoSalva = localStorage.getItem('sessao_usuario');
-const userSalvo   = sessaoSalva
-    ? USUARIOS.find(u => u.nome === sessaoSalva)
-    : null;
+const userSalvo   = sessaoSalva ? USUARIOS.find(u => u.nome === sessaoSalva) : null;
 
 if (userSalvo) {
     usuarioAtual = userSalvo.nome;
