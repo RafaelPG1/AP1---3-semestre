@@ -1,86 +1,155 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   anotacao.js — v15
+   anotacao.js — v21
+
+   Mudanças v21:
+     1. Backspace em code-block vazio remove o bloco
+     2. Botão de link abre modal customizado (texto + URL)
 ════════════════════════════════════════════════════════════════════════ */
 
-const STORAGE_PREFIX = 'anotacao_v3_';
-const AUTOSAVE_DELAY = 1500;
+const STORAGE_PREFIX  = 'anotacao_v5_';
+const AUTOSAVE_DELAY  = 1500;
 
+/* ── Estado global ──────────────────────────────────────────────────── */
 const _st = {
-    usuario:     null,
-    dados:       {},
-    quill:       null,
-    timer:       null,
-    toastEl:     null,
-    toastTimer:  null,
-    ultimaSel:   null,
-    renameAtivo: false,
+    usuario:    null,
+    dados:      {},
+    timer:      null,
+    toastEl:    null,
+    toastTimer: null,
+    quillMap:   new WeakMap(),
 };
 
-/* ─── QUILL (CDN) ───────────────────────────────────────────────────── */
-let _quillReady = null;
-function _carregarQuill() {
-    if (_quillReady) return _quillReady;
-    _quillReady = new Promise(resolve => {
-        if (window.Quill) { resolve(); return; }
-        if (!document.querySelector('#quill-css')) {
-            const l = document.createElement('link');
-            l.id = 'quill-css'; l.rel = 'stylesheet';
-            l.href = 'https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css';
-            document.head.appendChild(l);
-        }
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js';
-        s.onload = resolve;
-        document.head.appendChild(s);
-    });
-    return _quillReady;
-}
 
-/* ─── API PÚBLICA ───────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════
+   API PÚBLICA
+════════════════════════════════════════════════════════════════════════ */
+
 export async function initAnotacoes(usuario) {
     _st.usuario = usuario;
     _st.dados   = {};
     await _carregarTodas();
     if (!_st.toastEl) _criarToast();
-    _carregarQuill();
+    await _garantirQuill();
 }
+
 export function exibirAnotacao(discId, containerEl) {
     _limparPainel(containerEl);
     _renderizarLista(discId, containerEl);
 }
+
 export function removerAnotacao(containerEl) {
-    _st.quill = null;
+    _destruirQuill(containerEl);
     containerEl.querySelector('.panel-anotacao')?.remove();
     clearTimeout(_st.timer);
 }
 
-/* ─── STORAGE ───────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   QUILL — Bootstrap dinâmico
+════════════════════════════════════════════════════════════════════════ */
+
+async function _garantirQuill() {
+    if (window.Quill) return;
+    await Promise.all([
+        _carregarScript('https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js'),
+        _carregarCSS('https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css'),
+    ]);
+}
+
+function _carregarScript(src) {
+    return new Promise((res, rej) => {
+        if (document.querySelector(`script[src="${src}"]`)) { res(); return; }
+        const s = document.createElement('script');
+        s.src = src; s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+    });
+}
+
+function _carregarCSS(href) {
+    return new Promise(res => {
+        if (document.querySelector(`link[href="${href}"]`)) { res(); return; }
+        const l = document.createElement('link');
+        l.rel  = 'stylesheet'; l.href = href; l.onload = res;
+        document.head.appendChild(l);
+    });
+}
+
+function _criarQuill(containerEl, conteudoDelta) {
+    const editorMount = containerEl.querySelector('.ql-mount');
+    if (!editorMount) return null;
+
+    const quill = new window.Quill(editorMount, {
+        theme: 'snow',
+        modules: { toolbar: false, history: { delay: 400, maxStack: 100 } },
+        placeholder: 'Comece a escrever…',
+        formats: ['bold','italic','underline','strike','code','link',
+                  'header','blockquote','code-block',
+                  'list','indent','color','background'],
+    });
+
+    if (conteudoDelta) {
+        try { quill.setContents(JSON.parse(conteudoDelta)); } catch(_) {}
+    }
+
+    quill.setSelection(quill.getLength(), 0);
+    _st.quillMap.set(containerEl, quill);
+    return quill;
+}
+
+function _destruirQuill(containerEl) {
+    const quill = _st.quillMap.get(containerEl);
+    if (quill) {
+        quill.off('text-change');
+        quill.off('selection-change');
+        _st.quillMap.delete(containerEl);
+    }
+}
+
+function _getQuill(containerEl) {
+    return _st.quillMap.get(containerEl) ?? null;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STORAGE
+════════════════════════════════════════════════════════════════════════ */
+
 async function _carregarTodas() {
     try {
-        const r = await window.Storage?.get?.(STORAGE_PREFIX + _st.usuario);
+        const r = await window.Storage?.get?.(_storageKey());
         if (r) _st.dados = r;
     } catch (_) {}
 }
+
 async function _persistir() {
     try {
-        await window.Storage?.set?.(STORAGE_PREFIX + _st.usuario, _st.dados);
+        await window.Storage?.set?.(_storageKey(), _st.dados);
     } catch (_) {}
 }
-function _agendarSalvamento(discId, id, wrapper) {
+
+function _storageKey() { return STORAGE_PREFIX + _st.usuario; }
+
+function _agendarSalvamento(discId, id, quill, statusEl) {
     clearTimeout(_st.timer);
+    _atualizarStatus(statusEl, false);
     _st.timer = setTimeout(async () => {
-        _capturarQuill(discId, id);
+        _capturarQuill(discId, id, quill);
         await _persistir();
-        _atualizarStatus(wrapper, id, true);
+        _atualizarStatus(statusEl, true);
         _mostrarToast('Salvo automaticamente');
     }, AUTOSAVE_DELAY);
 }
 
-/* ─── CRUD ──────────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CRUD
+════════════════════════════════════════════════════════════════════════ */
+
 function _listarOrdenado(discId) {
     return Object.values(_st.dados[discId] ?? {})
         .sort((a, b) => b.editadoEm - a.editadoEm);
 }
+
 function _criarNota(discId, titulo) {
     if (!_st.dados[discId]) _st.dados[discId] = {};
     const agora = Date.now();
@@ -88,16 +157,19 @@ function _criarNota(discId, titulo) {
     _st.dados[discId][id] = {
         id,
         titulo: titulo.trim() || 'Sem título',
-        delta: null, html: '',
-        criadoEm: agora, editadoEm: agora,
+        delta: '',
+        criadoEm: agora,
+        editadoEm: agora,
     };
     _persistir();
     return _st.dados[discId][id];
 }
+
 function _deletarNota(discId, id) {
     delete _st.dados[discId]?.[id];
     _persistir();
 }
+
 function _renomearNota(discId, id, novoTitulo) {
     const nota = _st.dados[discId]?.[id];
     if (!nota) return false;
@@ -108,303 +180,343 @@ function _renomearNota(discId, id, novoTitulo) {
     _persistir();
     return true;
 }
-function _capturarQuill(discId, id) {
-    if (!_st.quill || !_st.dados[discId]?.[id]) return;
-    _st.dados[discId][id].delta     = JSON.parse(JSON.stringify(_st.quill.getContents()));
-    _st.dados[discId][id].html      = _st.quill.getSemanticHTML();
-    _st.dados[discId][id].editadoEm = Date.now();
+
+function _capturarQuill(discId, id, quill) {
+    const nota = _st.dados[discId]?.[id];
+    if (!nota || !quill) return;
+    nota.delta     = JSON.stringify(quill.getContents());
+    nota.editadoEm = Date.now();
 }
 
-/* ─── MODAL "NOVA ANOTAÇÃO" ─────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LÓGICA DE LISTA
+════════════════════════════════════════════════════════════════════════ */
+
+function _toggleLista(quill, tipo) {
+    const sel = quill.getSelection(true);
+    if (!sel) return;
+
+    const [inicioLinha] = quill.getLine(sel.index);
+    const inicioIdx     = quill.getIndex(inicioLinha);
+
+    const fimIdx = sel.index + sel.length;
+    const [fimLinha] = quill.getLine(fimIdx);
+    const fimIdxLinha = quill.getIndex(fimLinha) + fimLinha.length();
+
+    const comprimento = fimIdxLinha - inicioIdx;
+
+    let todasFormatadas = true;
+    let cursor = inicioIdx;
+    while (cursor < inicioIdx + comprimento) {
+        const [linha] = quill.getLine(cursor);
+        if (!linha) break;
+        const fmt = quill.getFormat(cursor, 1);
+        if (fmt.list !== tipo) { todasFormatadas = false; break; }
+        cursor += linha.length();
+    }
+
+    const novoTipo = todasFormatadas ? false : tipo;
+
+    quill.formatLine(inicioIdx, comprimento, 'list', novoTipo, 'user');
+    quill.setSelection(sel.index, sel.length, 'silent');
+}
+
+function _ajustarIndent(quill, aumentar) {
+    const sel = quill.getSelection(true);
+    if (!sel) return;
+
+    const [inicioLinha] = quill.getLine(sel.index);
+    const inicioIdx     = quill.getIndex(inicioLinha);
+
+    const fimIdx = sel.index + sel.length;
+    const [fimLinha] = quill.getLine(fimIdx);
+    const fimIdxLinha = quill.getIndex(fimLinha) + fimLinha.length();
+
+    const comprimento = fimIdxLinha - inicioIdx;
+
+    quill.formatLine(
+        inicioIdx,
+        comprimento,
+        'indent',
+        aumentar ? '+1' : '-1',
+        'user'
+    );
+
+    quill.setSelection(sel.index, sel.length, 'silent');
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CÓDIGO: usa code-block (estilo Notion)
+════════════════════════════════════════════════════════════════════════ */
+
+function _toggleCodeBlock(quill) {
+    const sel = quill.getSelection(true);
+    if (!sel) return;
+
+    const [inicioLinha] = quill.getLine(sel.index);
+    const inicioIdx     = quill.getIndex(inicioLinha);
+
+    const fimIdx = sel.index + sel.length;
+    const [fimLinha] = quill.getLine(fimIdx);
+    const fimIdxLinha = quill.getIndex(fimLinha) + fimLinha.length();
+
+    const comprimento = Math.max(fimIdxLinha - inicioIdx, 1);
+
+    const fmt = quill.getFormat(inicioIdx, comprimento);
+    const jaAtivo = !!fmt['code-block'];
+
+    quill.formatLine(inicioIdx, comprimento, 'code-block', !jaAtivo, 'user');
+    quill.setSelection(sel.index, sel.length, 'silent');
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MODAL "NOVA ANOTAÇÃO" / RENOMEAR
+════════════════════════════════════════════════════════════════════════ */
+
 function _pedirNomeNota(discId, containerEl) {
-    // Overlay
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
-        position: fixed; inset: 0; z-index: 2000;
-        background: rgba(0,0,0,.55);
-        backdrop-filter: blur(6px);
-        display: flex; align-items: center; justify-content: center;
-        animation: fadeIn .18s ease both;
-    `;
-
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        background: #161616;
-        border: 1px solid rgba(255,255,255,.1);
-        border-radius: 16px;
-        padding: 1.6rem 1.8rem 1.4rem;
-        width: 90%; max-width: 360px;
-        box-shadow: 0 24px 60px rgba(0,0,0,.6);
-        display: flex; flex-direction: column; gap: 1rem;
-        animation: ckFadeUp .22s ease both;
-    `;
-
-    modal.innerHTML = `
-        <div style="display:flex;align-items:center;gap:.6rem;">
-            <div style="width:32px;height:32px;border-radius:8px;background:rgba(124,90,243,.15);border:1px solid rgba(124,90,243,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <i class="fas fa-pen-to-square" style="font-size:.72rem;color:#a78bfa;"></i>
-            </div>
-            <span style="font-size:.92rem;font-weight:700;color:#eaeaea;font-family:'DM Sans',sans-serif;letter-spacing:-.01em;">Nova anotação</span>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:.4rem;">
-            <label style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">Nome</label>
-            <input
-                id="modal-nome-input"
-                maxlength="60"
-                placeholder="Ex: Resumo da aula"
-                style="
-                    font-family:'DM Sans',sans-serif;
-                    font-size:.88rem;
-                    font-weight:600;
-                    color:#eaeaea;
-                    background:rgba(255,255,255,.06);
-                    border:1px solid rgba(124,90,243,.35);
-                    border-radius:8px;
-                    padding:.55rem .85rem;
-                    outline:none;
-                    width:100%;
-                    letter-spacing:-.01em;
-                    transition:border-color .18s;
-                "
-            />
-            <span id="modal-nome-counter" style="font-size:.65rem;color:rgba(255,255,255,.25);align-self:flex-end;">0/60</span>
-        </div>
-
-        <div style="display:flex;gap:.5rem;justify-content:flex-end;">
-            <button id="modal-cancelar" style="
-                display:inline-flex;align-items:center;gap:.35rem;
-                padding:.38rem .85rem;border-radius:8px;
-                border:1px solid rgba(255,255,255,.1);
-                background:rgba(255,255,255,.04);
-                color:rgba(255,255,255,.45);
-                font-family:'DM Sans',sans-serif;font-size:.78rem;
-                cursor:pointer;transition:background .15s,color .15s;
-            ">
-                <i class="fas fa-xmark" style="font-size:.7rem;"></i> Cancelar
-            </button>
-            <button id="modal-criar" style="
-                display:inline-flex;align-items:center;gap:.35rem;
-                padding:.38rem .9rem;border-radius:8px;
-                border:1px solid rgba(124,90,243,.35);
-                background:rgba(124,90,243,.15);
-                color:#a78bfa;
-                font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;
-                cursor:pointer;transition:background .15s,border-color .15s;
-            ">
-                <i class="fas fa-plus" style="font-size:.7rem;"></i> Criar
-            </button>
-        </div>
-    `;
-
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    const inp     = modal.querySelector('#modal-nome-input');
-    const counter = modal.querySelector('#modal-nome-counter');
-    const btnCria = modal.querySelector('#modal-criar');
-    const btnCanc = modal.querySelector('#modal-cancelar');
-
-    inp.focus();
-
-    inp.addEventListener('input', () => {
-        const len = inp.value.length;
-        counter.textContent = `${len}/60`;
-        counter.style.color = len >= 55 ? 'rgba(239,68,68,.65)' : 'rgba(255,255,255,.25)';
-        inp.style.borderColor = len >= 55 ? 'rgba(239,68,68,.45)' : 'rgba(124,90,243,.35)';
-    });
-
-    inp.addEventListener('focus', () => {
-        inp.style.borderColor = inp.value.length >= 55 ? 'rgba(239,68,68,.45)' : 'rgba(124,90,243,.6)';
-    });
-
-    const fechar = () => overlay.remove();
-
-    const confirmar = () => {
-        const nome = inp.value.trim();
-        if (!nome) {
-            inp.style.borderColor = 'rgba(239,68,68,.5)';
-            inp.focus();
-            inp.placeholder = 'Digite um nome para continuar';
-            return;
+    _abrirModal({
+        titulo: 'Nova anotação', icone: 'fa-pen-to-square',
+        label: 'Nome', placeholder: 'Ex: Resumo da aula',
+        btnLabel: 'Criar', btnIcone: 'fa-plus', valorInicial: '',
+        onConfirmar(nome) {
+            _criarNota(discId, nome);
+            _limparPainel(containerEl);
+            _renderizarLista(discId, containerEl);
         }
-        fechar();
-        _criarNota(discId, nome);
-        _limparPainel(containerEl);
-        _renderizarLista(discId, containerEl);
-    };
-
-    btnCria.addEventListener('click', confirmar);
-    btnCanc.addEventListener('click', fechar);
-
-    inp.addEventListener('keydown', e => {
-        if (e.key === 'Enter')  { e.preventDefault(); confirmar(); }
-        if (e.key === 'Escape') { fechar(); }
     });
-
-    // Fechar ao clicar fora do modal
-    overlay.addEventListener('mousedown', e => {
-        if (e.target === overlay) fechar();
-    });
-
-    // Hover nos botões
-    btnCria.addEventListener('mouseenter', () => { btnCria.style.background = 'rgba(124,90,243,.25)'; btnCria.style.borderColor = 'rgba(124,90,243,.55)'; });
-    btnCria.addEventListener('mouseleave', () => { btnCria.style.background = 'rgba(124,90,243,.15)'; btnCria.style.borderColor = 'rgba(124,90,243,.35)'; });
-    btnCanc.addEventListener('mouseenter', () => { btnCanc.style.background = 'rgba(255,255,255,.08)'; btnCanc.style.color = 'rgba(255,255,255,.75)'; });
-    btnCanc.addEventListener('mouseleave', () => { btnCanc.style.background = 'rgba(255,255,255,.04)'; btnCanc.style.color = 'rgba(255,255,255,.45)'; });
 }
 
-/* ─── MODAL "RENOMEAR ANOTAÇÃO" ─────────────────────────────────────── */
 function _pedirNomeRename(discId, id, tituloEl, dataEl) {
-    const valorOriginal = _st.dados[discId]?.[id]?.titulo ?? '';
+    const valorAtual = _st.dados[discId]?.[id]?.titulo ?? '';
+    _abrirModal({
+        titulo: 'Renomear anotação', icone: 'fa-pencil',
+        label: 'Novo nome', placeholder: 'Digite o novo nome…',
+        btnLabel: 'Salvar', btnIcone: 'fa-check', valorInicial: valorAtual,
+        onConfirmar(novo) {
+            const mudou = _renomearNota(discId, id, novo);
+            if (mudou) {
+                if (tituloEl) tituloEl.textContent = novo;
+                if (dataEl)   dataEl.textContent   = _formatarData(Date.now());
+                _mostrarToast('Título atualizado');
+            }
+        }
+    });
+}
 
+function _abrirModal({ titulo, icone, label, placeholder, btnLabel, btnIcone, valorInicial, onConfirmar }) {
     const overlay = document.createElement('div');
     overlay.style.cssText = `
-        position: fixed; inset: 0; z-index: 2000;
-        background: rgba(0,0,0,.55);
-        backdrop-filter: blur(6px);
-        display: flex; align-items: center; justify-content: center;
-        animation: fadeIn .18s ease both;
-    `;
+        position:fixed;inset:0;z-index:2000;
+        background:rgba(0,0,0,.55);backdrop-filter:blur(6px);
+        display:flex;align-items:center;justify-content:center;
+        animation:fadeIn .18s ease both;`;
 
     const modal = document.createElement('div');
     modal.style.cssText = `
-        background: #161616;
-        border: 1px solid rgba(255,255,255,.1);
-        border-radius: 16px;
-        padding: 1.6rem 1.8rem 1.4rem;
-        width: 90%; max-width: 360px;
-        box-shadow: 0 24px 60px rgba(0,0,0,.6);
-        display: flex; flex-direction: column; gap: 1rem;
-        animation: ckFadeUp .22s ease both;
-    `;
+        background:#161616;border:1px solid rgba(255,255,255,.1);
+        border-radius:16px;padding:1.6rem 1.8rem 1.4rem;
+        width:90%;max-width:360px;box-shadow:0 24px 60px rgba(0,0,0,.6);
+        display:flex;flex-direction:column;gap:1rem;
+        animation:ckFadeUp .22s ease both;`;
 
     modal.innerHTML = `
         <div style="display:flex;align-items:center;gap:.6rem;">
             <div style="width:32px;height:32px;border-radius:8px;background:rgba(124,90,243,.15);border:1px solid rgba(124,90,243,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <i class="fas fa-pencil" style="font-size:.72rem;color:#a78bfa;"></i>
+                <i class="fas ${icone}" style="font-size:.72rem;color:#a78bfa;"></i>
             </div>
-            <span style="font-size:.92rem;font-weight:700;color:#eaeaea;font-family:'DM Sans',sans-serif;letter-spacing:-.01em;">Renomear anotação</span>
+            <span style="font-size:.92rem;font-weight:700;color:#eaeaea;font-family:'DM Sans',sans-serif;">${titulo}</span>
         </div>
-
         <div style="display:flex;flex-direction:column;gap:.4rem;">
-            <label style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">Novo nome</label>
-            <input
-                id="modal-rename-input"
-                maxlength="60"
-                placeholder="Digite o novo nome…"
-                style="
-                    font-family:'DM Sans',sans-serif;
-                    font-size:.88rem;
-                    font-weight:600;
-                    color:#eaeaea;
-                    background:rgba(255,255,255,.06);
-                    border:1px solid rgba(124,90,243,.35);
-                    border-radius:8px;
-                    padding:.55rem .85rem;
-                    outline:none;
-                    width:100%;
-                    letter-spacing:-.01em;
-                    transition:border-color .18s;
-                "
-            />
-            <span id="modal-rename-counter" style="font-size:.65rem;color:rgba(255,255,255,.25);align-self:flex-end;">${valorOriginal.length}/60</span>
+            <label style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">${label}</label>
+            <input id="_modal_inp" maxlength="60" placeholder="${placeholder}"
+                style="font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#eaeaea;
+                       background:rgba(255,255,255,.06);border:1px solid rgba(124,90,243,.35);
+                       border-radius:8px;padding:.55rem .85rem;outline:none;width:100%;
+                       letter-spacing:-.01em;transition:border-color .18s;box-sizing:border-box;"/>
+            <span id="_modal_counter" style="font-size:.65rem;color:rgba(255,255,255,.25);align-self:flex-end;">${valorInicial.length}/60</span>
         </div>
-
         <div style="display:flex;gap:.5rem;justify-content:flex-end;">
-            <button id="modal-rename-cancelar" style="
-                display:inline-flex;align-items:center;gap:.35rem;
-                padding:.38rem .85rem;border-radius:8px;
-                border:1px solid rgba(255,255,255,.1);
-                background:rgba(255,255,255,.04);
-                color:rgba(255,255,255,.45);
-                font-family:'DM Sans',sans-serif;font-size:.78rem;
-                cursor:pointer;transition:background .15s,color .15s;
-            ">
+            <button id="_modal_canc" style="display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .85rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.45);font-family:'DM Sans',sans-serif;font-size:.78rem;cursor:pointer;">
                 <i class="fas fa-xmark" style="font-size:.7rem;"></i> Cancelar
             </button>
-            <button id="modal-rename-salvar" style="
-                display:inline-flex;align-items:center;gap:.35rem;
-                padding:.38rem .9rem;border-radius:8px;
-                border:1px solid rgba(124,90,243,.35);
-                background:rgba(124,90,243,.15);
-                color:#a78bfa;
-                font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;
-                cursor:pointer;transition:background .15s,border-color .15s;
-            ">
-                <i class="fas fa-check" style="font-size:.7rem;"></i> Salvar
+            <button id="_modal_ok" style="display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .9rem;border-radius:8px;border:1px solid rgba(124,90,243,.35);background:rgba(124,90,243,.15);color:#a78bfa;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;">
+                <i class="fas ${btnIcone}" style="font-size:.7rem;"></i> ${btnLabel}
             </button>
-        </div>
-    `;
+        </div>`;
 
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    const inp     = modal.querySelector('#modal-rename-input');
-    const counter = modal.querySelector('#modal-rename-counter');
-    const btnSalv = modal.querySelector('#modal-rename-salvar');
-    const btnCanc = modal.querySelector('#modal-rename-cancelar');
+    const inp     = modal.querySelector('#_modal_inp');
+    const counter = modal.querySelector('#_modal_counter');
+    const btnOk   = modal.querySelector('#_modal_ok');
+    const btnCanc = modal.querySelector('#_modal_canc');
 
-    // Preenche com o valor atual e posiciona cursor no fim
-    inp.value = valorOriginal;
+    inp.value = valorInicial;
     inp.focus();
-    inp.setSelectionRange(valorOriginal.length, valorOriginal.length);
+    if (valorInicial) inp.setSelectionRange(valorInicial.length, valorInicial.length);
 
     inp.addEventListener('input', () => {
         const l = inp.value.length;
-        counter.textContent = `${l}/60`;
-        counter.style.color = l >= 55 ? 'rgba(239,68,68,.65)' : 'rgba(255,255,255,.25)';
+        counter.textContent   = `${l}/60`;
+        counter.style.color   = l >= 55 ? 'rgba(239,68,68,.65)' : 'rgba(255,255,255,.25)';
         inp.style.borderColor = l >= 55 ? 'rgba(239,68,68,.45)' : 'rgba(124,90,243,.35)';
     });
-
     inp.addEventListener('focus', () => {
         inp.style.borderColor = inp.value.length >= 55 ? 'rgba(239,68,68,.45)' : 'rgba(124,90,243,.6)';
     });
 
-    const fechar = () => overlay.remove();
-
+    const fechar    = () => overlay.remove();
     const confirmar = () => {
-        const novo = inp.value.trim();
-        if (!novo) {
+        const val = inp.value.trim();
+        if (!val) {
             inp.style.borderColor = 'rgba(239,68,68,.5)';
-            inp.focus();
             inp.placeholder = 'Digite um nome para continuar';
-            return;
+            inp.focus(); return;
         }
-        const mudou = _renomearNota(discId, id, novo);
-        fechar();
-        if (mudou) {
-            if (tituloEl) tituloEl.textContent = novo;
-            if (dataEl)   dataEl.textContent   = _formatarData(Date.now());
-            _mostrarToast('Título atualizado');
-        }
+        fechar(); onConfirmar(val);
     };
 
-    btnSalv.addEventListener('click', confirmar);
+    btnOk.addEventListener('click', confirmar);
     btnCanc.addEventListener('click', fechar);
-
     inp.addEventListener('keydown', e => {
         if (e.key === 'Enter')  { e.preventDefault(); confirmar(); }
-        if (e.key === 'Escape') { fechar(); }
+        if (e.key === 'Escape') fechar();
     });
+    overlay.addEventListener('mousedown', e => { if (e.target === overlay) fechar(); });
 
-    overlay.addEventListener('mousedown', e => {
-        if (e.target === overlay) fechar();
+    const hov = (btn, onIn, onOut) => {
+        btn.addEventListener('mouseenter', onIn);
+        btn.addEventListener('mouseleave', onOut);
+    };
+    hov(btnOk,
+        () => { btnOk.style.background = 'rgba(124,90,243,.25)'; btnOk.style.borderColor = 'rgba(124,90,243,.55)'; },
+        () => { btnOk.style.background = 'rgba(124,90,243,.15)'; btnOk.style.borderColor = 'rgba(124,90,243,.35)'; }
+    );
+    hov(btnCanc,
+        () => { btnCanc.style.background = 'rgba(255,255,255,.08)'; btnCanc.style.color = 'rgba(255,255,255,.75)'; },
+        () => { btnCanc.style.background = 'rgba(255,255,255,.04)'; btnCanc.style.color = 'rgba(255,255,255,.45)'; }
+    );
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MODAL DE LINK — v21
+════════════════════════════════════════════════════════════════════════ */
+
+function _abrirModalLink(textoInicial, onConfirmar) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position:fixed;inset:0;z-index:2000;
+        background:rgba(0,0,0,.55);backdrop-filter:blur(6px);
+        display:flex;align-items:center;justify-content:center;
+        animation:fadeIn .18s ease both;`;
+
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background:#161616;border:1px solid rgba(255,255,255,.1);
+        border-radius:16px;padding:1.6rem 1.8rem 1.4rem;
+        width:90%;max-width:400px;box-shadow:0 24px 60px rgba(0,0,0,.6);
+        display:flex;flex-direction:column;gap:1rem;
+        animation:ckFadeUp .22s ease both;`;
+
+    modal.innerHTML = `
+        <div style="display:flex;align-items:center;gap:.6rem;">
+            <div style="width:32px;height:32px;border-radius:8px;background:rgba(96,174,245,.12);border:1px solid rgba(96,174,245,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-link" style="font-size:.72rem;color:#60aef5;"></i>
+            </div>
+            <span style="font-size:.92rem;font-weight:700;color:#eaeaea;font-family:'DM Sans',sans-serif;">Inserir link</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.75rem;">
+            <div style="display:flex;flex-direction:column;gap:.35rem;">
+                <label style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">Texto</label>
+                <input id="_link_texto" maxlength="120" placeholder="Texto exibido (opcional)"
+                    style="font-family:'DM Sans',sans-serif;font-size:.88rem;color:#eaeaea;
+                           background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+                           border-radius:8px;padding:.5rem .85rem;outline:none;width:100%;
+                           transition:border-color .18s;box-sizing:border-box;"/>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.35rem;">
+                <label style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">URL <span style="color:rgba(239,68,68,.6);">*</span></label>
+                <input id="_link_url" maxlength="500" placeholder="https://..."
+                    style="font-family:'DM Sans',sans-serif;font-size:.88rem;color:#eaeaea;
+                           background:rgba(255,255,255,.06);border:1px solid rgba(96,174,245,.35);
+                           border-radius:8px;padding:.5rem .85rem;outline:none;width:100%;
+                           transition:border-color .18s;box-sizing:border-box;"/>
+            </div>
+        </div>
+        <div style="display:flex;gap:.5rem;justify-content:flex-end;">
+            <button id="_link_canc" style="display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .85rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.45);font-family:'DM Sans',sans-serif;font-size:.78rem;cursor:pointer;">
+                <i class="fas fa-xmark" style="font-size:.7rem;"></i> Cancelar
+            </button>
+            <button id="_link_ok" style="display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .9rem;border-radius:8px;border:1px solid rgba(96,174,245,.35);background:rgba(96,174,245,.12);color:#60aef5;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;">
+                <i class="fas fa-link" style="font-size:.7rem;"></i> Inserir
+            </button>
+        </div>`;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const inpUrl   = modal.querySelector('#_link_url');
+    const inpTexto = modal.querySelector('#_link_texto');
+    const btnOk    = modal.querySelector('#_link_ok');
+    const btnCanc  = modal.querySelector('#_link_canc');
+
+    // Preenche texto se havia seleção
+    inpTexto.value = textoInicial || '';
+    inpUrl.focus();
+
+    inpUrl.addEventListener('focus',   () => inpUrl.style.borderColor   = 'rgba(96,174,245,.65)');
+    inpUrl.addEventListener('blur',    () => inpUrl.style.borderColor   = 'rgba(96,174,245,.35)');
+    inpTexto.addEventListener('focus', () => inpTexto.style.borderColor = 'rgba(255,255,255,.25)');
+    inpTexto.addEventListener('blur',  () => inpTexto.style.borderColor = 'rgba(255,255,255,.12)');
+
+    const fechar    = () => overlay.remove();
+    const confirmar = () => {
+        let url = inpUrl.value.trim();
+        if (!url) {
+            inpUrl.style.borderColor = 'rgba(239,68,68,.5)';
+            inpUrl.focus(); return;
+        }
+        // Adiciona https:// se não tiver protocolo
+        if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+        fechar();
+        onConfirmar(url, inpTexto.value.trim());
+    };
+
+    btnOk.addEventListener('click', confirmar);
+    btnCanc.addEventListener('click', fechar);
+    inpUrl.addEventListener('keydown', e => {
+        if (e.key === 'Enter')  { e.preventDefault(); confirmar(); }
+        if (e.key === 'Escape') fechar();
     });
+    inpTexto.addEventListener('keydown', e => {
+        if (e.key === 'Enter')  { e.preventDefault(); inpUrl.focus(); }
+        if (e.key === 'Escape') fechar();
+    });
+    overlay.addEventListener('mousedown', e => { if (e.target === overlay) fechar(); });
 
-    // Hover
-    btnSalv.addEventListener('mouseenter', () => { btnSalv.style.background = 'rgba(124,90,243,.25)'; btnSalv.style.borderColor = 'rgba(124,90,243,.55)'; });
-    btnSalv.addEventListener('mouseleave', () => { btnSalv.style.background = 'rgba(124,90,243,.15)'; btnSalv.style.borderColor = 'rgba(124,90,243,.35)'; });
+    btnOk.addEventListener('mouseenter',   () => { btnOk.style.background = 'rgba(96,174,245,.22)';  btnOk.style.borderColor = 'rgba(96,174,245,.55)'; });
+    btnOk.addEventListener('mouseleave',   () => { btnOk.style.background = 'rgba(96,174,245,.12)';  btnOk.style.borderColor = 'rgba(96,174,245,.35)'; });
     btnCanc.addEventListener('mouseenter', () => { btnCanc.style.background = 'rgba(255,255,255,.08)'; btnCanc.style.color = 'rgba(255,255,255,.75)'; });
     btnCanc.addEventListener('mouseleave', () => { btnCanc.style.background = 'rgba(255,255,255,.04)'; btnCanc.style.color = 'rgba(255,255,255,.45)'; });
 }
 
-/* ─── LISTA ─────────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LISTA DE NOTAS
+════════════════════════════════════════════════════════════════════════ */
+
 function _limparPainel(el) {
     ['.panel-videos','.panel-modules','.panel-resumos','.panel-anotacao']
         .forEach(s => el.querySelector(s)?.remove());
 }
+
 function _renderizarLista(discId, containerEl) {
+    _destruirQuill(containerEl);
     const notas   = _listarOrdenado(discId);
     const wrapper = document.createElement('div');
     wrapper.className    = 'panel-anotacao';
@@ -433,22 +545,23 @@ function _renderizarLista(discId, containerEl) {
     wrapper.appendChild(lista);
     containerEl.appendChild(wrapper);
 
-    // Agora abre modal ao invés de criar direto
-    header.querySelector('.anot-btn-nova').addEventListener('click', () => {
-        _pedirNomeNota(discId, containerEl);
-    });
+    header.querySelector('.anot-btn-nova').addEventListener('click', () =>
+        _pedirNomeNota(discId, containerEl));
 }
 
 function _criarCardNota(discId, nota, containerEl) {
     const card = document.createElement('div');
     card.className  = 'anot-card';
     card.dataset.id = nota.id;
-    card.innerHTML  = `
+
+    const preview = _gerarPreviewDelta(nota.delta);
+
+    card.innerHTML = `
         <div class="anot-card-main">
             <div class="anot-card-icon"><i class="fas fa-file-pen"></i></div>
             <div class="anot-card-info">
                 <span class="anot-card-titulo">${_esc(nota.titulo)}</span>
-                <span class="anot-card-preview">${_gerarPreview(nota.html) || 'Sem conteúdo'}</span>
+                <span class="anot-card-preview">${preview || 'Sem conteúdo'}</span>
             </div>
             <span class="anot-card-data">${_formatarData(nota.editadoEm)}</span>
         </div>
@@ -461,12 +574,9 @@ function _criarCardNota(discId, nota, containerEl) {
         _abrirEditor(discId, nota.id, containerEl));
     card.querySelector('.btn-renomear').addEventListener('click', e => {
         e.stopPropagation();
-        _pedirNomeRename(
-            discId,
-            nota.id,
+        _pedirNomeRename(discId, nota.id,
             card.querySelector('.anot-card-titulo'),
-            card.querySelector('.anot-card-data')
-        );
+            card.querySelector('.anot-card-data'));
     });
     card.querySelector('.btn-deletar').addEventListener('click', e => {
         e.stopPropagation();
@@ -475,98 +585,18 @@ function _criarCardNota(discId, nota, containerEl) {
     return card;
 }
 
-/* ─── RENAME INLINE ─────────────────────────────────────────────────── */
-function _renomearInline(discId, id, alvoEl, onConcluido) {
-    if (_st.renameAtivo) return;
-    _st.renameAtivo = true;
 
-    const valorOriginal = _st.dados[discId]?.[id]?.titulo ?? '';
+/* ═══════════════════════════════════════════════════════════════════════
+   DELETAR
+════════════════════════════════════════════════════════════════════════ */
 
-    const input = document.createElement('input');
-    input.className = 'anot-rename-input';
-    input.maxLength = 60;
-    input.value     = valorOriginal;
-
-    // Impede que mousedown dentro do input propague
-    input.addEventListener('mousedown', e => e.stopPropagation());
-
-    alvoEl.replaceWith(input);
-
-    // Posiciona cursor no fim sem selecionar tudo
-    input.focus();
-    const len = input.value.length;
-    input.setSelectionRange(len, len);
-
-    // Contador de chars
-    const counter = document.createElement('span');
-    counter.style.cssText = 'font-size:.62rem;color:rgba(255,255,255,.25);margin-left:5px;white-space:nowrap;flex-shrink:0;pointer-events:none;';
-    counter.textContent = `${len}/60`;
-    input.after(counter);
-
-    input.addEventListener('input', () => {
-        const l = input.value.length;
-        counter.textContent = `${l}/60`;
-        counter.style.color = l >= 55 ? 'rgba(239,68,68,.6)' : 'rgba(255,255,255,.25)';
-    });
-
-    let encerrado = false;
-
-    const encerrar = (confirmar) => {
-        if (encerrado) return;
-        encerrado       = true;
-        _st.renameAtivo = false;
-        document.removeEventListener('mousedown', onMousedownFora, true);
-
-        counter.remove();
-
-        const valorFinal  = input.value.trim() || valorOriginal;
-        const mudou       = confirmar && _renomearNota(discId, id, valorFinal);
-        const textoExibir = mudou ? valorFinal : valorOriginal;
-
-        const novoEl = document.createElement(alvoEl.tagName.toLowerCase());
-        novoEl.className   = alvoEl.className;
-        novoEl.textContent = textoExibir;
-        if (alvoEl.title) novoEl.title = alvoEl.title;
-
-        if (input.isConnected) input.replaceWith(novoEl);
-
-        if (mudou) {
-            _mostrarToast('Título atualizado');
-            const dataEl = novoEl.closest('.anot-card')?.querySelector('.anot-card-data');
-            if (dataEl) dataEl.textContent = _formatarData(Date.now());
-        }
-        onConcluido?.(novoEl, mudou);
-    };
-
-    // Só registra o listener externo depois de um tick,
-    // e usa pointerdown em vez de mousedown para pegar taps também
-    const onMousedownFora = (e) => {
-        // Se o clique foi dentro do input ou do counter, ignora
-        if (e.target === input || e.target === counter) return;
-        encerrar(true);
-    };
-
-    // Delay maior: espera o evento do clique que acionou o renomear terminar
-    setTimeout(() => {
-        document.addEventListener('mousedown', onMousedownFora, true);
-    }, 150);
-
-    input.addEventListener('keydown', e => {
-        if (e.key === 'Enter')  { e.preventDefault(); encerrar(true); }
-        if (e.key === 'Escape') { input.value = valorOriginal; encerrar(false); }
-    });
-
-    // Ao clicar no próprio input, reposiciona cursor onde o user clicou (comportamento padrão)
-    // Não precisa de handler extra — o navegador já faz isso nativamente
-}
-
-/* ─── DELETAR ───────────────────────────────────────────────────────── */
 function _confirmarDeletar(discId, id, cardEl, containerEl) {
     const actions = cardEl.querySelector('.anot-card-actions');
     actions.innerHTML = `
         <span class="anot-confirm-txt">Tem certeza?</span>
         <button class="anot-card-btn btn-confirmar-sim"><i class="fas fa-check"></i> Sim, deletar</button>
         <button class="anot-card-btn btn-confirmar-nao"><i class="fas fa-xmark"></i> Cancelar</button>`;
+
     actions.querySelector('.btn-confirmar-sim').addEventListener('click', e => {
         e.stopPropagation();
         _deletarNota(discId, id);
@@ -578,8 +608,8 @@ function _confirmarDeletar(discId, id, cardEl, containerEl) {
             const countEl = wrapper?.querySelector('.anot-list-count');
             if (countEl) countEl.textContent = `${total} nota${total !== 1 ? 's' : ''}`;
             if (total === 0) {
-                const lista = wrapper?.querySelector('.anot-lista');
-                if (lista) lista.innerHTML = `<div class="anot-vazio">
+                const lst = wrapper?.querySelector('.anot-lista');
+                if (lst) lst.innerHTML = `<div class="anot-vazio">
                     <i class="fas fa-pen-to-square"></i>
                     <p>Nenhuma anotação ainda.</p>
                     <span>Clique em "Nova anotação" para começar.</span></div>`;
@@ -589,26 +619,32 @@ function _confirmarDeletar(discId, id, cardEl, containerEl) {
     });
     actions.querySelector('.btn-confirmar-nao').addEventListener('click', e => {
         e.stopPropagation();
-        actions.innerHTML = `
-            <button class="anot-card-btn btn-renomear"><i class="fas fa-pencil"></i> Renomear</button>
-            <button class="anot-card-btn btn-deletar"><i class="fas fa-trash-can"></i> Deletar</button>`;
-        actions.querySelector('.btn-renomear').addEventListener('click', ev => {
-            ev.stopPropagation();
-            _pedirNomeRename(
-                discId,
-                id,
-                cardEl.querySelector('.anot-card-titulo'),
-                cardEl.querySelector('.anot-card-data')
-            );
-        });
-        actions.querySelector('.btn-deletar').addEventListener('click', ev => {
-            ev.stopPropagation();
-            _confirmarDeletar(discId, id, cardEl, containerEl);
-        });
+        _rebuildCardActions(discId, id, cardEl, containerEl);
     });
 }
 
-/* ─── EDITOR — abrir ────────────────────────────────────────────────── */
+function _rebuildCardActions(discId, id, cardEl, containerEl) {
+    const actions = cardEl.querySelector('.anot-card-actions');
+    actions.innerHTML = `
+        <button class="anot-card-btn btn-renomear"><i class="fas fa-pencil"></i> Renomear</button>
+        <button class="anot-card-btn btn-deletar"><i class="fas fa-trash-can"></i> Deletar</button>`;
+    actions.querySelector('.btn-renomear').addEventListener('click', e => {
+        e.stopPropagation();
+        _pedirNomeRename(discId, id,
+            cardEl.querySelector('.anot-card-titulo'),
+            cardEl.querySelector('.anot-card-data'));
+    });
+    actions.querySelector('.btn-deletar').addEventListener('click', e => {
+        e.stopPropagation();
+        _confirmarDeletar(discId, id, cardEl, containerEl);
+    });
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EDITOR — Abrir
+════════════════════════════════════════════════════════════════════════ */
+
 async function _abrirEditor(discId, id, containerEl) {
     const nota = _st.dados[discId]?.[id];
     if (!nota) return;
@@ -617,124 +653,426 @@ async function _abrirEditor(discId, id, containerEl) {
 
     wrapper.innerHTML = `<div class="anot-loading">
         <i class="fas fa-circle-notch fa-spin"></i>
-        <span>Carregando editor…</span></div>`;
+        <span>Abrindo editor…</span></div>`;
 
-    await _carregarQuill();
+    await _garantirQuill();
+    await new Promise(r => setTimeout(r, 60));
+
     wrapper.innerHTML = '';
-    wrapper.appendChild(_buildEditorDOM(discId, id, nota));
+    const frag = _buildEditorDOM(discId, id, nota);
+    wrapper.appendChild(frag);
 
-    _st.quill     = null;
-    _st.ultimaSel = null;
+    const quill    = _criarQuill(containerEl, nota.delta);
+    const statusEl = wrapper.querySelector('.anot-editor-status');
 
-    _st.quill = new window.Quill(wrapper.querySelector('.anot-quill-editor'), {
-        theme:       'snow',
-        placeholder: 'Comece a escrever…',
-        modules: {
-            toolbar: { container: '#anot-toolbar-' + id },
-            history: { delay: 500, maxStack: 100 },
+    if (!quill) return;
+
+    // Eventos Quill
+    quill.on('text-change', () => {
+        _agendarSalvamento(discId, id, quill, statusEl);
+        _atualizarWC(wrapper, quill);
+        _sincronizarToolbar(wrapper, quill);
+    });
+    quill.on('selection-change', () => {
+        _sincronizarToolbar(wrapper, quill);
+    });
+
+    // Tab / Shift+Tab
+    quill.keyboard.addBinding({ key: 'Tab' }, function(range, context) {
+        if (context.format.list) {
+            _ajustarIndent(quill, true);
+            return false;
         }
+        return true;
     });
 
-    if (nota.delta) {
-        try { _st.quill.setContents(nota.delta, 'silent'); } catch (_) {}
-    }
-
-    _st.quill.setSelection(_st.quill.getLength(), 0);
-
-    _st.quill.on('selection-change', range => {
-        if (range) _st.ultimaSel = range;
-        _sincronizarToolbar(wrapper, id);
-    });
-    _st.quill.on('text-change', (_delta, _old, source) => {
-        if (source !== 'user') return;
-        _atualizarStatus(wrapper, id, false);
-        _atualizarWC(wrapper);
-        _agendarSalvamento(discId, id, wrapper);
+    quill.keyboard.addBinding({ key: 'Tab', shiftKey: true }, function(range, context) {
+        if (context.format.list) {
+            _ajustarIndent(quill, false);
+            return false;
+        }
+        return true;
     });
 
-    _montarToolbar(discId, id, wrapper);
-    _montarTopbar(discId, id, wrapper, containerEl);
-    _atualizarWC(wrapper);
+    // ── FIX v21: Backspace em code-block vazio remove o bloco ──────────
+    quill.keyboard.addBinding({ key: 'Backspace' }, function(range, context) {
+        if (!range || range.length !== 0) return true;
+
+        const fmt = quill.getFormat(range.index, 1);
+        if (!fmt['code-block']) return true;
+
+        const [linha] = quill.getLine(range.index);
+        if (!linha) return true;
+
+        // Linha vazia (só o \n) dentro de code-block → remove o bloco
+        if (linha.length() === 1) {
+            quill.formatLine(range.index, 1, 'code-block', false, 'user');
+            return false;
+        }
+
+        // Cursor no início da linha → remove o bloco da linha
+        const inicioIdx = quill.getIndex(linha);
+        if (range.index === inicioIdx) {
+            quill.formatLine(range.index, 1, 'code-block', false, 'user');
+            return false;
+        }
+
+        return true;
+    });
+
+    _montarToolbar(discId, id, wrapper, containerEl, quill, statusEl);
+    _atualizarWC(wrapper, quill);
+    _sincronizarToolbar(wrapper, quill);
+    quill.focus();
 }
 
-/* ─── TOOLBAR ───────────────────────────────────────────────────────── */
-function _montarToolbar(discId, id, wrapper) {
-    if (!_st.quill) return;
-    const toolbar = wrapper.querySelector(`#anot-toolbar-${id}`);
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EDITOR — Toolbar
+════════════════════════════════════════════════════════════════════════ */
+
+function _montarToolbar(discId, id, wrapper, containerEl, quill, statusEl) {
+    const toolbar = wrapper.querySelector('.anot-toolbar');
     if (!toolbar) return;
 
-    toolbar.addEventListener('mousedown', e => {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        if (btn.classList.contains('ql-code-block')) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            _st.quill.focus();
-            if (_st.ultimaSel) {
-                try { _st.quill.setSelection(_st.ultimaSel.index, _st.ultimaSel.length, 'silent'); } catch (_) {}
-            }
-            const fmt = _st.quill.getFormat();
-            _st.quill.format('code-block', !fmt['code-block'], 'user');
-            setTimeout(() => _sincronizarToolbar(wrapper, id), 30);
-        }
-    }, true);
-}
-
-function _sincronizarToolbar(wrapper, id) {
-    if (!_st.quill) return;
-    const toolbar = wrapper.querySelector(`#anot-toolbar-${id}`);
-    if (!toolbar) return;
-    const fmt = _st.quill.getFormat();
-
-    ['bold','italic','underline','strike','blockquote'].forEach(f =>
-        toolbar.querySelector(`.ql-${f}`)?.classList.toggle('ql-active', !!fmt[f])
-    );
-    toolbar.querySelector('.ql-code')?.classList.toggle('ql-active', !!fmt['code']);
-    toolbar.querySelector('.ql-code-block')?.classList.toggle('ql-active', !!fmt['code-block']);
-
-    const isCheck = fmt.list === 'unchecked' || fmt.list === 'checked';
-    toolbar.querySelector('.ql-list[value="check"]')?.classList.toggle('ql-active',   isCheck);
-    toolbar.querySelector('.ql-list[value="bullet"]')?.classList.toggle('ql-active',  fmt.list === 'bullet');
-    toolbar.querySelector('.ql-list[value="ordered"]')?.classList.toggle('ql-active', fmt.list === 'ordered');
-
-    const hs = toolbar.querySelector('.ql-header');
-    if (hs) hs.value = fmt.header ? String(fmt.header) : '';
-}
-
-/* ─── TOPBAR ────────────────────────────────────────────────────────── */
-function _montarTopbar(discId, id, wrapper, containerEl) {
-    const btnSalvar = wrapper.querySelector(`#anot-save-${id}`);
-
-    btnSalvar?.addEventListener('click', async () => {
-        clearTimeout(_st.timer);
-        _capturarQuill(discId, id);
-        await _persistir();
-        _atualizarStatus(wrapper, id, true);
-        _mostrarToast('Anotação salva');
-    });
-
-    const atalho = e => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 's' && _st.quill) {
-            e.preventDefault();
-            btnSalvar?.click();
-        }
-        if (!wrapper.isConnected) document.removeEventListener('keydown', atalho);
-    };
-    document.addEventListener('keydown', atalho);
-
+    /* ── Voltar ─────────────────────────────────────────────── */
     wrapper.querySelector('.anot-btn-voltar').addEventListener('click', async () => {
         clearTimeout(_st.timer);
-        _capturarQuill(discId, id);
+        _capturarQuill(discId, id, quill);
         await _persistir();
-        _st.quill       = null;
-        _st.renameAtivo = false;
-        document.removeEventListener('keydown', atalho);
+        _destruirQuill(containerEl);
         _limparPainel(containerEl);
         _renderizarLista(discId, containerEl);
     });
+
+    /* ── Salvar ─────────────────────────────────────────────── */
+    wrapper.querySelector('.anot-btn-salvar').addEventListener('click', async () => {
+        clearTimeout(_st.timer);
+        _capturarQuill(discId, id, quill);
+        await _persistir();
+        _atualizarStatus(statusEl, true);
+        _mostrarToast('Anotação salva');
+    });
+
+    /* Ctrl+S */
+    const atalhoSave = e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            wrapper.querySelector('.anot-btn-salvar')?.click();
+        }
+        if (!wrapper.isConnected) document.removeEventListener('keydown', atalhoSave);
+    };
+    document.addEventListener('keydown', atalhoSave);
+
+    /* ── Título ─────────────────────────────────────────────── */
+    wrapper.querySelector('.anot-editor-titulo-display').addEventListener('click', () => {
+        _pedirNomeRename(discId, id, wrapper.querySelector('.anot-editor-titulo-display'), null);
+    });
+
+    /* ── Select de heading ──────────────────────────────────── */
+    const selHeading = toolbar.querySelector('.anot-tb-select');
+    selHeading?.addEventListener('change', () => {
+        const val = selHeading.value;
+        const sel = quill.getSelection(true);
+        if (!sel) return;
+        quill.formatLine(sel.index, sel.length || 1, 'header', val === '0' ? false : parseInt(val), 'user');
+        selHeading.blur();
+        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+    });
+
+    /* ── Formatação inline ──────────────────────────────────── */
+    const btnSimples = [
+        ['bold',      () => quill.format('bold',      !quill.getFormat().bold,      'user')],
+        ['italic',    () => quill.format('italic',    !quill.getFormat().italic,    'user')],
+        ['underline', () => quill.format('underline', !quill.getFormat().underline, 'user')],
+        ['strike',    () => quill.format('strike',    !quill.getFormat().strike,    'user')],
+    ];
+    btnSimples.forEach(([cmd, fn]) => {
+        toolbar.querySelector(`[data-cmd="${cmd}"]`)?.addEventListener('mousedown', e => {
+            e.preventDefault();
+            fn();
+            setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+        });
+    });
+
+    /* ── Code-block ─────────────────────────────────────────── */
+    toolbar.querySelector('[data-cmd="code"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        _toggleCodeBlock(quill);
+        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+    });
+
+    /* ── Blockquote ─────────────────────────────────────────── */
+    toolbar.querySelector('[data-cmd="quote"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        const sel = quill.getSelection(true);
+        if (!sel) return;
+        const fmt = quill.getFormat(sel.index, sel.length);
+        quill.formatLine(sel.index, sel.length || 1, 'blockquote', !fmt.blockquote, 'user');
+        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+    });
+
+    /* ── Listas ─────────────────────────────────────────────── */
+    toolbar.querySelector('[data-cmd="ol"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        _toggleLista(quill, 'ordered');
+        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+    });
+    toolbar.querySelector('[data-cmd="ul"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        _toggleLista(quill, 'bullet');
+        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+    });
+    toolbar.querySelector('[data-cmd="check"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        _toggleLista(quill, 'unchecked');
+        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+    });
+
+    /* ── Indent / Outdent ───────────────────────────────────── */
+    toolbar.querySelector('[data-cmd="indent"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        _ajustarIndent(quill, true);
+        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+    });
+    toolbar.querySelector('[data-cmd="outdent"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        _ajustarIndent(quill, false);
+        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+    });
+
+    /* ── FIX v21: Link → modal customizado ─────────────────── */
+    toolbar.querySelector('[data-cmd="link"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        const sel        = quill.getSelection();
+        const textoSel   = sel && sel.length > 0 ? quill.getText(sel.index, sel.length) : '';
+
+        _abrirModalLink(textoSel, (url, texto) => {
+            // Restaura o foco no editor antes de aplicar
+            quill.focus();
+            const selAtual = quill.getSelection() ?? sel;
+            if (!selAtual) return;
+
+            if (selAtual.length > 0) {
+                // Tinha seleção: aplica link no texto selecionado
+                quill.formatText(selAtual.index, selAtual.length, 'link', url, 'user');
+            } else {
+                // Sem seleção: insere o texto digitado com o link
+                const txt = texto || url;
+                quill.insertText(selAtual.index, txt, 'link', url, 'user');
+                // Remove o formato link do cursor após o texto inserido
+                quill.formatText(selAtual.index + txt.length, 1, 'link', false, 'user');
+                quill.setSelection(selAtual.index + txt.length, 0, 'silent');
+            }
+            setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+        });
+    });
+
+    /* ── COLOR PICKER CUSTOM ────────────────────────────────── */
+    const colorBtn = toolbar.querySelector('.anot-color-wrap');
+    const colorDot = toolbar.querySelector('.anot-color-dot');
+
+    let _selSalva = null;
+
+    colorBtn?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        _selSalva = quill.getSelection();
+
+        const existente = document.querySelector('.anot-color-popup');
+        if (existente) { existente.remove(); return; }
+
+        _abrirColorPopup(colorBtn, colorDot, cor => {
+            if (_selSalva && _selSalva.length > 0) {
+                quill.setSelection(_selSalva.index, _selSalva.length, 'silent');
+                quill.formatText(_selSalva.index, _selSalva.length, 'color', cor, 'user');
+            } else {
+                quill.format('color', cor, 'user');
+            }
+            if (colorDot) colorDot.style.background = cor;
+            setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+        });
+    });
+
+    quill.on('selection-change', () => {
+        const sel = quill.getSelection();
+        if (!sel) return;
+        const fmt = quill.getFormat(sel.index, sel.length);
+        if (colorDot) {
+            colorDot.style.background = fmt.color
+                ? _rgbParaHex(fmt.color)
+                : '#ffffff';
+        }
+    });
+
+    /* ── Limpar formatação ──────────────────────────────────── */
+    toolbar.querySelector('[data-cmd="clear"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        const sel = quill.getSelection(true);
+        if (!sel) return;
+        quill.removeFormat(sel.index, sel.length, 'user');
+        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+    });
+
+    /* ── Undo / Redo ────────────────────────────────────────── */
+    toolbar.querySelector('[data-cmd="undo"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        quill.history.undo();
+    });
+    toolbar.querySelector('[data-cmd="redo"]')?.addEventListener('mousedown', e => {
+        e.preventDefault();
+        quill.history.redo();
+    });
 }
 
-/* ─── DOM DO EDITOR ─────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   COLOR POPUP
+════════════════════════════════════════════════════════════════════════ */
+
+const _COR_PALETA = [
+    { hex: '#ffffff', label: 'Branco'     },
+    { hex: '#a1a1aa', label: 'Cinza'      },
+    { hex: '#71717a', label: 'Cinza esc.' },
+    { hex: '#18181b', label: 'Preto'      },
+    { hex: '#ef4444', label: 'Vermelho'   },
+    { hex: '#f97316', label: 'Laranja'    },
+    { hex: '#f59e0b', label: 'Âmbar'      },
+    { hex: '#22c55e', label: 'Verde'      },
+    { hex: '#06b6d4', label: 'Ciano'      },
+    { hex: '#3b82f6', label: 'Azul'       },
+    { hex: '#8b5cf6', label: 'Violeta'    },
+    { hex: '#a78bfa', label: 'Lavanda'    },
+    { hex: '#fda4af', label: 'Rosa'       },
+    { hex: '#fed7aa', label: 'Pêssego'    },
+    { hex: '#bbf7d0', label: 'Menta'      },
+    { hex: '#bfdbfe', label: 'Azul claro' },
+];
+
+const _COR_CLARA = new Set(['#ffffff','#fda4af','#fed7aa','#bbf7d0','#bfdbfe']);
+
+function _abrirColorPopup(anchorEl, dotEl, onPick) {
+    const popup = document.createElement('div');
+    popup.className = 'anot-color-popup';
+
+    popup.innerHTML = `
+        <div class="anot-cp-header">
+            <span class="anot-cp-title"><i class="fas fa-palette"></i> Cor do texto</span>
+            <button class="anot-cp-reset" title="Remover cor">
+                <i class="fas fa-rotate-left"></i> Padrão
+            </button>
+        </div>
+        <div class="anot-cp-grid"></div>`;
+
+    const grid = popup.querySelector('.anot-cp-grid');
+
+    _COR_PALETA.forEach(({ hex, label }) => {
+        const sw = document.createElement('button');
+        sw.className        = 'anot-cp-swatch';
+        sw.title            = label;
+        sw.dataset.hex      = hex;
+        sw.style.background = hex;
+        if (_COR_CLARA.has(hex)) {
+            sw.style.border = '1.5px solid rgba(255,255,255,.2)';
+        }
+        sw.addEventListener('mousedown', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (dotEl) dotEl.style.background = hex;
+            onPick(hex);
+            popup.remove();
+            document.removeEventListener('mousedown', _fecharFora, true);
+        });
+        grid.appendChild(sw);
+    });
+
+    popup.querySelector('.anot-cp-reset').addEventListener('mousedown', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (dotEl) dotEl.style.background = '#ffffff';
+        onPick(false);
+        popup.remove();
+        document.removeEventListener('mousedown', _fecharFora, true);
+    });
+
+    document.body.appendChild(popup);
+
+    const rect = anchorEl.getBoundingClientRect();
+    const pw   = popup.offsetWidth  || 196;
+    const ph   = popup.offsetHeight || 148;
+    const vw   = window.innerWidth;
+    const vh   = window.innerHeight;
+
+    let top  = rect.bottom + window.scrollY + 6;
+    let left = rect.left   + window.scrollX;
+
+    if (left + pw > vw - 8) left = vw - pw - 8;
+    if (top  + ph > vh + window.scrollY - 8) top = rect.top + window.scrollY - ph - 6;
+
+    popup.style.top  = `${top}px`;
+    popup.style.left = `${left}px`;
+
+    function _fecharFora(e) {
+        if (!popup.contains(e.target) && e.target !== anchorEl) {
+            popup.remove();
+            document.removeEventListener('mousedown', _fecharFora, true);
+        }
+    }
+    setTimeout(() => document.addEventListener('mousedown', _fecharFora, true), 0);
+
+    const _fecharEsc = e => {
+        if (e.key === 'Escape') {
+            popup.remove();
+            document.removeEventListener('keydown', _fecharEsc);
+        }
+    };
+    document.addEventListener('keydown', _fecharEsc);
+}
+
+function _rgbParaHex(cor) {
+    if (!cor) return '#ffffff';
+    if (cor.startsWith('#')) return cor;
+    const m = cor.match(/\d+/g);
+    if (!m || m.length < 3) return '#ffffff';
+    return '#' + m.slice(0, 3).map(n => parseInt(n).toString(16).padStart(2, '0')).join('');
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EDITOR — Sincronizar toolbar
+════════════════════════════════════════════════════════════════════════ */
+
+function _sincronizarToolbar(wrapper, quill) {
+    const toolbar = wrapper.querySelector('.anot-toolbar');
+    if (!toolbar || !quill) return;
+
+    const sel = quill.getSelection();
+    if (!sel) return;
+
+    const fmt = quill.getFormat(sel.index, sel.length);
+
+    const mapCmds = { bold: 'bold', italic: 'italic', underline: 'underline', strike: 'strike' };
+    Object.entries(mapCmds).forEach(([cmd, fmtKey]) => {
+        toolbar.querySelector(`[data-cmd="${cmd}"]`)?.classList.toggle('ativo', !!fmt[fmtKey]);
+    });
+
+    toolbar.querySelector('[data-cmd="code"]')?.classList.toggle('ativo',  !!fmt['code-block']);
+    toolbar.querySelector('[data-cmd="ol"]')?.classList.toggle('ativo',    fmt.list === 'ordered');
+    toolbar.querySelector('[data-cmd="ul"]')?.classList.toggle('ativo',    fmt.list === 'bullet');
+    toolbar.querySelector('[data-cmd="check"]')?.classList.toggle('ativo', fmt.list === 'unchecked' || fmt.list === 'checked');
+    toolbar.querySelector('[data-cmd="quote"]')?.classList.toggle('ativo', !!fmt.blockquote);
+    toolbar.querySelector('[data-cmd="link"]')?.classList.toggle('ativo',  !!fmt.link);
+
+    const selHeading = toolbar.querySelector('.anot-tb-select');
+    if (selHeading) selHeading.value = fmt.header ? String(fmt.header) : '0';
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EDITOR — DOM
+════════════════════════════════════════════════════════════════════════ */
+
 function _buildEditorDOM(discId, id, nota) {
     const frag = document.createDocumentFragment();
 
@@ -742,58 +1080,60 @@ function _buildEditorDOM(discId, id, nota) {
     topbar.className = 'anot-editor-topbar';
     topbar.innerHTML = `
         <button class="anot-btn-voltar"><i class="fas fa-arrow-left"></i> Anotações</button>
-        <span class="anot-editor-titulo-display">${_esc(nota.titulo)}</span>
+        <span class="anot-editor-titulo-display" title="Clique para renomear">${_esc(nota.titulo)}</span>
         <div class="anot-topbar-right">
             <span class="anot-editor-status" id="anot-status-${id}">—</span>
-            <button class="anot-btn-salvar" id="anot-save-${id}">
-                <i class="fas fa-floppy-disk"></i> Salvar
+            <button class="anot-btn-salvar">
+                <i class="fas fa-floppy-disk"></i> <span>Salvar</span>
             </button>
         </div>`;
     frag.appendChild(topbar);
 
     const toolbar = document.createElement('div');
-    toolbar.id        = `anot-toolbar-${id}`;
-    toolbar.className = 'anot-ql-toolbar';
+    toolbar.className = 'anot-toolbar';
     toolbar.innerHTML = `
-        <span class="ql-formats">
-            <select class="ql-header">
-                <option value="1">Título 1</option>
-                <option value="2">Título 2</option>
-                <option value="3">Título 3</option>
-                <option selected>Parágrafo</option>
-            </select>
-        </span>
-        <span class="ql-formats">
-            <button class="ql-bold"      title="Negrito (Ctrl+B)"></button>
-            <button class="ql-italic"    title="Itálico (Ctrl+I)"></button>
-            <button class="ql-underline" title="Sublinhado (Ctrl+U)"></button>
-            <button class="ql-strike"    title="Tachado"></button>
-        </span>
-        <span class="ql-formats">
-            <button class="ql-code"       title="Código inline"></button>
-            <button class="ql-code-block" title="Bloco de código"></button>
-        </span>
-        <span class="ql-formats">
-            <button class="ql-list" value="bullet"  title="Lista"></button>
-            <button class="ql-list" value="ordered" title="Lista numerada"></button>
-            <button class="ql-list" value="check"   title="Checklist"></button>
-        </span>
-        <span class="ql-formats">
-            <select class="ql-color" title="Cor do texto"></select>
-            <button class="ql-blockquote" title="Citação"></button>
-            <button class="ql-link"       title="Link"></button>
-        </span>
-        <span class="ql-formats">
-            <button class="ql-clean" title="Limpar formatação"></button>
-        </span>`;
+        <button class="anot-tb-btn" data-cmd="undo"  title="Desfazer (Ctrl+Z)"><i class="fas fa-rotate-left"></i></button>
+        <button class="anot-tb-btn" data-cmd="redo"  title="Refazer (Ctrl+Y)"><i class="fas fa-rotate-right"></i></button>
+        <div class="anot-tb-sep"></div>
+
+        <select class="anot-tb-select" title="Estilo do texto">
+            <option value="0">Parágrafo</option>
+            <option value="1">Título 1</option>
+            <option value="2">Título 2</option>
+            <option value="3">Título 3</option>
+        </select>
+        <div class="anot-tb-sep"></div>
+
+        <button class="anot-tb-btn" data-cmd="bold"      title="Negrito (Ctrl+B)"><i class="fas fa-bold"></i></button>
+        <button class="anot-tb-btn" data-cmd="italic"    title="Itálico (Ctrl+I)"><i class="fas fa-italic"></i></button>
+        <button class="anot-tb-btn" data-cmd="underline" title="Sublinhado (Ctrl+U)"><i class="fas fa-underline"></i></button>
+        <button class="anot-tb-btn" data-cmd="strike"    title="Tachado"><i class="fas fa-strikethrough"></i></button>
+        <button class="anot-tb-btn" data-cmd="code"      title="Bloco de código"><i class="fas fa-code"></i></button>
+        <div class="anot-tb-sep"></div>
+
+        <button class="anot-tb-btn" data-cmd="ol"    title="Lista numerada"><i class="fas fa-list-ol"></i></button>
+        <button class="anot-tb-btn" data-cmd="ul"    title="Lista com pontos"><i class="fas fa-list-ul"></i></button>
+        <button class="anot-tb-btn" data-cmd="check" title="Checklist"><i class="fas fa-list-check"></i></button>
+        <div class="anot-tb-sep"></div>
+
+        <button class="anot-tb-btn" data-cmd="indent"  title="Aumentar nível (Tab)"><i class="fas fa-indent"></i></button>
+        <button class="anot-tb-btn" data-cmd="outdent" title="Diminuir nível (Shift+Tab)"><i class="fas fa-outdent"></i></button>
+        <div class="anot-tb-sep"></div>
+
+        <button class="anot-tb-btn" data-cmd="quote" title="Citação"><i class="fas fa-quote-left"></i></button>
+        <button class="anot-tb-btn" data-cmd="link"  title="Link"><i class="fas fa-link"></i></button>
+        <div class="anot-tb-sep"></div>
+
+        <button class="anot-tb-btn anot-color-wrap" title="Cor do texto">
+            <i class="fas fa-palette"></i>
+            <span class="anot-color-dot"></span>
+        </button>
+        <button class="anot-tb-btn" data-cmd="clear" title="Limpar formatação"><i class="fas fa-remove-format"></i></button>`;
     frag.appendChild(toolbar);
 
-    const wrap = document.createElement('div');
-    wrap.className = 'anot-quill-wrap';
-    const ed = document.createElement('div');
-    ed.className = 'anot-quill-editor';
-    wrap.appendChild(ed);
-    frag.appendChild(wrap);
+    const mount = document.createElement('div');
+    mount.className = 'ql-mount';
+    frag.appendChild(mount);
 
     const sb = document.createElement('div');
     sb.className = 'anot-statusbar';
@@ -805,32 +1145,43 @@ function _buildEditorDOM(discId, id, nota) {
     return frag;
 }
 
-/* ─── UTILITÁRIOS ───────────────────────────────────────────────────── */
-function _atualizarStatus(wrapper, id, salvo) {
-    const el = wrapper.querySelector(`#anot-status-${id}`);
-    if (!el) return;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UTILITÁRIOS
+════════════════════════════════════════════════════════════════════════ */
+
+function _atualizarStatus(statusEl, salvo) {
+    if (!statusEl) return;
     if (salvo) {
-        el.textContent = 'Salvo';
-        el.classList.add('saved');
-        setTimeout(() => { el.textContent = '—'; el.classList.remove('saved'); }, 2000);
+        statusEl.textContent = 'Salvo';
+        statusEl.classList.add('saved');
+        setTimeout(() => { statusEl.textContent = '—'; statusEl.classList.remove('saved'); }, 2000);
     } else {
-        el.textContent = 'Não salvo';
-        el.classList.remove('saved');
+        statusEl.textContent = 'Não salvo';
+        statusEl.classList.remove('saved');
     }
 }
-function _atualizarWC(wrapper) {
+
+function _atualizarWC(wrapper, quill) {
     const el = wrapper.querySelector('.anot-wc');
-    if (!el || !_st.quill) return;
-    const txt = _st.quill.getText().trim();
-    el.textContent = txt === '' ? 0 : txt.split(/\s+/).length;
+    if (!el || !quill) return;
+    const txt = quill.getText().trim();
+    el.textContent = txt === '' ? 0 : txt.split(/\s+/).filter(Boolean).length;
 }
-function _gerarPreview(html) {
-    if (!html) return '';
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    const txt = tmp.innerText?.trim() ?? '';
-    return _esc(txt.slice(0, 90)) + (txt.length > 90 ? '…' : '');
+
+function _gerarPreviewDelta(delta) {
+    if (!delta) return '';
+    try {
+        const parsed = JSON.parse(delta);
+        let txt = '';
+        (parsed.ops ?? []).forEach(op => {
+            if (typeof op.insert === 'string') txt += op.insert;
+        });
+        txt = txt.replace(/\n/g, ' ').trim();
+        return _esc(txt.slice(0, 90)) + (txt.length > 90 ? '…' : '');
+    } catch (_) { return ''; }
 }
+
 function _formatarData(ts) {
     if (!ts) return '';
     const d = Date.now() - ts;
@@ -840,13 +1191,18 @@ function _formatarData(ts) {
     if (d < 172800000) return 'ontem';
     return new Date(ts).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }
+
 function _esc(str) {
     return String(str ?? '')
         .replace(/&/g,'&amp;').replace(/</g,'&lt;')
         .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-/* ─── TOAST ─────────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════════════════════ */
+
 function _criarToast() {
     const el = document.createElement('div');
     el.className = 'anot-toast';
@@ -854,6 +1210,7 @@ function _criarToast() {
     document.body.appendChild(el);
     _st.toastEl = el;
 }
+
 function _mostrarToast(msg) {
     if (!_st.toastEl) return;
     _st.toastEl.querySelector('span').textContent = msg;

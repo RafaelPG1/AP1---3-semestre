@@ -27,6 +27,11 @@ import {
 } from './anotacao.js';
 
 
+import {
+    salvarNoFirebase,
+    carregarDoFirebase
+} from './firebase.js';
+
 // ── CREDENCIAIS ───────────────────────────────────────────────────────
 const USUARIOS = [
     { nome: 'Rafael',   senha: '288' },
@@ -135,23 +140,23 @@ btnSair.addEventListener('click', () => {
 //  STORAGE
 // ═════════════════════════════════════════════════════════════════════
 
+// DEPOIS:
 async function carregarDados() {
     try {
-        const raw = await window.Storage?.get?.(`checklist_${usuarioAtual}`);
-        if (raw?.checklist) checklistCompleto = raw.checklist;
-        if (raw?.videos)    videosCompletos   = raw.videos;
-    } catch (_) { /* primeiro acesso */ }
+        const raw = await carregarDoFirebase(usuarioAtual);
+        if (raw?.checklist)        checklistCompleto = raw.checklist;
+        if (raw?.videosAssistidos) videosCompletos   = raw.videosAssistidos;
+    } catch (err) {
+        console.warn('[Pessoal] Falha ao carregar do Firebase, iniciando vazio.', err);
+    }
 }
-
 const salvarDados = criarSalvador(async () => {
     try {
-        await window.Storage?.set?.(`checklist_${usuarioAtual}`, {
-            checklist: checklistCompleto,
-            videos:    videosCompletos
-        });
-    } catch (_) { /* silencioso */ }
+        await salvarNoFirebase(usuarioAtual, checklistCompleto, videosCompletos);
+    } catch (err) {
+        console.warn('[Pessoal] Falha ao salvar no Firebase.', err);
+    }
 }, 800, 3000);
-
 
 // ═════════════════════════════════════════════════════════════════════
 //  TABS

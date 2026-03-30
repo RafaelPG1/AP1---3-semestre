@@ -1,0 +1,906 @@
+/*Anotacoes.css*//* ═══════════════════════════════════════════════════════════════════════
+   anotacao.css — v8 (fix definitivo: lista duplicada)
+
+   Inclua APÓS o quill.snow.css para sobrescrever os defaults do Quill.
+════════════════════════════════════════════════════════════════════════ */
+
+/* ── Wrapper ─────────────────────────────────────────────────────────── */
+.panel-anotacao {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    animation: ckFadeUp .3s ease both;
+}
+
+@keyframes ckFadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LISTA DE NOTAS
+════════════════════════════════════════════════════════════════════════ */
+
+.anot-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .65rem 1rem;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+.anot-list-header-left { display: flex; align-items: center; gap: .6rem; }
+
+.anot-list-label {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #b8b8b8;
+}
+.anot-list-label i { margin-right: .25rem; }
+
+.anot-list-count {
+    font-size: .72rem;
+    color: rgba(255,255,255,.3);
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 99px;
+    padding: 1px 8px;
+}
+
+.anot-btn-nova {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .35rem .85rem;
+    border-radius: 8px;
+    border: 1px solid rgba(124,90,243,.3);
+    background: rgba(124,90,243,.1);
+    color: #a78bfa;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .18s, border-color .18s, transform .15s;
+    white-space: nowrap;
+}
+.anot-btn-nova i { font-size: .7rem; }
+.anot-btn-nova:hover {
+    background: rgba(124,90,243,.2);
+    border-color: rgba(124,90,243,.5);
+    transform: translateY(-1px);
+}
+
+.anot-lista { display: flex; flex-direction: column; gap: 6px; }
+
+.anot-vazio {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    color: rgba(255,255,255,.2);
+}
+.anot-vazio i    { font-size: 2rem; display: block; margin-bottom: .8rem; }
+.anot-vazio p    { font-size: .88rem; margin-bottom: .3rem; color: rgba(255,255,255,.3); }
+.anot-vazio span { font-size: .78rem; color: rgba(255,255,255,.18); }
+
+
+/* ── Cards ───────────────────────────────────────────────────────────── */
+.anot-card {
+    background: rgba(255,255,255,.025);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color .2s, opacity .25s, transform .25s;
+    animation: ckFadeUp .3s ease both;
+}
+.anot-card:nth-child(1) { animation-delay: .00s; }
+.anot-card:nth-child(2) { animation-delay: .04s; }
+.anot-card:nth-child(3) { animation-delay: .08s; }
+.anot-card:nth-child(4) { animation-delay: .12s; }
+.anot-card:nth-child(5) { animation-delay: .16s; }
+.anot-card:hover { border-color: rgba(255,255,255,.12); }
+.anot-card-saindo { opacity: 0; transform: translateX(-12px); pointer-events: none; }
+
+.anot-card-main {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background .15s;
+}
+.anot-card-main:hover { background: rgba(255,255,255,.03); }
+
+.anot-card-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(124,90,243,.1);
+    border: 1px solid rgba(124,90,243,.18);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.anot-card-icon i { font-size: .72rem; color: #a78bfa; }
+
+.anot-card-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.anot-card-titulo {
+    font-size: .855rem; font-weight: 700; color: #eaeaea;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    letter-spacing: -.01em; font-family: 'DM Sans', sans-serif;
+}
+.anot-card-preview {
+    font-size: .72rem; color: rgba(255,255,255,.32);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.anot-card-data { font-size: .67rem; color: rgba(255,255,255,.25); white-space: nowrap; flex-shrink: 0; }
+
+.anot-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 12px;
+    border-top: 1px solid rgba(255,255,255,.04);
+    background: rgba(255,255,255,.015);
+}
+
+.anot-card-btn {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .28rem .65rem; border-radius: 6px;
+    border: 1px solid transparent; background: transparent;
+    color: rgba(255,255,255,.3); font-family: 'DM Sans', sans-serif;
+    font-size: .7rem; cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+    white-space: nowrap;
+}
+.anot-card-btn i { font-size: .62rem; }
+.anot-card-btn:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.1); color: rgba(255,255,255,.75); }
+.anot-card-btn.btn-deletar:hover { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); color: #fca5a5; }
+.anot-card-btn.btn-confirmar-sim:hover { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.25); color: #fca5a5; }
+
+.anot-confirm-txt { font-size: .72rem; color: rgba(255,255,255,.4); margin-right: 4px; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LOADING
+════════════════════════════════════════════════════════════════════════ */
+.anot-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .7rem;
+    padding: 4rem 1rem;
+    color: rgba(255,255,255,.3);
+    font-size: .85rem;
+}
+.anot-loading i { font-size: 1.1rem; color: #a78bfa; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EDITOR — TOPBAR
+════════════════════════════════════════════════════════════════════════ */
+.anot-editor-topbar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .5rem .2rem .75rem;
+}
+.anot-btn-voltar {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .32rem .7rem; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.45);
+    font-family: 'DM Sans', sans-serif; font-size: .76rem;
+    cursor: pointer; transition: background .15s, color .15s;
+    white-space: nowrap; flex-shrink: 0;
+}
+.anot-btn-voltar i { font-size: .65rem; }
+.anot-btn-voltar:hover {
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.15);
+    color: rgba(255,255,255,.8);
+}
+
+.anot-editor-titulo-display {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 50%;
+    font-size: .92rem; font-weight: 700;
+    color: #eaeaea; letter-spacing: -.01em;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; border-radius: 6px; padding: 2px 6px;
+    transition: background .15s;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.anot-editor-titulo-display:hover { background: rgba(255,255,255,.05); }
+
+.anot-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.anot-editor-status {
+    font-size: .68rem; color: rgba(255,255,255,.25);
+    white-space: nowrap; transition: color .3s;
+    align-self: center;
+}
+.anot-editor-status.saved { color: #34d399; }
+
+.anot-btn-salvar {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .32rem .8rem; border-radius: 8px;
+    border: 1px solid rgba(124,90,243,.3);
+    background: rgba(124,90,243,.12);
+    color: #a78bfa; font-family: 'DM Sans', sans-serif;
+    font-size: .76rem; font-weight: 600; cursor: pointer;
+    transition: background .15s, border-color .15s;
+    white-space: nowrap;
+}
+.anot-btn-salvar i { font-size: .65rem; }
+.anot-btn-salvar:hover { background: rgba(124,90,243,.22); border-color: rgba(124,90,243,.5); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EDITOR — TOOLBAR CUSTOMIZADA
+════════════════════════════════════════════════════════════════════════ */
+.anot-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+    padding: 7px 10px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px 12px 0 0;
+    border-bottom: none;
+    user-select: none;
+}
+
+.anot-tb-sep {
+    width: 1px; height: 18px;
+    background: rgba(255,255,255,.08);
+    margin: 0 3px; flex-shrink: 0;
+}
+
+.anot-tb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 28px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: rgba(255,255,255,.4);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .7rem; font-weight: 600;
+    transition: background .14s, color .14s, border-color .14s;
+    flex-shrink: 0;
+    position: relative;
+}
+.anot-tb-btn i { font-size: .68rem; pointer-events: none; }
+.anot-tb-btn:hover {
+    background: rgba(255,255,255,.07);
+    color: rgba(255,255,255,.85);
+    border-color: rgba(255,255,255,.08);
+}
+.anot-tb-btn.ativo {
+    background: rgba(124,90,243,.15);
+    border-color: rgba(124,90,243,.3);
+    color: #a78bfa;
+}
+.anot-tb-btn.ativo i { color: #a78bfa; }
+
+/* Tooltip */
+.anot-tb-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 6px); left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: .65rem;
+    color: rgba(255,255,255,.7);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Select heading */
+.anot-tb-select {
+    height: 28px; padding: 0 6px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.5);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .7rem; font-weight: 600;
+    cursor: pointer; outline: none;
+    transition: background .14s, color .14s;
+    appearance: none; -webkit-appearance: none;
+    padding-right: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,.3)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+}
+.anot-tb-select:hover { background-color: rgba(255,255,255,.07); color: rgba(255,255,255,.8); }
+.anot-tb-select option { background: #1a1a1a; color: rgba(255,255,255,.8); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   COLOR PICKER
+════════════════════════════════════════════════════════════════════════ */
+.anot-color-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    width: 38px;
+    cursor: pointer;
+}
+
+.anot-color-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1.5px solid rgba(255,255,255,.25);
+    display: block;
+    pointer-events: none;
+    transition: background .12s;
+    flex-shrink: 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   COLOR POPUP
+════════════════════════════════════════════════════════════════════════ */
+.anot-color-popup {
+    position: absolute;
+    z-index: 3000;
+    min-width: 196px;
+    background: #111113;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.7), 0 2px 8px rgba(0,0,0,.4);
+    padding: 10px 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: ckFadeUp .15s ease both;
+}
+
+.anot-cp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2px 4px;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.anot-cp-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.35);
+}
+.anot-cp-title i {
+    margin-right: .3rem;
+    font-size: .6rem;
+    color: #a78bfa;
+}
+
+.anot-cp-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: transparent;
+    color: rgba(255,255,255,.3);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .65rem;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+.anot-cp-reset i { font-size: .6rem; }
+.anot-cp-reset:hover {
+    background: rgba(255,255,255,.07);
+    color: rgba(255,255,255,.7);
+    border-color: rgba(255,255,255,.14);
+}
+
+.anot-cp-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.anot-cp-swatch {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 7px;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: transform .12s, border-color .12s, box-shadow .12s;
+    outline: none;
+    position: relative;
+}
+.anot-cp-swatch:hover {
+    transform: scale(1.15);
+    border-color: rgba(255,255,255,.55) !important;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.12);
+    z-index: 1;
+}
+.anot-cp-swatch:active { transform: scale(1.05); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   QUILL EDITOR — Override do tema Snow
+════════════════════════════════════════════════════════════════════════ */
+
+.ql-mount .ql-toolbar.ql-snow { display: none !important; }
+
+.ql-mount .ql-container.ql-snow {
+    border: 1px solid rgba(255,255,255,.08) !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-radius: 0 !important;
+    background: rgba(255,255,255,.02) !important;
+    font-family: 'DM Sans', sans-serif !important;
+}
+
+.ql-mount .ql-editor {
+    min-height: 340px;
+    padding: 20px 22px !important;
+    color: rgba(255,255,255,.85) !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: .9rem !important;
+    line-height: 1.75 !important;
+    caret-color: #a78bfa !important;
+}
+
+.ql-mount .ql-editor.ql-blank::before {
+    color: rgba(255,255,255,.18) !important;
+    font-style: normal !important;
+    left: 22px !important;
+}
+
+.ql-mount .ql-editor ::selection { background: rgba(124,90,243,.28) !important; }
+
+.ql-mount .ql-editor h1 {
+    font-size: 1.7rem; font-weight: 800; color: #f0f0f0;
+    letter-spacing: -.02em; line-height: 1.25; margin: .4rem 0 .2rem;
+}
+.ql-mount .ql-editor h2 {
+    font-size: 1.25rem; font-weight: 700; color: #e8e8e8; margin: .35rem 0 .15rem;
+}
+.ql-mount .ql-editor h3 {
+    font-size: 1rem; font-weight: 700; color: #ddd; margin: .25rem 0 .1rem;
+}
+.ql-mount .ql-editor p { margin: .1rem 0; }
+
+.ql-mount .ql-editor a { color: #60aef5; text-underline-offset: 2px; }
+.ql-mount .ql-editor a:hover { color: #93c5fd; }
+
+.ql-mount .ql-editor blockquote {
+    border-left: 3px solid rgba(167,139,250,.5) !important;
+    background: rgba(124,90,243,.06);
+    padding: .6rem 1rem .6rem 1.1rem !important;
+    border-radius: 0 8px 8px 0;
+    color: rgba(255,255,255,.6);
+    font-style: italic;
+    margin: .5rem 0 !important;
+}
+
+/* Code block — estilo Notion */
+.ql-mount .ql-editor pre.ql-syntax {
+    display: block;
+    margin: .9rem 0 !important;
+    padding: 14px 18px 14px 20px !important;
+    border-radius: 0 10px 10px 0 !important;
+    background: #0d1117 !important;
+    border: none !important;
+    border-left: 3px solid #a78bfa !important;
+    color: #c9d1d9 !important;
+    font-family: 'JetBrains Mono','Fira Code','Courier New',monospace !important;
+    font-size: .83rem !important;
+    line-height: 1.8 !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+}
+
+.ql-mount .ql-editor code {
+    background: rgba(124,90,243,.12);
+    border: 1px solid rgba(124,90,243,.2);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-family: 'JetBrains Mono','Fira Code','Courier New',monospace;
+    font-size: .82em;
+    color: #c4a7fa;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LISTAS — FIX DEFINITIVO v8
+   -----------------------------------------------------------------------
+   Estratégia em 3 camadas:
+     1. Reset total: zera marker nativo do browser e ::before do Snow
+     2. Nossas regras com especificidade MAIOR redefinem os marcadores
+     3. Indentação visual por nível
+════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Reset base ─────────────────────────────────────────────────── */
+.ql-mount .ql-editor ol,
+.ql-mount .ql-editor ul {
+    padding-left: 0 !important;
+    margin: .2rem 0 !important;
+    list-style: none !important;
+    counter-reset: none !important;
+}
+
+.ql-mount .ql-editor li {
+    list-style: none !important;
+    list-style-type: none !important;
+    line-height: 1.8 !important;
+    color: rgba(255,255,255,.82) !important;
+    padding-left: 1.5em !important;
+    position: relative;
+}
+
+/* Zera ::marker nativo do browser */
+.ql-mount .ql-editor li::marker {
+    content: "" !important;
+    font-size: 0 !important;
+    display: none !important;
+}
+
+/* ── NUCLEAR RESET: cobre TODOS os seletores possíveis do Quill Snow ─
+   Listamos explicitamente cada combinação para garantir que nenhuma
+   regra do quill.snow.css sobreviva, independente da sua especificidade.
+─────────────────────────────────────────────────────────────────────── */
+.ql-mount .ql-editor li::before,
+.ql-mount .ql-editor ol li::before,
+.ql-mount .ql-editor ul li::before,
+.ql-mount .ql-editor li[data-list]::before,
+.ql-mount .ql-editor ol li[data-list]::before,
+.ql-mount .ql-editor ul li[data-list]::before,
+.ql-mount .ql-editor li[data-list="ordered"]::before,
+.ql-mount .ql-editor li[data-list="bullet"]::before,
+.ql-mount .ql-editor li[data-list="unchecked"]::before,
+.ql-mount .ql-editor li[data-list="checked"]::before {
+    content: none !important;
+    display: none !important;
+    counter-increment: none !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ── 2a. BULLET LIST — marcadores por nível
+   Especificidade (0,2,1) > Snow (0,1,1) ✓
+════════════════════════════════════════════════════════════════════════ */
+
+/* Nível 0 — • */
+.ql-mount .ql-editor ul li[data-list="bullet"]::before {
+    content: "•" !important;
+    display: inline-block !important;
+    width: 1.2em;
+    margin-left: -1.2em;
+    color: rgba(255,255,255,.45) !important;
+    font-style: normal !important;
+    counter-increment: none !important;
+}
+
+/* Nível 1 — ◦ */
+.ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-1::before {
+    content: "◦" !important;
+    display: inline-block !important;
+    width: 1.2em;
+    margin-left: -1.2em;
+    color: rgba(255,255,255,.45) !important;
+    font-style: normal !important;
+    counter-increment: none !important;
+}
+
+/* Nível 2 — ▪ */
+.ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-2::before {
+    content: "▪" !important;
+    display: inline-block !important;
+    width: 1.2em;
+    margin-left: -1.2em;
+    font-size: .75em;
+    color: rgba(255,255,255,.45) !important;
+    font-style: normal !important;
+    counter-increment: none !important;
+}
+
+/* Nível 3 — • */
+.ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-3::before {
+    content: "•" !important;
+    display: inline-block !important;
+    width: 1.2em; margin-left: -1.2em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+    counter-increment: none !important;
+}
+
+/* Nível 4 — ◦ */
+.ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-4::before {
+    content: "◦" !important;
+    display: inline-block !important;
+    width: 1.2em; margin-left: -1.2em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+    counter-increment: none !important;
+}
+
+/* Nível 5 — ▪ */
+.ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-5::before {
+    content: "▪" !important;
+    display: inline-block !important;
+    width: 1.2em; margin-left: -1.2em;
+    font-size: .75em; color: rgba(255,255,255,.45) !important; font-style: normal !important;
+    counter-increment: none !important;
+}
+
+/* Nível 6 — • */
+.ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-6::before {
+    content: "•" !important;
+    display: inline-block !important;
+    width: 1.2em; margin-left: -1.2em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+    counter-increment: none !important;
+}
+
+/* Nível 7 — ◦ */
+.ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-7::before {
+    content: "◦" !important;
+    display: inline-block !important;
+    width: 1.2em; margin-left: -1.2em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+    counter-increment: none !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ── 2b. ORDERED LIST — contadores CSS por nível
+   Contador definido no próprio li para evitar conflito com o Snow.
+   Especificidade (0,2,1) > Snow (0,1,1) ✓
+════════════════════════════════════════════════════════════════════════ */
+
+/*
+   IMPORTANTE: NÃO use counter-reset no <ol> pai — o Quill Snow
+   também faz isso e causa conflito. Em vez disso, cada nível
+   faz counter-reset dos níveis filhos dentro do próprio li.
+   O counter-reset do nível 0 fica no .ql-editor para ser neutro.
+*/
+.ql-mount .ql-editor {
+    counter-reset: list-0 list-1 list-2 list-3 list-4 list-5 list-6 list-7;
+}
+
+/* ── Nível 0 — 1, 2, 3 … ─────────────────────────────────────────── */
+.ql-mount .ql-editor li[data-list="ordered"] {
+    counter-increment: list-0 !important;
+    counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 !important;
+}
+.ql-mount .ql-editor li[data-list="ordered"]::before {
+    content: counter(list-0) "." !important;
+    display: inline-block !important;
+    width: 1.5em;
+    margin-left: -1.5em;
+    color: rgba(255,255,255,.45) !important;
+    font-weight: 600;
+    font-style: normal !important;
+}
+
+/* ── Nível 1 — a, b, c … ─────────────────────────────────────────── */
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-1 {
+    counter-increment: list-1 !important;
+    counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 !important;
+}
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-1::before {
+    content: counter(list-1, lower-alpha) "." !important;
+    display: inline-block !important;
+    width: 1.5em; margin-left: -1.5em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+}
+
+/* ── Nível 2 — i, ii, iii … ──────────────────────────────────────── */
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-2 {
+    counter-increment: list-2 !important;
+    counter-reset: list-3 list-4 list-5 list-6 list-7 !important;
+}
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-2::before {
+    content: counter(list-2, lower-roman) "." !important;
+    display: inline-block !important;
+    width: 1.5em; margin-left: -1.5em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+}
+
+/* ── Nível 3 — A, B, C … ─────────────────────────────────────────── */
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-3 {
+    counter-increment: list-3 !important;
+    counter-reset: list-4 list-5 list-6 list-7 !important;
+}
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-3::before {
+    content: counter(list-3, upper-alpha) "." !important;
+    display: inline-block !important;
+    width: 1.5em; margin-left: -1.5em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+}
+
+/* ── Nível 4 — I, II, III … ──────────────────────────────────────── */
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-4 {
+    counter-increment: list-4 !important;
+    counter-reset: list-5 list-6 list-7 !important;
+}
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-4::before {
+    content: counter(list-4, upper-roman) "." !important;
+    display: inline-block !important;
+    width: 1.5em; margin-left: -1.5em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+}
+
+/* ── Nível 5 — 1, 2, 3 (cicla) ───────────────────────────────────── */
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-5 {
+    counter-increment: list-5 !important;
+    counter-reset: list-6 list-7 !important;
+}
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-5::before {
+    content: counter(list-5) "." !important;
+    display: inline-block !important;
+    width: 1.5em; margin-left: -1.5em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+}
+
+/* ── Nível 6 — a, b, c (cicla) ───────────────────────────────────── */
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-6 {
+    counter-increment: list-6 !important;
+    counter-reset: list-7 !important;
+}
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-6::before {
+    content: counter(list-6, lower-alpha) "." !important;
+    display: inline-block !important;
+    width: 1.5em; margin-left: -1.5em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+}
+
+/* ── Nível 7 — i, ii, iii (cicla) ────────────────────────────────── */
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-7 {
+    counter-increment: list-7 !important;
+}
+.ql-mount .ql-editor li[data-list="ordered"].ql-indent-7::before {
+    content: counter(list-7, lower-roman) "." !important;
+    display: inline-block !important;
+    width: 1.5em; margin-left: -1.5em;
+    color: rgba(255,255,255,.45) !important; font-style: normal !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ── 3. INDENTAÇÃO VISUAL — padding-left por nível
+════════════════════════════════════════════════════════════════════════ */
+
+.ql-mount .ql-editor li.ql-indent-1 { padding-left: 3.0em  !important; }
+.ql-mount .ql-editor li.ql-indent-2 { padding-left: 4.5em  !important; }
+.ql-mount .ql-editor li.ql-indent-3 { padding-left: 6.0em  !important; }
+.ql-mount .ql-editor li.ql-indent-4 { padding-left: 7.5em  !important; }
+.ql-mount .ql-editor li.ql-indent-5 { padding-left: 9.0em  !important; }
+.ql-mount .ql-editor li.ql-indent-6 { padding-left: 10.5em !important; }
+.ql-mount .ql-editor li.ql-indent-7 { padding-left: 12.0em !important; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CHECKLIST — data-list="checked" / "unchecked"
+════════════════════════════════════════════════════════════════════════ */
+
+.ql-mount .ql-editor li[data-list="unchecked"],
+.ql-mount .ql-editor li[data-list="checked"] {
+    list-style: none !important;
+}
+
+/* Garante reset total para checklist também */
+.ql-mount .ql-editor ul li[data-list="unchecked"]::before,
+.ql-mount .ql-editor ul li[data-list="checked"]::before,
+.ql-mount .ql-editor ol li[data-list="unchecked"]::before,
+.ql-mount .ql-editor ol li[data-list="checked"]::before {
+    content: none !important;
+    display: none !important;
+}
+
+/* Checkbox desmarcado */
+.ql-mount .ql-editor li[data-list="unchecked"]::before {
+    content: '' !important;
+    display: inline-block !important;
+    width: 14px; height: 14px;
+    border: 1.5px solid rgba(255,255,255,.28) !important;
+    border-radius: 4px !important;
+    margin-right: .5em !important;
+    vertical-align: middle !important;
+    background: transparent !important;
+    position: relative; top: -1px;
+    cursor: pointer;
+    margin-left: -1.5em;
+    counter-increment: none !important;
+}
+
+/* Checkbox marcado */
+.ql-mount .ql-editor li[data-list="checked"]::before {
+    content: '' !important;
+    display: inline-block !important;
+    width: 14px; height: 14px;
+    border: 1.5px solid #a78bfa !important;
+    border-radius: 4px !important;
+    background: #a78bfa !important;
+    margin-right: .5em !important;
+    vertical-align: middle !important;
+    position: relative; top: -1px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='8' fill='none'%3E%3Cpath d='M1 4l3 3 5-6' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-left: -1.5em;
+    counter-increment: none !important;
+}
+
+.ql-mount .ql-editor li[data-list="checked"] {
+    color: rgba(255,255,255,.3) !important;
+    text-decoration: line-through;
+}
+
+
+/* ── Statusbar ─────────────────────────────────────────────────────── */
+.anot-statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 16px;
+    background: rgba(255,255,255,.02);
+    border: 1px solid rgba(255,255,255,.08);
+    border-top: 1px solid rgba(255,255,255,.05);
+    border-radius: 0 0 12px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .68rem;
+    color: rgba(255,255,255,.25);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════════════════════ */
+.anot-toast {
+    position: fixed; bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(30px);
+    background: rgba(20,20,20,.95);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 10px; padding: .55rem 1.1rem;
+    font-size: .8rem; color: rgba(255,255,255,.85);
+    display: flex; align-items: center; gap: .5rem;
+    pointer-events: none; opacity: 0;
+    transition: opacity .25s, transform .25s;
+    z-index: 1000; white-space: nowrap;
+    backdrop-filter: blur(10px);
+}
+.anot-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.anot-toast i { color: #a78bfa; font-size: .75rem; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVO
+════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 720px) {
+    .anot-editor-topbar  { padding: .4rem 0 .6rem; gap: .5rem; flex-wrap: wrap; }
+    .anot-topbar-right   { gap: .4rem; }
+    .anot-toolbar        { gap: 1px; padding: 5px 8px; }
+    .anot-list-header    { flex-wrap: wrap; gap: .5rem; }
+    .anot-btn-salvar span { display: none; }
+    .anot-tb-btn[title]:hover::after { display: none; }
+    .ql-mount .ql-editor { padding: 14px !important; min-height: 260px; }
+}
