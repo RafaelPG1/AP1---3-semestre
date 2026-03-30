@@ -1,9 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   pessoal.js — Área Pessoal  (v13 — anotações integradas)
-   ✦ Login, sessão e navegação de disciplinas
-   ✦ Integração com checklist.js (renderização + progresso)
-   ✦ Sistema de Resumos embutido
-   ✦ Sistema de Anotações (rich text editor)
+   pessoal.js — Área Pessoal  (v14 — FABs controlados pelo resumo.js)
 ════════════════════════════════════════════════════════════════════════ */
 
 import {
@@ -20,7 +16,8 @@ import {
 
 import {
     listarResumos,
-    getResumoPorId
+    getResumoPorId,
+    mostrarFABs
 } from './resumo.js';
 
 import {
@@ -46,7 +43,7 @@ let discSelecionada   = null;
 let checklistCompleto = {};
 let videosCompletos   = {};
 
-let modoAtual  = 'checklist'; // 'checklist' | 'resumos' | 'anotacao'
+let modoAtual  = 'checklist';
 let discAtual  = null;
 let _toastEl   = null;
 let _toastTimer = null;
@@ -112,6 +109,7 @@ async function entrarNoDashboard() {
     await initAnotacoes(usuarioAtual);
     construirTabs();
     _criarToast();
+    _criarFABs();
     selecionarDisc(Object.keys(DISCIPLINAS_DATA)[0]);
 }
 
@@ -202,15 +200,18 @@ function selecionarDisc(discId) {
         discPanel.querySelector('.panel-modules')?.remove();
         _injetarModeToggle(discId, discPanel);
         _exibirResumos(discId, discPanel);
+        mostrarFABs(true);
     } else if (modoAtual === 'anotacao') {
         renderizarPainel(discId, discPanel);
         discPanel.querySelector('.panel-videos')?.remove();
         discPanel.querySelector('.panel-modules')?.remove();
         _injetarModeToggle(discId, discPanel);
         exibirAnotacao(discId, discPanel);
+        mostrarFABs(false);
     } else {
         _renderizarChecklistCompleto(discId, discPanel);
         _injetarModeToggle(discId, discPanel);
+        mostrarFABs(false);
     }
 }
 
@@ -312,11 +313,14 @@ function _injetarModeToggle(discId, panelEl) {
             if (modoAtual === 'resumos') {
                 removerAnotacao(panelEl);
                 _exibirResumos(discId, panelEl);
+                mostrarFABs(true);
             } else if (modoAtual === 'anotacao') {
                 _exibirAnotacaoWrapper(discId, panelEl);
+                mostrarFABs(false);
             } else {
                 removerAnotacao(panelEl);
                 _exibirChecklist(discId, panelEl);
+                mostrarFABs(false);
             }
         });
     });
@@ -476,6 +480,57 @@ function _mostrarToast(msg) {
     _toastEl.classList.add('show');
     clearTimeout(_toastTimer);
     _toastTimer = setTimeout(() => _toastEl.classList.remove('show'), 2800);
+}
+
+
+// ═════════════════════════════════════════════════════════════════════
+//  FABs FLUTUANTES
+// ═════════════════════════════════════════════════════════════════════
+
+function _criarFABs() {
+    document.getElementById('fab-group')?.remove();
+
+    const group = document.createElement('div');
+    group.id = 'fab-group';
+    group.className = 'fab-group';
+    group.style.display = 'none'; // oculto por padrão
+    group.innerHTML = `
+        <button class="fab-btn" id="fab-up" title="Ir para o topo">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+        <button class="fab-btn fab-collapse" id="fab-collapse" title="Contrair todos os resumos">
+            <i class="fas fa-compress"></i>
+        </button>
+        <button class="fab-btn" id="fab-down" title="Ir para o final">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    `;
+    document.body.appendChild(group);
+
+    function scrollUp() {
+        if (discPanel.scrollTop > 0) {
+            discPanel.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function scrollDown() {
+        const panelScrollable = discPanel.scrollHeight > discPanel.clientHeight;
+        if (panelScrollable) {
+            discPanel.scrollTo({ top: discPanel.scrollHeight, behavior: 'smooth' });
+        } else {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+    }
+
+    document.getElementById('fab-up').addEventListener('click', scrollUp);
+    document.getElementById('fab-down').addEventListener('click', scrollDown);
+
+    document.getElementById('fab-collapse').addEventListener('click', () => {
+        const abertos = discPanel.querySelectorAll('.resumo-card.expanded');
+        abertos.forEach(c => c.classList.remove('expanded'));
+    });
 }
 
 

@@ -3505,29 +3505,14 @@ export const resumoData = {
 //  FUNÇÕES UTILITÁRIAS
 // ═══════════════════════════════════════════════════════════════════════
 
-/**
- * Retorna o objeto de resumos de uma disciplina.
- * @param {string} nome - Chave da disciplina ('design', 'poo', 'redes', 'banco')
- * @returns {object|null}
- */
 export function getResumoPorDisciplina(nome) {
     return resumoData[nome] ?? null;
 }
 
-/**
- * Retorna a lista de resumos de uma disciplina.
- * @param {string} disciplina - Chave da disciplina
- * @returns {Array}
- */
 export function listarResumos(disciplina) {
     return resumoData[disciplina]?.resumos ?? [];
 }
 
-/**
- * Retorna um resumo específico pelo id.
- * @param {string} id - id do resumo (ex: 'design_aula1')
- * @returns {object|null}
- */
 export function getResumoPorId(id) {
     for (const disc of Object.values(resumoData)) {
         const encontrado = disc.resumos.find(r => r.id === id);
@@ -3536,25 +3521,25 @@ export function getResumoPorId(id) {
     return null;
 }
 
-/**
- * Marca um resumo como lido/não lido em memória.
- * @param {string} id - id do resumo
- * @param {boolean} lida
- */
 export function marcarComoLida(id, lida = true) {
     const resumo = getResumoPorId(id);
     if (resumo) resumo.lida = lida;
 }
 
-/**
- * Retorna quantos resumos de uma disciplina estão marcados como lidos.
- * @param {string} disciplina
- * @returns {{ lidos: number, total: number }}
- */
 export function progressoLeitura(disciplina) {
     const lista = listarResumos(disciplina);
     return {
         lidos: lista.filter(r => r.lida).length,
         total: lista.length
     };
+}
+
+// ═════════════════════════════════════════════════════════════════════
+//  CONTROLE DE VISIBILIDADE DOS FABs
+// ═════════════════════════════════════════════════════════════════════
+
+export function mostrarFABs(visivel) {
+    const fabGroup = document.getElementById('fab-group');
+    if (!fabGroup) return;
+    fabGroup.style.display = visivel ? 'flex' : 'none';
 }

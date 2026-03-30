@@ -932,6 +932,66 @@ body {
 }
 
 
+/* ── Botões Flutuantes ─────────────────────────────────────── */
+.fab-group {
+    position: fixed;
+    right: 1.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .55rem;
+    z-index: 50;
+}
+
+.fab-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.1);
+    background: rgba(18,18,18,.88);
+    backdrop-filter: blur(12px);
+    color: rgba(255,255,255,.55);
+    font-size: .78rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .18s, border-color .18s, color .18s, transform .15s;
+    box-shadow: 0 4px 16px rgba(0,0,0,.4);
+}
+.fab-btn:hover {
+    background: rgba(30,30,30,.98);
+    border-color: rgba(255,255,255,.2);
+    color: rgba(255,255,255,.9);
+    transform: translateY(-2px);
+}
+.fab-btn:active { transform: scale(.94); }
+
+.fab-btn.fab-collapse {
+    border-color: rgba(124,90,243,.25);
+    color: #a78bfa;
+}
+.fab-btn.fab-collapse:hover {
+    background: rgba(124,90,243,.15);
+    border-color: rgba(124,90,243,.5);
+    color: #c4b5fd;
+}
+
+.fab-divider {
+    width: 1px;
+    height: 10px;
+    background: rgba(255,255,255,.08);
+}
+
+@media (max-width: 720px) {
+    .fab-group {
+        right: .75rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
 
 /*Anotacoes.css*/
 
@@ -1126,8 +1186,8 @@ body {
     align-items: center;
     gap: .75rem;
     padding: .5rem .2rem .75rem;
+    /* sem justify-content */
 }
-
 .anot-btn-voltar {
     display: inline-flex; align-items: center; gap: .4rem;
     padding: .32rem .7rem; border-radius: 8px;
@@ -1142,20 +1202,33 @@ body {
 .anot-btn-voltar:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.15); color: rgba(255,255,255,.8); }
 
 .anot-editor-titulo-display {
-    flex: 1; font-size: .92rem; font-weight: 700;
+    flex: 0 1 auto;       /* ← cresce só até o conteúdo natural */
+    min-width: 0;
+    max-width: 50%;       /* ← trava no meio */
+    font-size: .92rem; font-weight: 700;
     color: #eaeaea; letter-spacing: -.01em;
     font-family: 'DM Sans', sans-serif;
     cursor: pointer; border-radius: 6px; padding: 2px 6px;
     transition: background .15s;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+
 .anot-editor-titulo-display:hover { background: rgba(255,255,255,.05); }
 
-.anot-topbar-right { display: flex; align-items: center; gap: .6rem; flex-shrink: 0; }
+.anot-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-shrink: 0;
+    margin-left: auto;   /* ← isso empurra o salvar para a direita */
+}
 
 .anot-editor-status {
     font-size: .68rem; color: rgba(255,255,255,.25);
     white-space: nowrap; transition: color .3s;
+    display: flex;
+    align-items: center;
+    align-self: center; /* centraliza no eixo vertical do flex pai */
 }
 .anot-editor-status.saved { color: #34d399; }
 
@@ -1254,17 +1327,18 @@ body {
 
 .anot-quill-wrap .ql-editor {
     min-height: 340px;
-    padding: 20px 22px !important;
+    padding: 20px 22px 20px 20px !important; /* era 4px, agora 20px */
     color: rgba(255,255,255,.85) !important;
     line-height: 1.75 !important;
     caret-color: #a78bfa;
 }
 
-/* Placeholder */
 .anot-quill-wrap .ql-editor.ql-blank::before {
     color: rgba(255,255,255,.18) !important;
     font-style: normal !important;
     font-family: 'DM Sans', sans-serif !important;
+    left: 20px !important;
+    top: 23px !important; /* ajuste esse valor */
 }
 
 /* Tipografia interna */
@@ -1327,9 +1401,42 @@ body {
 .anot-quill-wrap .ql-editor li[data-list="unchecked"] > .ql-ui::before { color: rgba(255,255,255,.25) !important; }
 .anot-quill-wrap .ql-editor li[data-list="checked"] { color: rgba(255,255,255,.35) !important; text-decoration: line-through; }
 
-/* Lista */
-.anot-quill-wrap .ql-editor ol li, .anot-quill-wrap .ql-editor ul li { color: rgba(255,255,255,.8); }
-.ql-snow .ql-editor li::before { color: rgba(255,255,255,.35) !important; }
+/* Fix 3: recuar listas para a esquerda */
+.anot-quill-wrap .ql-editor ol,
+.anot-quill-wrap .ql-editor ul {
+    padding-left: 1.4em !important;
+}
+.anot-quill-wrap .ql-editor ol li,
+.anot-quill-wrap .ql-editor ul li {
+    color: rgba(255,255,255,.8);
+    padding-left: 0.3em !important;
+}
+.anot-quill-wrap .ql-editor li::before {
+    color: rgba(255,255,255,.35) !important;
+    margin-left: -1.2em !important;
+    width: 1.2em !important;
+    text-align: right !important;
+}
+
+/* Fix 4 — icone checklist na toolbar via SVG inline */
+.anot-ql-toolbar .ql-list[value="check"] svg { display: none !important; }
+.anot-ql-toolbar .ql-list[value="check"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.anot-ql-toolbar .ql-list[value="check"]::after {
+    content: "";
+    display: block;
+    width: 16px; height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 15px 15px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Crect fill='none' stroke='rgba(255,255,255,0.45)' stroke-width='1.5' height='8' rx='1' ry='1' width='8' x='1' y='5'/%3E%3Cpolyline fill='none' stroke='rgba(255,255,255,0.45)' stroke-width='1.5' points='3 9 5 11 9 7'/%3E%3Cline stroke='rgba(255,255,255,0.45)' stroke-width='1.5' x1='11' x2='17' y1='7' y2='7'/%3E%3Cline stroke='rgba(255,255,255,0.45)' stroke-width='1.5' x1='11' x2='17' y1='11' y2='11'/%3E%3C/svg%3E");
+}
+.anot-ql-toolbar .ql-list[value="check"].ql-active::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Crect fill='none' stroke='%23a78bfa' stroke-width='1.5' height='8' rx='1' ry='1' width='8' x='1' y='5'/%3E%3Cpolyline fill='none' stroke='%23a78bfa' stroke-width='1.5' points='3 9 5 11 9 7'/%3E%3Cline stroke='%23a78bfa' stroke-width='1.5' x1='11' x2='17' y1='7' y2='7'/%3E%3Cline stroke='%23a78bfa' stroke-width='1.5' x1='11' x2='17' y1='11' y2='11'/%3E%3C/svg%3E");
+}
 
 /* Seleção */
 .anot-quill-wrap .ql-editor ::selection { background: rgba(124,90,243,.28); }
