@@ -1,86 +1,72 @@
 /**
  * STORAGE.JS - Sistema de Storage Centralizado para Quizzes
  * =========================================================
- *
+ * 
  * Este arquivo gerencia o armazenamento persistente de progresso
- * para todos os quizzes do projeto usando a Storage API do Claude
- * (window.storage), compatível com Artifacts em desktop e mobile.
- *
- * Versão: 2.0
- * Compatibilidade: Artifacts do Claude.ai (desktop e mobile)
- *
- * IMPORTANTE: Todos os métodos são assíncronos (retornam Promises).
- * Use sempre "await" ou ".then()" ao chamá-los.
+ * para todos os quizzes do projeto usando localStorage.
+ * 
+ * Versão: 1.0
+ * Compatibilidade: Todos os navegadores modernos com suporte ao localStorage
  */
 
-(function () {
+(function() {
     'use strict';
 
-    // Prefixo para isolar as chaves deste projeto no storage compartilhado
+    // Chave principal para armazenar todos os dados dos quizzes no localStorage
+    const STORAGE_KEY = 'quiz_project_data';
+    
+    // Prefixo para identificar dados deste projeto
     const PROJECT_PREFIX = 'QuizProject_';
-
-    // Chave que armazena o índice de todos os quizzes salvos
-    const INDEX_KEY = PROJECT_PREFIX + '__index__';
-
-    /**
-     * UTILITÁRIO INTERNO
-     * ==================
-     * Monta a chave completa de um quiz no storage
-     */
-    function buildKey(quizId) {
-        return PROJECT_PREFIX + quizId;
-    }
 
     /**
      * OBJETO PRINCIPAL DO STORAGE
-     * ===========================
+     * ==========================
      */
     const QuizStorage = {
 
         /**
          * SALVAR PROGRESSO DE UM QUIZ ESPECÍFICO
-         * =======================================
-         *
-         * @param {string} quizId      - Identificador único do quiz (ex: 'matematica_unidade1')
-         * @param {Array|Object} respostas - Respostas do usuário
-         * @param {Object} metadata    - Dados adicionais opcionais (score, timeSpent, etc.)
-         * @returns {Promise<boolean>} - true se salvo com sucesso
-         *
-         * Exemplo:
-         * await storage.saveProgress('matematica_unidade1', [0, 2, 1, 3], { score: 15 });
+         * =====================================
+         * 
+         * @param {string} quizId - Identificador único do quiz (ex: 'matematica_unidade1')
+         * @param {Array|Object} respostas - Array ou objeto com as respostas do usuário
+         * @param {Object} metadata - Dados adicionais (opcional: timestamp, score parcial, etc.)
+         * 
+         * Exemplo de uso:
+         * storage.saveProgress('matematica_unidade1', [0, 2, 1, 3], { timestamp: Date.now() });
          */
-        saveProgress: async function (quizId, respostas, metadata = {}) {
+        saveProgress: function(quizId, respostas, metadata = {}) {
             try {
+                // Validação dos parâmetros de entrada
                 if (!quizId || typeof quizId !== 'string') {
                     console.error('[QuizStorage] quizId deve ser uma string válida');
                     return false;
                 }
-                if (respostas === undefined || respostas === null) {
+
+                if (!respostas) {
                     console.error('[QuizStorage] respostas não pode ser vazio');
                     return false;
                 }
 
+                // Recupera dados existentes do localStorage
+                const allData = this._getAllData();
+                
+                // Cria objeto com dados do progresso
                 const progressData = {
                     respostas: respostas,
                     metadata: {
                         ...metadata,
                         lastSaved: new Date().toISOString(),
-                        version: '2.0'
+                        version: '1.0'
                     }
                 };
 
-                // Salva os dados do quiz
-                const key = buildKey(quizId);
-                const result = await window.storage.set(key, JSON.stringify(progressData));
-
-                if (!result) {
-                    console.error('[QuizStorage] Falha ao salvar no storage');
-                    return false;
-                }
-
-                // Atualiza o índice de quizzes salvos
-                await this._addToIndex(quizId);
-
+                // Salva o progresso do quiz específico
+                allData[quizId] = progressData;
+                
+                // Atualiza o localStorage
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+                
                 console.log(`[QuizStorage] Progresso salvo para quiz: ${quizId}`);
                 return true;
 
@@ -92,43 +78,38 @@
 
         /**
          * CARREGAR PROGRESSO DE UM QUIZ ESPECÍFICO
-         * =========================================
-         *
+         * =======================================
+         * 
          * @param {string} quizId - Identificador único do quiz
-         * @returns {Promise<Object|null>} - { respostas, metadata } ou null se não encontrado
-         *
-         * Exemplo:
-         * const progresso = await storage.loadProgress('matematica_unidade1');
+         * @returns {Object|null} - Retorna objeto com respostas e metadata, ou null se não encontrado
+         * 
+         * Exemplo de uso:
+         * const progresso = storage.loadProgress('matematica_unidade1');
          * if (progresso) {
-         *     console.log(progresso.respostas);
-         *     console.log(progresso.metadata.lastSaved);
+         *     const respostas = progresso.respostas;
+         *     const metadata = progresso.metadata;
          * }
          */
-        loadProgress: async function (quizId) {
+        loadProgress: function(quizId) {
             try {
+                // Validação do parâmetro
                 if (!quizId || typeof quizId !== 'string') {
                     console.error('[QuizStorage] quizId deve ser uma string válida');
                     return null;
                 }
 
-                const key = buildKey(quizId);
-
-                let result;
-                try {
-                    result = await window.storage.get(key);
-                } catch (_) {
-                    // Chave não existe
+                // Recupera todos os dados
+                const allData = this._getAllData();
+                
+                // Retorna dados do quiz específico ou null
+                const progressData = allData[quizId] || null;
+                
+                if (progressData) {
+                    console.log(`[QuizStorage] Progresso carregado para quiz: ${quizId}`);
+                } else {
                     console.log(`[QuizStorage] Nenhum progresso encontrado para quiz: ${quizId}`);
-                    return null;
                 }
-
-                if (!result || result.value === undefined) {
-                    console.log(`[QuizStorage] Nenhum progresso encontrado para quiz: ${quizId}`);
-                    return null;
-                }
-
-                const progressData = JSON.parse(result.value);
-                console.log(`[QuizStorage] Progresso carregado para quiz: ${quizId}`);
+                
                 return progressData;
 
             } catch (error) {
@@ -139,41 +120,38 @@
 
         /**
          * LIMPAR PROGRESSO DE UM QUIZ ESPECÍFICO
-         * ========================================
-         *
+         * =====================================
+         * 
          * @param {string} quizId - Identificador único do quiz
-         * @returns {Promise<boolean>} - true se removido com sucesso
-         *
-         * Exemplo:
-         * await storage.clearProgress('matematica_unidade1');
+         * @returns {boolean} - true se removido com sucesso, false se erro
+         * 
+         * Exemplo de uso:
+         * storage.clearProgress('matematica_unidade1');
          */
-        clearProgress: async function (quizId) {
+        clearProgress: function(quizId) {
             try {
+                // Validação do parâmetro
                 if (!quizId || typeof quizId !== 'string') {
                     console.error('[QuizStorage] quizId deve ser uma string válida');
                     return false;
                 }
 
-                const key = buildKey(quizId);
-
-                let deleteResult;
-                try {
-                    deleteResult = await window.storage.delete(key);
-                } catch (_) {
+                // Recupera todos os dados
+                const allData = this._getAllData();
+                
+                // Remove o quiz específico
+                if (allData[quizId]) {
+                    delete allData[quizId];
+                    
+                    // Atualiza o localStorage
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+                    
+                    console.log(`[QuizStorage] Progresso removido para quiz: ${quizId}`);
+                    return true;
+                } else {
                     console.log(`[QuizStorage] Nenhum progresso encontrado para remover: ${quizId}`);
                     return false;
                 }
-
-                if (!deleteResult) {
-                    console.log(`[QuizStorage] Nenhum progresso encontrado para remover: ${quizId}`);
-                    return false;
-                }
-
-                // Remove do índice
-                await this._removeFromIndex(quizId);
-
-                console.log(`[QuizStorage] Progresso removido para quiz: ${quizId}`);
-                return true;
 
             } catch (error) {
                 console.error('[QuizStorage] Erro ao limpar progresso:', error);
@@ -183,31 +161,18 @@
 
         /**
          * LIMPAR TODO O PROGRESSO DE TODOS OS QUIZZES
-         * =============================================
-         *
-         * @returns {Promise<boolean>} - true se tudo foi removido com sucesso
-         *
-         * Exemplo:
-         * await storage.clearAllProgress();
+         * ==========================================
+         * 
+         * Remove completamente todos os dados salvos do projeto
+         * 
+         * @returns {boolean} - true se removido com sucesso
+         * 
+         * Exemplo de uso:
+         * storage.clearAllProgress();
          */
-        clearAllProgress: async function () {
+        clearAllProgress: function() {
             try {
-                const quizIds = await this.listSavedQuizzes();
-
-                for (const quizId of quizIds) {
-                    const key = buildKey(quizId);
-                    try {
-                        await window.storage.delete(key);
-                    } catch (_) {
-                        // ignora chaves que não existem
-                    }
-                }
-
-                // Limpa o índice
-                try {
-                    await window.storage.delete(INDEX_KEY);
-                } catch (_) {}
-
+                localStorage.removeItem(STORAGE_KEY);
                 console.log('[QuizStorage] Todo o progresso foi removido');
                 return true;
 
@@ -219,27 +184,19 @@
 
         /**
          * LISTAR TODOS OS QUIZZES COM PROGRESSO SALVO
-         * =============================================
-         *
-         * @returns {Promise<Array<string>>} - Lista de IDs dos quizzes salvos
-         *
-         * Exemplo:
-         * const quizzes = await storage.listSavedQuizzes();
-         * console.log('Quizzes salvos:', quizzes);
+         * ==========================================
+         * 
+         * @returns {Array} - Lista com IDs de todos os quizzes que têm progresso salvo
+         * 
+         * Exemplo de uso:
+         * const quizzesComProgresso = storage.listSavedQuizzes();
+         * console.log('Quizzes salvos:', quizzesComProgresso);
          */
-        listSavedQuizzes: async function () {
+        listSavedQuizzes: function() {
             try {
-                let result;
-                try {
-                    result = await window.storage.get(INDEX_KEY);
-                } catch (_) {
-                    return [];
-                }
-
-                if (!result || !result.value) return [];
-
-                return JSON.parse(result.value);
-
+                const allData = this._getAllData();
+                return Object.keys(allData);
+                
             } catch (error) {
                 console.error('[QuizStorage] Erro ao listar quizzes salvos:', error);
                 return [];
@@ -248,21 +205,19 @@
 
         /**
          * OBTER ESTATÍSTICAS DE ARMAZENAMENTO
-         * =====================================
-         *
-         * @returns {Promise<Object|null>} - Estatísticas de uso
-         *
-         * Exemplo:
-         * const stats = await storage.getStorageStats();
-         * console.log('Total de quizzes:', stats.totalQuizzes);
+         * ==================================
+         * 
+         * @returns {Object} - Objeto com estatísticas de uso do storage
          */
-        getStorageStats: async function () {
+        getStorageStats: function() {
             try {
-                const quizIds = await this.listSavedQuizzes();
-
+                const allData = this._getAllData();
+                const quizIds = Object.keys(allData);
+                
                 return {
                     totalQuizzes: quizIds.length,
                     quizzes: quizIds,
+                    storageSize: JSON.stringify(allData).length,
                     lastAccess: new Date().toISOString()
                 };
 
@@ -273,121 +228,111 @@
         },
 
         /**
-         * VERIFICAR SE O STORAGE ESTÁ DISPONÍVEL
-         * ========================================
-         *
-         * @returns {Promise<boolean>} - true se o storage está funcionando
+         * VERIFICAR SE O LOCALSTORAGE ESTÁ DISPONÍVEL
+         * ==========================================
+         * 
+         * @returns {boolean} - true se localStorage está disponível
          */
-        isStorageAvailable: async function () {
+        isStorageAvailable: function() {
             try {
-                const testKey = PROJECT_PREFIX + '__availability_test__';
-                await window.storage.set(testKey, 'test');
-                await window.storage.delete(testKey);
+                const test = '__storage_test__';
+                localStorage.setItem(test, 'test');
+                localStorage.removeItem(test);
                 return true;
             } catch (e) {
-                console.warn('[QuizStorage] window.storage não está disponível:', e);
+                console.warn('[QuizStorage] localStorage não está disponível');
                 return false;
             }
         },
 
         /**
-         * MÉTODO DE DEBUG: EXIBIR TODOS OS DADOS SALVOS
-         * ===============================================
-         *
-         * @returns {Promise<Object>} - Mapa { quizId: progressData }
+         * MÉTODO PRIVADO: RECUPERAR TODOS OS DADOS DO LOCALSTORAGE
+         * =======================================================
+         * 
+         * @returns {Object} - Objeto com todos os dados dos quizzes
+         * @private
          */
-        debug_getAllData: async function () {
-            const quizIds = await this.listSavedQuizzes();
-            const allData = {};
-
-            for (const quizId of quizIds) {
-                allData[quizId] = await this.loadProgress(quizId);
+        _getAllData: function() {
+            try {
+                const dataString = localStorage.getItem(STORAGE_KEY);
+                return dataString ? JSON.parse(dataString) : {};
+                
+            } catch (error) {
+                console.error('[QuizStorage] Erro ao recuperar dados do localStorage:', error);
+                return {};
             }
+        },
 
+        /**
+         * MÉTODO DE DEBUG: EXIBIR TODOS OS DADOS SALVOS
+         * ============================================
+         * 
+         * Útil para desenvolvimento e debugging
+         * 
+         * @returns {Object} - Todos os dados salvos
+         */
+        debug_getAllData: function() {
+            const allData = this._getAllData();
             console.log('[QuizStorage] Dados completos:', allData);
             return allData;
-        },
-
-        // ─── Métodos Privados ────────────────────────────────────────────────
-
-        /**
-         * MÉTODO PRIVADO: Adiciona um quizId ao índice
-         * @private
-         */
-        _addToIndex: async function (quizId) {
-            const current = await this.listSavedQuizzes();
-            if (!current.includes(quizId)) {
-                current.push(quizId);
-                await window.storage.set(INDEX_KEY, JSON.stringify(current));
-            }
-        },
-
-        /**
-         * MÉTODO PRIVADO: Remove um quizId do índice
-         * @private
-         */
-        _removeFromIndex: async function (quizId) {
-            const current = await this.listSavedQuizzes();
-            const updated = current.filter(id => id !== quizId);
-            await window.storage.set(INDEX_KEY, JSON.stringify(updated));
         }
     };
 
-    // ─── Exportação ──────────────────────────────────────────────────────────
-
+    /**
+     * EXPORTAÇÃO DO MÓDULO
+     * ===================
+     * 
+     * Torna o QuizStorage disponível globalmente como 'storage'
+     */
+    
+    // Para uso em browsers (variável global)
     if (typeof window !== 'undefined') {
         window.storage = QuizStorage;
     }
-
+    
+    // Para uso em Node.js (caso necessário)
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = QuizStorage;
     }
 
-    // Verificação inicial
+    // Verificação inicial do localStorage
     if (typeof window !== 'undefined') {
-        QuizStorage.isStorageAvailable().then(available => {
-            if (!available) {
-                console.warn('[QuizStorage] AVISO: window.storage não está disponível. Os dados não serão salvos.');
-            } else {
-                console.log('[QuizStorage] Sistema de storage v2.0 inicializado com sucesso');
-            }
-        });
+        if (!QuizStorage.isStorageAvailable()) {
+            console.warn('[QuizStorage] AVISO: localStorage não está disponível. Os dados não serão salvos persistentemente.');
+        } else {
+            console.log('[QuizStorage] Sistema de storage inicializado com sucesso');
+        }
     }
 
 })();
 
 /**
- * EXEMPLOS DE USO (v2.0 - assíncrono)
- * =====================================
- *
+ * EXEMPLOS DE USO
+ * ==============
+ * 
  * // 1. Salvar progresso de um quiz
- * await storage.saveProgress('matematica_unidade1', [0, 2, 1, 3, null], {
- *     score: 15,
- *     timeSpent: 300
+ * storage.saveProgress('matematica_unidade1', [0, 2, 1, 3, null], { 
+ *     score: 15, 
+ *     timeSpent: 300 
  * });
- *
+ * 
  * // 2. Carregar progresso
- * const progresso = await storage.loadProgress('matematica_unidade1');
+ * const progresso = storage.loadProgress('matematica_unidade1');
  * if (progresso) {
- *     console.log('Respostas:', progresso.respostas);
- *     console.log('Última vez salvo:', progresso.metadata.lastSaved);
+ *     const respostas = progresso.respostas;
+ *     const metadata = progresso.metadata;
+ *     console.log('Última vez salvo:', metadata.lastSaved);
  * }
- *
+ * 
  * // 3. Limpar progresso específico
- * await storage.clearProgress('matematica_unidade1');
- *
+ * storage.clearProgress('matematica_unidade1');
+ * 
  * // 4. Limpar todo o progresso
- * await storage.clearAllProgress();
- *
+ * storage.clearAllProgress();
+ * 
  * // 5. Ver quizzes salvos
- * const quizzes = await storage.listSavedQuizzes();
- * console.log('Quizzes com progresso:', quizzes);
- *
+ * console.log('Quizzes com progresso:', storage.listSavedQuizzes());
+ * 
  * // 6. Estatísticas
- * const stats = await storage.getStorageStats();
- * console.log('Stats:', stats);
- *
- * // 7. Verificar disponibilidade
- * const ok = await storage.isStorageAvailable();
- * console.log('Storage disponível:', ok);
+ * console.log('Stats:', storage.getStorageStats());
  */
