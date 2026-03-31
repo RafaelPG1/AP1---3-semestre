@@ -379,33 +379,68 @@ function _exibirResumos(discId, panelEl) {
     const wrapper = document.createElement('div');
     wrapper.className = 'panel-resumos';
 
-    // ── bloco: resumos das aulas ─────────────────────────────────────
+// ── bloco: resumos das aulas ─────────────────────────────────────
     let htmlAulas = '';
     if (resumos.length > 0) {
-        htmlAulas = `
-            <div class="resumo-header-bar">
-                <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
-                <span class="rh-count">${resumos.length} aula${resumos.length !== 1 ? 's' : ''}</span>
-            </div>
-            ${resumos.map(r => _renderCard(r, discId)).join('')}
-        `;
+        if (discId === 'redes') {
+            // com toggle colapsável
+            htmlAulas = `
+                <div class="resumo-header-bar resumo-secao-toggle" data-secao="aulas" style="cursor:pointer;">
+                    <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
+                    <div style="display:flex;align-items:center;gap:.6rem;">
+                        <span class="rh-count">${resumos.length} aula${resumos.length !== 1 ? 's' : ''}</span>
+                        <i class="fas fa-chevron-down rh-chevron"></i>
+                    </div>
+                </div>
+                <div class="resumo-secao-body resumo-secao-body--aulas" style="display:none;">
+                    ${resumos.map(r => _renderCard(r, discId)).join('')}
+                </div>
+            `;
+        } else {
+            // sem toggle — comportamento original
+            htmlAulas = `
+                <div class="resumo-header-bar">
+                    <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
+                    <span class="rh-count">${resumos.length} aula${resumos.length !== 1 ? 's' : ''}</span>
+                </div>
+                ${resumos.map(r => _renderCard(r, discId)).join('')}
+            `;
+        }
     }
 
-    // ── bloco: resumo do professor ───────────────────────────────────
+    // ── bloco: resumo do professor (só existe em redes) ──────────────
     let htmlProf = '';
-    if (resumosProf.length > 0) {
+    if (discId === 'redes' && resumosProf.length > 0) {
         htmlProf = `
-            <div class="resumo-header-bar" style="margin-top:1.5rem;">
+            <div class="resumo-header-bar resumo-secao-toggle" data-secao="prof" style="margin-top:1rem;cursor:pointer;">
                 <span class="rh-label"><i class="fas fa-chalkboard-teacher" style="margin-right:.35rem;"></i>Resumo do Professor</span>
-                <span class="rh-count">${resumosProf.length} tópico${resumosProf.length !== 1 ? 's' : ''}</span>
+                <div style="display:flex;align-items:center;gap:.6rem;">
+                    <span class="rh-count">${resumosProf.length} tópico${resumosProf.length !== 1 ? 's' : ''}</span>
+                    <i class="fas fa-chevron-down rh-chevron"></i>
+                </div>
             </div>
-            ${resumosProf.map(r => _renderCard(r, 'redes_professor')).join('')}
+            <div class="resumo-secao-body resumo-secao-body--prof" style="display:none;">
+                ${resumosProf.map(r => _renderCard(r, 'redes_professor')).join('')}
+            </div>
         `;
     }
 
     wrapper.innerHTML = htmlAulas + htmlProf;
     panelEl.appendChild(wrapper);
+// ── toggle das seções (Aulas / Professor) ────────────────────────
+    wrapper.querySelectorAll('.resumo-secao-toggle').forEach(header => {
+        header.style.cursor = 'pointer';
+        header.addEventListener('click', () => {
+            const secao   = header.dataset.secao;
+            const body    = wrapper.querySelector(`.resumo-secao-body--${secao}`);
+            const chevron = header.querySelector('.rh-chevron');
+            const aberto  = body.style.display !== 'none';
 
+            body.style.display   = aberto ? 'none' : 'block';
+            chevron.style.transform = aberto ? 'rotate(0deg)' : 'rotate(180deg)';
+            chevron.style.transition = 'transform .25s ease';
+        });
+    });
     // ── eventos (cards de aulas + cards do professor) ────────────────
     wrapper.querySelectorAll('.resumo-card').forEach(card => {
         const rid = card.dataset.resumoId;
