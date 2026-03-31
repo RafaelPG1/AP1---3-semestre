@@ -1,8 +1,8 @@
-// Configuração do quiz
 const originalQuizData = [
   {
-    subject: "Aula 1 — Introdução e Aplicações de Redes",
+    subject: "Aula 01/02 — Fundamentos e Classificação de Redes",
     questions: [
+      // Q original 1 — Modelo P2P
       {
         texto: "Uma startup de tecnologia está desenvolvendo um novo sistema de compartilhamento de arquivos de vídeo em altíssima resolução. Para economizar custos com infraestrutura de servidores centrais e aproveitar a capacidade de processamento e upload dos próprios usuários, a equipe de engenharia decide que cada nó da rede deve ser capaz de fornecer e consumir dados simultaneamente, sem uma hierarquia rígida.",
         question: "Esse cenário descreve a aplicação de qual modelo de organização?",
@@ -16,6 +16,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Modelo Peer-to-Peer (P2P).\n\nPor que está certa:\nNo modelo P2P não há uma divisão estrita entre quem provê e quem consome o dado, e a responsabilidade é compartilhada entre os indivíduos."
       },
+      // Q original 2 — Rede de Computadores vs SD
       {
         texto: "Um hospital universitário implementou um sistema onde cada computador opera de forma independente, sem um controle central obrigatório, mas todos estão interconectados por fibra óptica para trocar prontuários médicos. Os usuários precisam lidar explicitamente com diferentes sistemas operacionais e máquinas reais para acessar os dados.",
         question: "De acordo com as definições técnicas de arquitetura, esse sistema é classificado como:",
@@ -29,6 +30,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Rede de Computadores.\n\nPor que está certa:\nUma rede de computadores consiste em computadores autônomos interconectados onde o usuário lida explicitamente com o hardware e há ausência de um software de automação (middleware) que traga coesão."
       },
+      // Q original 3 — RFID / IoT
       {
         texto: "Uma grande rede de supermercados deseja substituir os códigos de barras de seus produtos por etiquetas que permitam o inventário em tempo real sem a necessidade de contato visual ou manual com o item. A solução adotada utiliza chips passivos embutidos nas embalagens, que reportam automaticamente dados de identificação e localização via sinal de radiofrequência para leitores espalhados pelo estoque.",
         question: "Esse cenário é um exemplo prático de qual tecnologia?",
@@ -42,6 +44,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Identificação por Radiofrequência (RFID).\n\nPor que está certa:\nO RFID utiliza chips passivos para monitoramento e identificação, sendo um pilar da computação ubíqua e Internet das Coisas."
       },
+      // Q original 4 — Middleware / Sistema Distribuído
       {
         texto: "Um engenheiro de software precisa decidir entre implementar a lógica de um novo sistema de reservas aéreas como uma rede de computadores pura ou como um sistema distribuído. O sistema será acessado por milhares de agências ao redor do mundo e precisa apresentar-se como uma plataforma única e coesa, independentemente de quantas máquinas físicas estejam envolvidas no processamento.",
         question: "Considerando a diferenciação arquitetural entre esses dois conceitos, qual critério seria determinante para escolher o sistema distribuído?",
@@ -55,6 +58,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) A existência de um middleware que ofereça transparência e faça o conjunto parecer um sistema único e coerente.\n\nPor que está certa:\nA principal diferença arquitetural é que sistemas distribuídos possuem um middleware que garante coesão e transparência, fazendo com que o hardware seja invisível para o usuário, ao contrário das redes de computadores."
       },
+      // Q original 5 — Tirania da geografia
       {
         texto: "Uma empresa de advocacia com escritórios em Singapura e Nova York precisa garantir que seus advogados acessem documentos confidenciais de clientes de qualquer localidade, como se estivessem operando um servidor local. Graças à infraestrutura de redes, os arquivos localizados fisicamente em um continente são acessados em tempo real por profissionais no outro lado do globo, eliminando a necessidade de deslocamentos ou envio físico de documentos.",
         question: "Esse benefício das redes de computadores é conhecido como:",
@@ -68,6 +72,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Eliminação da \"tirania da geografia\".\n\nPor que está certa:\nO compartilhamento de recursos em rede permite que dados em locais distantes sejam acessados como se fossem locais, removendo limitações geográficas."
       },
+      // Q original 6 — BitTorrent / P2P
       {
         texto: "Durante uma auditoria de TI em uma empresa do setor financeiro, descobriu-se que funcionários estavam utilizando o BitTorrent para baixar arquivos pessoais no ambiente de trabalho. Além do alto consumo de banda, o gestor de segurança identificou que essa tecnologia opera sem um banco de dados centralizado para controle de conteúdo — cada usuário conectado pode simultaneamente baixar e distribuir partes de arquivos para outros participantes da rede.",
         question: "Essa característica de descentralização é típica de qual modelo?",
@@ -81,6 +86,7 @@ const originalQuizData = [
         answer: 3,
         feedback: "✓ Resposta correta: D) Sistemas Peer-to-Peer (P2P).\n\nPor que está certa:\nO BitTorrent é um exemplo moderno de sistema P2P, caracterizado pela descentralização e ausência de um banco de dados de conteúdo central."
       },
+      // Q original 7 — Neutralidade da rede
       {
         texto: "Uma operadora de internet de grande porte passou a oferecer velocidades de download significativamente menores para serviços de streaming de concorrentes, enquanto o acesso à sua própria plataforma de vídeo permanecia sem restrições. Usuários e entidades reguladoras questionaram a legalidade dessa prática, argumentando que o tráfego de todos os provedores de conteúdo deveria ser tratado de forma igualitária pelos operadores de infraestrutura.",
         question: "Esse debate envolve qual conceito central das questões sociais e éticas das redes modernas?",
@@ -94,6 +100,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Neutralidade da Rede.\n\nPor que está certa:\nA neutralidade da rede trata da questão de se todo conteúdo deve ser tratado de forma igualitária pelos operadores."
       },
+      // Q original 8 — Lei de Metcalfe
       {
         texto: "Ao estudar o crescimento das redes sociais e da internet, pesquisadores observaram que plataformas como o Facebook se tornaram exponencialmente mais valiosas à medida que novos usuários ingressavam. Esse fenômeno é explicado por um princípio econômico que descreve a relação entre o número de participantes de uma rede e o valor que ela gera para cada um de seus membros.",
         question: "A \"Lei de Metcalfe\", citada no contexto das aplicações domésticas de redes, afirma:",
@@ -107,6 +114,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) O valor de uma rede cresce proporcionalmente ao quadrado do número de usuários.\n\nPor que está certa:\nConforme as aplicações domésticas, a Lei de Metcalfe indica que o valor de uma rede cresce proporcionalmente ao quadrado do número de usuários."
       },
+      // Q original 9 — Botnets / IoT
       {
         texto: "Um edifício inteligente utiliza sensores de temperatura, câmeras e etiquetas RFID para controle de acesso e automação de ambientes. O administrador da rede constatou que dispositivos domésticos mal protegidos — como lâmpadas Wi-Fi e termostatos conectados — foram comprometidos por agentes maliciosos e passaram a enviar requisições coordenadas a servidores externos, sobrecarregando-os e tornando-os indisponíveis para usuários legítimos.",
         question: "Esse problema de segurança, onde dispositivos IoT infectados são utilizados para ataques coordenados, é tecnicamente conhecido como:",
@@ -120,6 +128,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Botnets.\n\nPor que está certa:\nBotnets são redes de dispositivos infectados usados para ataques coordenados, um dos grandes desafios de segurança na conectividade atual."
       },
+      // Q original 10 — VoIP / Videoconferência
       {
         texto: "Para reduzir custos operacionais com deslocamentos e ligações internacionais, uma multinacional com filiais em quatro continentes implementou um sistema integrado de videoconferência e comunicação de voz sobre rede de dados. Com isso, as reuniões antes realizadas presencialmente passaram a ocorrer de forma remota, e as chamadas telefônicas entre filiais deixaram de ser roteadas pelas companhias telefônicas tradicionais.",
         question: "Qual é o componente principal dessa solução e quais custos tradicionais ela visa substituir?",
@@ -132,12 +141,8 @@ const originalQuizData = [
         ],
         answer: 1,
         feedback: "✓ Resposta correta: B) Substituem custos de viagens e usam a rede de dados em vez da companhia telefônica.\n\nPor que está certa:\nTecnologias de VoIP e videoconferência eliminam custos de viagens e as chamadas são realizadas pela rede de dados."
-      }
-    ]
-  },
-  {
-    subject: "Aula 2 — Hardware e Classificação de Redes",
-    questions: [
+      },
+      // Q original 11 — LAN / campus universitário
       {
         texto: "Um engenheiro de redes foi contratado para projetar a conectividade de um novo campus universitário onde os prédios estão distribuídos em um raio de 800 metros entre si. Os requisitos do projeto exigem alta velocidade de transferência (até 10 Gbps entre os edifícios) e o menor atraso possível para as aplicações acadêmicas e administrativas.",
         question: "De acordo com a escala física das redes, qual é a classificação correta para esse projeto?",
@@ -151,6 +156,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Local Area Network (LAN).\n\nPor que está certa:\nAs LANs operam dentro de um único prédio ou campus de até 1 km, com altas velocidades e baixo atraso."
       },
+      // Q original 12 — Broadcast
       {
         texto: "Em uma rede de laboratório, todas as máquinas compartilham um único canal de comunicação. Quando qualquer computador envia um pacote, ele é fisicamente recebido por todos os outros dispositivos conectados ao mesmo canal. Contudo, apenas o equipamento cujo endereço corresponde ao campo de destino do pacote efetua o processamento da informação; os demais simplesmente ignoram o dado recebido.",
         question: "Esse tipo de tecnologia de transmissão é conhecido como:",
@@ -164,6 +170,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Broadcast.\n\nPor que está certa:\nRedes de broadcast utilizam um único canal compartilhado onde todas as máquinas recebem o pacote, mas um campo de endereço identifica o destino."
       },
+      // Q original 13 — PAN / Bluetooth
       {
         texto: "Um executivo em viagem de negócios utiliza seu smartphone para conectar-se simultaneamente a fones de ouvido sem fio e a um smartwatch enquanto caminha pelo hotel. Todos esses dispositivos trocam dados em um raio inferior a um metro, sem depender de infraestrutura de rede externa.",
         question: "Essa rede, que opera no alcance de uma pessoa, é classificada como:",
@@ -177,6 +184,7 @@ const originalQuizData = [
         answer: 3,
         feedback: "✓ Resposta correta: D) Personal Area Network (PAN).\n\nPor que está certa:\nAs PANs permitem a comunicação no alcance de uma pessoa (geralmente 1 metro) e o Bluetooth é a tecnologia emblemática para isso."
       },
+      // Q original 14 — WAN / sub-rede / roteadores
       {
         texto: "Uma empresa de telecomunicações está expandindo sua rede de fibra óptica transcontinental para interligar data centers na América do Sul, Europa e Ásia. No projeto, máquinas especializadas analisam os pacotes de dados recebidos e executam algoritmos para selecionar a melhor interface de saída, encaminhando os dados por rotas eficientes através de dezenas de nós intermediários ao longo dos continentes.",
         question: "Considerando o hardware de rede de longa distância, quais são os dois componentes fundamentais da \"sub-rede de comunicação\" descritos nesse cenário?",
@@ -190,6 +198,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Linhas de Transmissão e Elementos de Comutação (Roteadores).\n\nPor que está certa:\nUma WAN interconecta hosts utilizando uma sub-rede composta por linhas de transmissão (fibra, cobre, rádio) e elementos de comutação, que são os roteadores."
       },
+      // Q original 15 — MAN / TV a cabo
       {
         texto: "Uma prefeitura municipal decidiu interconectar digitalmente todas as 47 escolas e 23 postos de saúde espalhados por uma cidade de médio porte, cujos pontos mais distantes estão a aproximadamente 10 km do centro administrativo. Para reduzir custos, o projeto aproveitará a infraestrutura de cabos de TV já instalada ao longo das principais avenidas da cidade.",
         question: "Essa rede é classificada como:",
@@ -203,6 +212,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) MAN (Rede Metropolitana).\n\nPor que está certa:\nUma MAN abrange uma cidade inteira (~10 km) e o exemplo clássico é a rede de TV a cabo evoluída para internet."
       },
+      // Q original 16 — VPN
       {
         texto: "Uma multinacional com filiais em São Paulo, Tóquio e Londres precisa garantir que os funcionários de diferentes países trabalhem de forma integrada, acessando os mesmos sistemas internos como se estivessem na mesma rede local. Alugar linhas dedicadas transcontinentais seria inviável financeiramente, por isso a empresa optou por uma solução que utiliza a infraestrutura pública da Internet para criar canais virtuais criptografados e seguros entre os escritórios.",
         question: "Essa solução técnica é chamada de:",
@@ -216,19 +226,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Virtual Private Network (VPN).\n\nPor que está certa:\nA VPN cria links virtuais sobre a infraestrutura pública da Internet, oferecendo flexibilidade e custo reduzido."
       },
-      {
-        texto: "Em um escritório moderno que passou por recente modernização, o antigo cabeamento coletivo foi substituído por uma arquitetura em que cada computador possui seu próprio cabo físico conectado a um dispositivo central. Esse equipamento recebe os pacotes e, consultando uma tabela de endereços, encaminha os dados exclusivamente para a porta à qual o destinatário está conectado, evitando que os outros computadores recebam pacotes desnecessários.",
-        question: "Qual é esse hardware central responsável pelo encaminhamento inteligente?",
-        options: [
-          "Modem DSL.",
-          "Roteador WAN.",
-          "Switch Ethernet.",
-          "Antena de Satélite.",
-          "Gateway de Protocolos."
-        ],
-        answer: 2,
-        feedback: "✓ Resposta correta: C) Switch Ethernet.\n\nPor que está certa:\nO switch é um dispositivo com várias portas que repassa pacotes baseado no endereço de destino apenas para a porta correta."
-      },
+      // Q original 18 — Sem fio e fixo
       {
         texto: "Um prédio tombado pelo patrimônio histórico não pode receber perfurações em suas paredes para passar cabos de rede. A equipe de TI instalou então uma antena Wi-Fi no escritório para conectar os computadores desktop à rede corporativa. Apesar de usar tecnologia sem fio, as máquinas permanecem em posição fixa sobre as mesas, sem qualquer mobilidade.",
         question: "Como essa configuração é classificada quanto ao tipo de rede e à mobilidade dos dispositivos?",
@@ -242,154 +240,7 @@ const originalQuizData = [
         answer: 3,
         feedback: "✓ Resposta correta: D) Sem fio e Fixa.\n\nPor que está certa:\nO dispositivo usa rede sem fio (antena), mas é fixo (desktop no escritório). A computação móvel implica deslocamento, o que não é o caso de um desktop fixo, mesmo usando Wi-Fi."
       },
-      {
-        texto: "Em uma residência, o roteador doméstico conecta dispositivos Wi-Fi (smartphones e notebooks) a uma rede Ethernet cabeada que por sua vez se liga ao modem do provedor. Internamente, o roteador precisa fazer com que essas duas redes — com padrões de comunicação distintos — funcionem de forma integrada, traduzindo os dados entre os diferentes formatos de pacote utilizados por cada tecnologia.",
-        question: "Qual é o nome técnico do dispositivo ou função que realiza essa conexão e tradução entre redes quase sempre incompatíveis?",
-        options: [
-          "Switch.",
-          "Roteador.",
-          "Gateway.",
-          "Modem.",
-          "Access Point."
-        ],
-        answer: 2,
-        feedback: "✓ Resposta correta: C) Gateway.\n\nPor que está certa:\nO gateway é o nome geral para a máquina que oferece a conexão e tradução entre redes incompatíveis."
-      },
-      {
-        texto: "Uma expedição científica instalada na Antártida precisa enviar diariamente grandes volumes de dados climáticos para uma universidade na Europa. A região não dispõe de nenhuma infraestrutura terrestre de cabos de fibra óptica ou torres de rádio. A solução adotada utiliza uma antena no solo que transmite os dados para um equipamento em órbita, o qual redistribui o sinal para uma vasta área geográfica no destino.",
-        question: "Quais são as características fundamentais dessa tecnologia de transmissão?",
-        options: [
-          "Curto alcance (1 metro) e paradigma mestre-escravo.",
-          "Alcance metropolitano (10 km) via WiMAX.",
-          "Cobertura de áreas sem infraestrutura terrestre e propriedade de transmissão broadcast.",
-          "Conexão direta entre dois roteadores via cabo de cobre par trançado.",
-          "Uso de switches para encaminhamento inteligente de pacotes locais."
-        ],
-        answer: 2,
-        feedback: "✓ Resposta correta: C) Cobertura de áreas sem infraestrutura terrestre e propriedade de transmissão broadcast.\n\nPor que está certa:\nSistemas via satélite funcionam como broadcast inerente e são fundamentais para cobrir áreas geográficas onde o transporte terrestre é inviável."
-      }
-    ]
-  },
-  {
-    subject: "Aula 3 — Meios de Transmissão",
-    questions: [
-      {
-        texto: "Uma operadora de internet deseja expandir seus serviços para um bairro recém-construído. Após analisar as alternativas disponíveis, a empresa optou pela tecnologia FTTH (Fiber to the Home), que leva a fibra óptica diretamente às residências dos usuários finais, garantindo velocidades superiores a 100 Mbps.",
-        question: "Comparada ao tradicional fio de cobre, qual é a principal vantagem técnica da fibra óptica para o desempenho da rede?",
-        options: [
-          "Menor custo de instalação em curtas distâncias.",
-          "Imunidade a interferências eletromagnéticas e baixíssimo atraso.",
-          "Capacidade de transmitir apenas sinais analógicos de voz.",
-          "Reutilização obrigatória da infraestrutura de telefonia antiga.",
-          "Facilidade em realizar emendas manuais sem equipamentos especializados."
-        ],
-        answer: 1,
-        feedback: "✓ Resposta correta: B) Imunidade a interferências eletromagnéticas e baixíssimo atraso.\n\nPor que está certa:\nA fibra óptica é inerentemente imune a ruídos elétricos e oferece um desempenho superior em termos de atraso e largura de banda."
-      },
-      {
-        texto: "Um pesquisador instalado em uma estação científica remota no interior da Amazônia precisa enviar diariamente grandes volumes de dados meteorológicos e de monitoramento ambiental para centros de processamento localizados em São Paulo e Lisboa. A região não possui cobertura de rede celular, não há torres de rádio nas proximidades e nenhum cabo de fibra óptica chega àquela localidade.",
-        question: "Qual tecnologia de transmissão é a mais indicada para garantir a conectividade nessa região geográfica isolada?",
-        options: [
-          "Ethernet comutada via par trançado.",
-          "Redes celulares de curto alcance.",
-          "Sistemas via satélite de transmissão broadcast.",
-          "Linhas DSL reutilizadas de telefonia.",
-          "Conexão Dial-up de 56 kbps."
-        ],
-        answer: 2,
-        feedback: "✓ Resposta correta: C) Sistemas via satélite de transmissão broadcast.\n\nPor que está certa:\nSistemas de satélite são ideais para cobrir áreas onde o transporte terrestre é inviável, funcionando como redes de radiodifusão."
-      },
-      {
-        texto: "Uma empresa com escritórios regionais distribuídos por cidades do interior contratou um provedor de internet para fornecer acesso de banda larga. O provedor optou por uma tecnologia que aproveita a extensa malha de fios de cobre já existente da rede telefônica convencional, evitando a necessidade de instalar novos cabos até cada localidade atendida.",
-        question: "Qual é a característica específica de aproveitamento de recursos que define essa tecnologia?",
-        options: [
-          "Substituição total de todos os fios de cobre por fibras ópticas.",
-          "Uso exclusivo de sinais de rádio para evitar atenuação.",
-          "Reutilização da infraestrutura telefônica existente para transportar dados digitais.",
-          "Transmissão de dados apenas em um sentido (simplex).",
-          "Limitação obrigatória da velocidade a 56 kbps."
-        ],
-        answer: 2,
-        feedback: "✓ Resposta correta: C) Reutilização da infraestrutura telefônica existente para transportar dados digitais.\n\nPor que está certa:\nO DSL permite que a rede de dados utilize a \"última milha\" dos fios de cobre das companhias telefônicas."
-      },
-      {
-        texto: "Em uma planta industrial com grandes motores elétricos e equipamentos de soldagem, a equipe de TI registra um alto índice de erros na transmissão de bits pela rede interna baseada em fios de cobre. Os campos eletromagnéticos gerados pelos motores corrompem os sinais elétricos nos cabos, fazendo com que bits '1' sejam recebidos como '0' e vice-versa, comprometendo a integridade dos dados.",
-        question: "Para resolver o problema de precisão na entrega dos dados nesse ambiente hostil, qual mudança na infraestrutura física seria a mais eficaz?",
-        options: [
-          "Aumentar a tensão elétrica nos cabos de par trançado.",
-          "Substituir o cabeamento de cobre por fibra óptica.",
-          "Instalar antenas WiFi potentes próximas aos motores.",
-          "Reduzir o tempo de duração de cada bit para nanosegundos.",
-          "Utilizar modems de rádio em frequências compartilhadas."
-        ],
-        answer: 1,
-        feedback: "✓ Resposta correta: B) Substituir o cabeamento de cobre por fibra óptica.\n\nPor que está certa:\nA fibra óptica utiliza luz para transmissão, sendo totalmente imune às interferências eletromagnéticas que afetam o sinal elétrico no cobre."
-      },
-      {
-        texto: "Uma universidade instalou uma rede sem fio baseada no padrão IEEE 802.11 (WiFi) em todos os seus campi para permitir que alunos e professores se conectem com notebooks e smartphones. No centro dessa infraestrutura estão dispositivos responsáveis por gerenciar os clientes sem fio e conectá-los à rede cabeada do campus, funcionando como estação-base para a comunicação compartilhada na área de cobertura.",
-        question: "Qual é o principal componente que gerencia essa comunicação em uma rede local sem fio?",
-        options: [
-          "Modem DSL.",
-          "Ponto de Acesso (Access Point).",
-          "Cabo Coaxial de TV.",
-          "Gateway de Tradução.",
-          "Backbone de fibra internacional."
-        ],
-        answer: 1,
-        feedback: "✓ Resposta correta: B) Ponto de Acesso (Access Point).\n\nPor que está certa:\nO Ponto de Acesso atua como uma estação-base que gerencia os dispositivos wireless e os conecta à rede externa."
-      },
-      {
-        texto: "Na camada física de uma rede de dados, engenheiros definem padrões técnicos que estabelecem quais níveis de tensão elétrica representam o valor binário '1' e quais representam o valor '0'. Esses padrões, junto com especificações de conectores, pinagens e características elétricas, compõem a base da transmissão bruta de informações entre dispositivos.",
-        question: "Qual é o objetivo central ao definir esses padrões técnicos na transmissão bruta?",
-        options: [
-          "Garantir que a lógica do quadro de dados seja verificada pelo hardware.",
-          "Assegurar que um bit '1' enviado seja interpretado corretamente como '1' no destino.",
-          "Impedir que o sinal viaje simultaneamente nos dois sentidos do cabo.",
-          "Priorizar o tráfego de vídeo sobre o tráfego de texto no meio físico.",
-          "Eliminar a necessidade de conectores e pinagens padronizadas."
-        ],
-        answer: 1,
-        feedback: "✓ Resposta correta: B) Assegurar que um bit '1' enviado seja interpretado corretamente como '1' no destino.\n\nPor que está certa:\nO foco da transmissão física é a movimentação bruta de sinais e a garantia da integridade bit a bit."
-      },
-      {
-        texto: "As principais operadoras de telecomunicações do Brasil mantêm redes tronco (backbones) que cruzam o território nacional e se conectam a cabos submarinos internacionais. Esses sistemas são responsáveis por transportar o tráfego agregado de milhões de usuários, unindo milhares de roteadores e data centers em escala nacional e intercontinental.",
-        question: "Qual é o meio de transmissão predominante nessas redes de backbone devido à sua alta largura de banda?",
-        options: [
-          "Satélites de órbita baixa.",
-          "Cabos de cobre par trançado.",
-          "Fibras ópticas de alta velocidade.",
-          "Ondas de rádio infravermelho.",
-          "Conexões Dial-up tradicionais."
-        ],
-        answer: 2,
-        feedback: "✓ Resposta correta: C) Fibras ópticas de alta velocidade.\n\nPor que está certa:\nA fibra óptica excede o cobre em todas as dimensões de desempenho, sendo essencial para as conexões de backbone."
-      },
-      {
-        texto: "Um condomínio residencial já possuía toda a infraestrutura de TV a cabo instalada, com cabeamento coaxial chegando a cada apartamento. O provedor de internet local aproveitou essa estrutura existente para oferecer acesso à web aos moradores, sem precisar instalar novos cabos. Um dispositivo específico é instalado em cada unidade para viabilizar essa conexão.",
-        question: "Como esse dispositivo consegue transportar dados de internet utilizando a infraestrutura de TV a cabo?",
-        options: [
-          "Convertendo sinais digitais em ondas de som audíveis pela linha telefônica.",
-          "Utilizando canais de TV a cabo que não estão sendo usados para a programação.",
-          "Criando uma rede sem fio metropolitana baseada em satélites.",
-          "Transmitindo bits através das tubulações de água e esgoto.",
-          "Exigindo que o usuário instale uma antena parabólica dedicada em cada cômodo."
-        ],
-        answer: 1,
-        feedback: "✓ Resposta correta: B) Utilizando canais de TV a cabo que não estão sendo usados para a programação.\n\nPor que está certa:\nO modem a cabo aproveita o espectro não utilizado da rede de televisão para o transporte de dados digitais."
-      },
-      {
-        texto: "Ao projetar uma rede sem fio para um grande armazém de logística, um engenheiro percebe que os coletores de dados portáteis (PDAs) perdem frequentemente a conexão quando se movem atrás de prateleiras metálicas de grande porte. O sinal de rádio não consegue atravessar ou contornar adequadamente essas estruturas, resultando em falhas de transmissão e quedas de conexão em certas zonas do armazém.",
-        question: "Qual conceito físico explica essa degradação e qual seria uma solução possível de acordo com os dispositivos de rede?",
-        options: [
-          "Atenuação do sinal no vácuo; solução: usar cabos coaxiais nos PDAs.",
-          "Interferência de frequência; solução: usar exclusivamente modems DSL.",
-          "Obstrução e reflexão do sinal; solução: instalar múltiplos Pontos de Acesso (APs) para cobertura.",
-          "Latência de processamento; solução: aumentar a memória RAM dos coletores.",
-          "Falha no protocolo de voz; solução: substituir o rádio por fibra óptica em cada PDA."
-        ],
-        answer: 2,
-        feedback: "✓ Resposta correta: C) Obstrução e reflexão do sinal; solução: instalar múltiplos Pontos de Acesso (APs) para cobertura.\n\nPor que está certa:\nSinais de rádio (meios não guiados) são afetados pelo ambiente físico e obstáculos, exigindo estações-base (APs) bem posicionadas para garantir o repasse de pacotes."
-      },
+      // Q original 30 — Bluetooth vs Wi-Fi / escala
       {
         texto: "Um profissional utiliza diariamente dois tipos de tecnologia sem fio: o Bluetooth para conectar fones de ouvido e um teclado ao seu notebook, e o WiFi para acessar a internet em cafeterias e salas de reunião. Embora ambas as tecnologias utilizem ondas de rádio para transmissão, elas foram projetadas para escalas de uso e contextos de aplicação bem distintos.",
         question: "Qual é a principal diferença de escala entre as tecnologias Bluetooth e WiFi?",
@@ -406,8 +257,177 @@ const originalQuizData = [
     ]
   },
   {
-    subject: "Aula 4 — Dispositivos de Rede",
+    subject: "Aula 03/04 — Meios, Dispositivos e Modelos",
     questions: [
+      // Q original 17 — Switch Ethernet
+      {
+        texto: "Em um escritório moderno que passou por recente modernização, o antigo cabeamento coletivo foi substituído por uma arquitetura em que cada computador possui seu próprio cabo físico conectado a um dispositivo central. Esse equipamento recebe os pacotes e, consultando uma tabela de endereços, encaminha os dados exclusivamente para a porta à qual o destinatário está conectado, evitando que os outros computadores recebam pacotes desnecessários.",
+        question: "Qual é esse hardware central responsável pelo encaminhamento inteligente?",
+        options: [
+          "Modem DSL.",
+          "Roteador WAN.",
+          "Switch Ethernet.",
+          "Antena de Satélite.",
+          "Gateway de Protocolos."
+        ],
+        answer: 2,
+        feedback: "✓ Resposta correta: C) Switch Ethernet.\n\nPor que está certa:\nO switch é um dispositivo com várias portas que repassa pacotes baseado no endereço de destino apenas para a porta correta."
+      },
+      // Q original 19 — Gateway
+      {
+        texto: "Em uma residência, o roteador doméstico conecta dispositivos Wi-Fi (smartphones e notebooks) a uma rede Ethernet cabeada que por sua vez se liga ao modem do provedor. Internamente, o roteador precisa fazer com que essas duas redes — com padrões de comunicação distintos — funcionem de forma integrada, traduzindo os dados entre os diferentes formatos de pacote utilizados por cada tecnologia.",
+        question: "Qual é o nome técnico do dispositivo ou função que realiza essa conexão e tradução entre redes quase sempre incompatíveis?",
+        options: [
+          "Switch.",
+          "Roteador.",
+          "Gateway.",
+          "Modem.",
+          "Access Point."
+        ],
+        answer: 2,
+        feedback: "✓ Resposta correta: C) Gateway.\n\nPor que está certa:\nO gateway é o nome geral para a máquina que oferece a conexão e tradução entre redes incompatíveis."
+      },
+      // Q original 20 — Satélite / broadcast
+      {
+        texto: "Uma expedição científica instalada na Antártida precisa enviar diariamente grandes volumes de dados climáticos para uma universidade na Europa. A região não dispõe de nenhuma infraestrutura terrestre de cabos de fibra óptica ou torres de rádio. A solução adotada utiliza uma antena no solo que transmite os dados para um equipamento em órbita, o qual redistribui o sinal para uma vasta área geográfica no destino.",
+        question: "Quais são as características fundamentais dessa tecnologia de transmissão?",
+        options: [
+          "Curto alcance (1 metro) e paradigma mestre-escravo.",
+          "Alcance metropolitano (10 km) via WiMAX.",
+          "Cobertura de áreas sem infraestrutura terrestre e propriedade de transmissão broadcast.",
+          "Conexão direta entre dois roteadores via cabo de cobre par trançado.",
+          "Uso de switches para encaminhamento inteligente de pacotes locais."
+        ],
+        answer: 2,
+        feedback: "✓ Resposta correta: C) Cobertura de áreas sem infraestrutura terrestre e propriedade de transmissão broadcast.\n\nPor que está certa:\nSistemas via satélite funcionam como broadcast inerente e são fundamentais para cobrir áreas geográficas onde o transporte terrestre é inviável."
+      },
+      // Q original 21 — Fibra óptica / FTTH
+      {
+        texto: "Uma operadora de internet deseja expandir seus serviços para um bairro recém-construído. Após analisar as alternativas disponíveis, a empresa optou pela tecnologia FTTH (Fiber to the Home), que leva a fibra óptica diretamente às residências dos usuários finais, garantindo velocidades superiores a 100 Mbps.",
+        question: "Comparada ao tradicional fio de cobre, qual é a principal vantagem técnica da fibra óptica para o desempenho da rede?",
+        options: [
+          "Menor custo de instalação em curtas distâncias.",
+          "Imunidade a interferências eletromagnéticas e baixíssimo atraso.",
+          "Capacidade de transmitir apenas sinais analógicos de voz.",
+          "Reutilização obrigatória da infraestrutura de telefonia antiga.",
+          "Facilidade em realizar emendas manuais sem equipamentos especializados."
+        ],
+        answer: 1,
+        feedback: "✓ Resposta correta: B) Imunidade a interferências eletromagnéticas e baixíssimo atraso.\n\nPor que está certa:\nA fibra óptica é inerentemente imune a ruídos elétricos e oferece um desempenho superior em termos de atraso e largura de banda."
+      },
+      // Q original 22 — Satélite / região remota
+      {
+        texto: "Um pesquisador instalado em uma estação científica remota no interior da Amazônia precisa enviar diariamente grandes volumes de dados meteorológicos e de monitoramento ambiental para centros de processamento localizados em São Paulo e Lisboa. A região não possui cobertura de rede celular, não há torres de rádio nas proximidades e nenhum cabo de fibra óptica chega àquela localidade.",
+        question: "Qual tecnologia de transmissão é a mais indicada para garantir a conectividade nessa região geográfica isolada?",
+        options: [
+          "Ethernet comutada via par trançado.",
+          "Redes celulares de curto alcance.",
+          "Sistemas via satélite de transmissão broadcast.",
+          "Linhas DSL reutilizadas de telefonia.",
+          "Conexão Dial-up de 56 kbps."
+        ],
+        answer: 2,
+        feedback: "✓ Resposta correta: C) Sistemas via satélite de transmissão broadcast.\n\nPor que está certa:\nSistemas de satélite são ideais para cobrir áreas onde o transporte terrestre é inviável, funcionando como redes de radiodifusão."
+      },
+      // Q original 23 — DSL / linha telefônica
+      {
+        texto: "Uma empresa com escritórios regionais distribuídos por cidades do interior contratou um provedor de internet para fornecer acesso de banda larga. O provedor optou por uma tecnologia que aproveita a extensa malha de fios de cobre já existente da rede telefônica convencional, evitando a necessidade de instalar novos cabos até cada localidade atendida.",
+        question: "Qual é a característica específica de aproveitamento de recursos que define essa tecnologia?",
+        options: [
+          "Substituição total de todos os fios de cobre por fibras ópticas.",
+          "Uso exclusivo de sinais de rádio para evitar atenuação.",
+          "Reutilização da infraestrutura telefônica existente para transportar dados digitais.",
+          "Transmissão de dados apenas em um sentido (simplex).",
+          "Limitação obrigatória da velocidade a 56 kbps."
+        ],
+        answer: 2,
+        feedback: "✓ Resposta correta: C) Reutilização da infraestrutura telefônica existente para transportar dados digitais.\n\nPor que está certa:\nO DSL permite que a rede de dados utilize a \"última milha\" dos fios de cobre das companhias telefônicas."
+      },
+      // Q original 24 — Interferência EM / fibra óptica
+      {
+        texto: "Em uma planta industrial com grandes motores elétricos e equipamentos de soldagem, a equipe de TI registra um alto índice de erros na transmissão de bits pela rede interna baseada em fios de cobre. Os campos eletromagnéticos gerados pelos motores corrompem os sinais elétricos nos cabos, fazendo com que bits '1' sejam recebidos como '0' e vice-versa, comprometendo a integridade dos dados.",
+        question: "Para resolver o problema de precisão na entrega dos dados nesse ambiente hostil, qual mudança na infraestrutura física seria a mais eficaz?",
+        options: [
+          "Aumentar a tensão elétrica nos cabos de par trançado.",
+          "Substituir o cabeamento de cobre por fibra óptica.",
+          "Instalar antenas WiFi potentes próximas aos motores.",
+          "Reduzir o tempo de duração de cada bit para nanosegundos.",
+          "Utilizar modems de rádio em frequências compartilhadas."
+        ],
+        answer: 1,
+        feedback: "✓ Resposta correta: B) Substituir o cabeamento de cobre por fibra óptica.\n\nPor que está certa:\nA fibra óptica utiliza luz para transmissão, sendo totalmente imune às interferências eletromagnéticas que afetam o sinal elétrico no cobre."
+      },
+      // Q original 25 — Access Point / Wi-Fi
+      {
+        texto: "Uma universidade instalou uma rede sem fio baseada no padrão IEEE 802.11 (WiFi) em todos os seus campi para permitir que alunos e professores se conectem com notebooks e smartphones. No centro dessa infraestrutura estão dispositivos responsáveis por gerenciar os clientes sem fio e conectá-los à rede cabeada do campus, funcionando como estação-base para a comunicação compartilhada na área de cobertura.",
+        question: "Qual é o principal componente que gerencia essa comunicação em uma rede local sem fio?",
+        options: [
+          "Modem DSL.",
+          "Ponto de Acesso (Access Point).",
+          "Cabo Coaxial de TV.",
+          "Gateway de Tradução.",
+          "Backbone de fibra internacional."
+        ],
+        answer: 1,
+        feedback: "✓ Resposta correta: B) Ponto de Acesso (Access Point).\n\nPor que está certa:\nO Ponto de Acesso atua como uma estação-base que gerencia os dispositivos wireless e os conecta à rede externa."
+      },
+      // Q original 26 — Camada física / bits
+      {
+        texto: "Na camada física de uma rede de dados, engenheiros definem padrões técnicos que estabelecem quais níveis de tensão elétrica representam o valor binário '1' e quais representam o valor '0'. Esses padrões, junto com especificações de conectores, pinagens e características elétricas, compõem a base da transmissão bruta de informações entre dispositivos.",
+        question: "Qual é o objetivo central ao definir esses padrões técnicos na transmissão bruta?",
+        options: [
+          "Garantir que a lógica do quadro de dados seja verificada pelo hardware.",
+          "Assegurar que um bit '1' enviado seja interpretado corretamente como '1' no destino.",
+          "Impedir que o sinal viaje simultaneamente nos dois sentidos do cabo.",
+          "Priorizar o tráfego de vídeo sobre o tráfego de texto no meio físico.",
+          "Eliminar a necessidade de conectores e pinagens padronizadas."
+        ],
+        answer: 1,
+        feedback: "✓ Resposta correta: B) Assegurar que um bit '1' enviado seja interpretado corretamente como '1' no destino.\n\nPor que está certa:\nO foco da transmissão física é a movimentação bruta de sinais e a garantia da integridade bit a bit."
+      },
+      // Q original 27 — Backbone / fibra óptica
+      {
+        texto: "As principais operadoras de telecomunicações do Brasil mantêm redes tronco (backbones) que cruzam o território nacional e se conectam a cabos submarinos internacionais. Esses sistemas são responsáveis por transportar o tráfego agregado de milhões de usuários, unindo milhares de roteadores e data centers em escala nacional e intercontinental.",
+        question: "Qual é o meio de transmissão predominante nessas redes de backbone devido à sua alta largura de banda?",
+        options: [
+          "Satélites de órbita baixa.",
+          "Cabos de cobre par trançado.",
+          "Fibras ópticas de alta velocidade.",
+          "Ondas de rádio infravermelho.",
+          "Conexões Dial-up tradicionais."
+        ],
+        answer: 2,
+        feedback: "✓ Resposta correta: C) Fibras ópticas de alta velocidade.\n\nPor que está certa:\nA fibra óptica excede o cobre em todas as dimensões de desempenho, sendo essencial para as conexões de backbone."
+      },
+      // Q original 28 — Modem a cabo / TV
+      {
+        texto: "Um condomínio residencial já possuía toda a infraestrutura de TV a cabo instalada, com cabeamento coaxial chegando a cada apartamento. O provedor de internet local aproveitou essa estrutura existente para oferecer acesso à web aos moradores, sem precisar instalar novos cabos. Um dispositivo específico é instalado em cada unidade para viabilizar essa conexão.",
+        question: "Como esse dispositivo consegue transportar dados de internet utilizando a infraestrutura de TV a cabo?",
+        options: [
+          "Convertendo sinais digitais em ondas de som audíveis pela linha telefônica.",
+          "Utilizando canais de TV a cabo que não estão sendo usados para a programação.",
+          "Criando uma rede sem fio metropolitana baseada em satélites.",
+          "Transmitindo bits através das tubulações de água e esgoto.",
+          "Exigindo que o usuário instale uma antena parabólica dedicada em cada cômodo."
+        ],
+        answer: 1,
+        feedback: "✓ Resposta correta: B) Utilizando canais de TV a cabo que não estão sendo usados para a programação.\n\nPor que está certa:\nO modem a cabo aproveita o espectro não utilizado da rede de televisão para o transporte de dados digitais."
+      },
+      // Q original 29 — Sinal de rádio / obstáculos
+      {
+        texto: "Ao projetar uma rede sem fio para um grande armazém de logística, um engenheiro percebe que os coletores de dados portáteis (PDAs) perdem frequentemente a conexão quando se movem atrás de prateleiras metálicas de grande porte. O sinal de rádio não consegue atravessar ou contornar adequadamente essas estruturas, resultando em falhas de transmissão e quedas de conexão em certas zonas do armazém.",
+        question: "Qual conceito físico explica essa degradação e qual seria uma solução possível de acordo com os dispositivos de rede?",
+        options: [
+          "Atenuação do sinal no vácuo; solução: usar cabos coaxiais nos PDAs.",
+          "Interferência de frequência; solução: usar exclusivamente modems DSL.",
+          "Obstrução e reflexão do sinal; solução: instalar múltiplos Pontos de Acesso (APs) para cobertura.",
+          "Latência de processamento; solução: aumentar a memória RAM dos coletores.",
+          "Falha no protocolo de voz; solução: substituir o rádio por fibra óptica em cada PDA."
+        ],
+        answer: 2,
+        feedback: "✓ Resposta correta: C) Obstrução e reflexão do sinal; solução: instalar múltiplos Pontos de Acesso (APs) para cobertura.\n\nPor que está certa:\nSinais de rádio (meios não guiados) são afetados pelo ambiente físico e obstáculos, exigindo estações-base (APs) bem posicionadas para garantir o repasse de pacotes."
+      },
+      // Q original 31 — Switch / encaminhamento
       {
         texto: "Em uma rede local de um escritório, o antigo \"cabo único compartilhado\" (barramento) foi substituído por uma nova arquitetura. Agora, um hardware central com múltiplas portas recebe cada pacote enviado pelos computadores e, consultando internamente uma tabela de endereços, encaminha o dado exclusivamente para a porta onde o destinatário está fisicamente conectado — sem enviar cópias para as demais máquinas.",
         question: "Esse dispositivo central responsável pelo encaminhamento inteligente é um:",
@@ -421,6 +441,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Switch Ethernet.\n\nPor que está certa:\nO switch realiza o encaminhamento inteligente de pacotes baseado em endereços, substituindo o broadcast clássico de barramento."
       },
+      // Q original 32 — Roteador / algoritmo de caminho
       {
         texto: "Um provedor de internet (ISP) opera uma rede de longa distância com dezenas de pontos de presença espalhados pelo país. Quando um pacote de dados de um cliente chega a um desses pontos, um computador especializado analisa o endereço de destino e executa um algoritmo para determinar por qual interface de saída o dado deve seguir para alcançar o destino final de forma eficiente.",
         question: "Qual é o nome desse dispositivo e de sua função principal?",
@@ -434,6 +455,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Roteador; função de roteamento e escolha de caminho.\n\nPor que está certa:\nRoteadores são especialistas em decidir caminhos em redes complexas (WANs) através de algoritmos de roteamento."
       },
+      // Q original 33 — Gateway / tradução
       {
         texto: "Uma empresa de software legado utiliza internamente uma rede baseada em uma arquitetura proprietária desenvolvida na década de 1990, com formatos de pacotes e regras de comunicação completamente distintas do padrão TCP/IP da Internet. Para que os desenvolvedores possam acessar repositórios e APIs externas sem substituir toda a infraestrutura interna, é necessário um equipamento capaz de converter e traduzir os dados entre os dois ambientes incompatíveis.",
         question: "Esse dispositivo responsável pela conversão e tradução entre redes incompatíveis é chamado de:",
@@ -447,6 +469,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Gateway.\n\nPor que está certa:\nO gateway é o termo geral para a máquina que oferece conexão e tradução entre redes incompatíveis."
       },
+      // Q original 34 — Modem / conversão D-A
       {
         texto: "Muitos usuários residenciais acessam a internet por meio de conexões via linha telefônica ou TV a cabo. Para viabilizar esse acesso, um dispositivo específico é instalado entre o computador do usuário e o meio físico de transmissão. Esse equipamento precisa converter os dados produzidos pelo computador — que trabalha exclusivamente com sinais digitais binários — em sinais compatíveis com o meio físico utilizado pelo provedor.",
         question: "Qual é a função técnica primordial que o Modem (Modulador-Demodulador) desempenha para o computador?",
@@ -460,6 +483,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Converter bits digitais do computador em sinais analógicos compatíveis com o meio físico.\n\nPor que está certa:\nA função do modem é a conversão entre dados digitais e os sinais (elétricos ou de rádio) do canal físico."
       },
+      // Q original 35 — Access Point / mobilidade
       {
         texto: "Uma empresa de consultoria em expansão reformou seu prédio e equipou todas as salas de reunião e andares com conectividade sem fio. O objetivo é que os funcionários possam mover-se livremente com seus notebooks entre qualquer ambiente do edifício sem perder a conexão à rede corporativa. Para isso, o administrador instalou múltiplos dispositivos espalhados estrategicamente pelo prédio, cada um gerenciando os clientes wireless de sua área e conectando-os à rede cabeada existente.",
         question: "Esses dispositivos responsáveis por gerenciar a comunicação sem fio e repassar os dados para a rede cabeada são:",
@@ -473,19 +497,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Pontos de Acesso (Access Points).\n\nPor que está certa:\nO AP é o componente central que gerencia dispositivos wireless em uma LAN."
       },
-      {
-        texto: "Uma grande operadora de telecomunicações mantém uma rede de longa distância composta por dezenas de roteadores interconectados por linhas de fibra óptica de alta velocidade. Durante uma tempestade, o cabo que conecta os nós de Brasília e Goiânia foi rompido. Apesar disso, o tráfego entre essas cidades continuou fluindo normalmente, sendo automaticamente redirecionado por São Paulo e Belo Horizonte.",
-        question: "Essa característica de resiliência e redirecionamento automático é típica de qual configuração de dispositivos?",
-        options: [
-          "Topologia em Barramento com cabos de cobre.",
-          "Topologia em Estrela centralizada em um único Switch.",
-          "Topologia em Malha (Mesh) com roteamento dinâmico.",
-          "Conexão Dial-up ponto a ponto temporária.",
-          "Rede Ad-hoc sem infraestrutura."
-        ],
-        answer: 2,
-        feedback: "✓ Resposta correta: C) Topologia em Malha (Mesh) com roteamento dinâmico.\n\nPor que está certa:\nRedes em malha possuem conexões redundantes e utilizam roteadores para encontrar caminhos alternativos em caso de falhas."
-      },
+      // Q original 37 — Rede Ad-hoc
       {
         texto: "Quatro pesquisadores de campo estão em uma área remota realizando um levantamento topográfico. Sem infraestrutura de rede disponível, eles precisam compartilhar arquivos de mapas e coordenadas entre seus notebooks em tempo real. Para isso, configuraram seus dispositivos para se comunicarem diretamente entre si via sinal de rádio Wi-Fi, sem nenhum equipamento central de infraestrutura.",
         question: "Essa configuração de rede sem fio sem dispositivo central é conhecida como:",
@@ -499,6 +511,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Rede Ad-hoc.\n\nPor que está certa:\nO modo ad-hoc permite que dispositivos próximos se comuniquem diretamente, sem a necessidade de um AP central."
       },
+      // Q original 38 — Switch vs Roteador
       {
         texto: "Em uma empresa de médio porte, o administrador de rede utiliza dois tipos distintos de dispositivos de interconexão: um para conectar os computadores internamente no escritório (segmento local), e outro para conectar esse escritório à internet e às filiais em outras cidades. Cada dispositivo possui características e capacidades adequadas à sua escala de atuação.",
         question: "Qual é a principal diferença de funcionamento entre um Switch e um Roteador, considerando a escala de atuação de cada um?",
@@ -512,6 +525,7 @@ const originalQuizData = [
         answer: 0,
         feedback: "✓ Resposta correta: A) O Switch conecta computadores em uma rede local (LAN), enquanto o Roteador interconecta redes distintas (WAN).\n\nPor que está certa:\nSwitches operam internamente em LANs e roteadores operam na interconexão de redes."
       },
+      // Q original 39 — AP — sem fio para cabeado
       {
         texto: "O setor administrativo de um hospital opera com computadores conectados por cabos Ethernet, enquanto os médicos utilizam tablets sem fio para acessar prontuários durante as visitas aos leitos. Para que os dados circulem de forma transparente entre a rede cabeada e os dispositivos móveis, o administrador precisa de um equipamento específico que faça o repasse dos pacotes entre os dois meios de transmissão.",
         question: "Qual dispositivo realiza esse repasse de pacotes entre o meio sem fio e o cabeado?",
@@ -524,7 +538,27 @@ const originalQuizData = [
         ],
         answer: 1,
         feedback: "✓ Resposta correta: B) Ponto de Acesso (Access Point).\n\nPor que está certa:\nO AP tem a função específica de encaminhar pacotes entre máquinas sem fio e a rede cabeada externa."
+      }
+    ]
+  },
+  {
+    subject: "Aula 05 — Topologias e Desempenho",
+    questions: [
+      // Q original 36 — Malha / roteamento dinâmico (da Aula 4)
+      {
+        texto: "Uma grande operadora de telecomunicações mantém uma rede de longa distância composta por dezenas de roteadores interconectados por linhas de fibra óptica de alta velocidade. Durante uma tempestade, o cabo que conecta os nós de Brasília e Goiânia foi rompido. Apesar disso, o tráfego entre essas cidades continuou fluindo normalmente, sendo automaticamente redirecionado por São Paulo e Belo Horizonte.",
+        question: "Essa característica de resiliência e redirecionamento automático é típica de qual configuração de dispositivos?",
+        options: [
+          "Topologia em Barramento com cabos de cobre.",
+          "Topologia em Estrela centralizada em um único Switch.",
+          "Topologia em Malha (Mesh) com roteamento dinâmico.",
+          "Conexão Dial-up ponto a ponto temporária.",
+          "Rede Ad-hoc sem infraestrutura."
+        ],
+        answer: 2,
+        feedback: "✓ Resposta correta: C) Topologia em Malha (Mesh) com roteamento dinâmico.\n\nPor que está certa:\nRedes em malha possuem conexões redundantes e utilizam roteadores para encontrar caminhos alternativos em caso de falhas."
       },
+      // Q original 40 — Congestionamento (da Aula 4)
       {
         texto: "Durante um evento de transmissão ao vivo de grande audiência, centenas de computadores de uma emissora passaram a enviar dados simultaneamente para o servidor de streaming. O roteador central, incapaz de processar todos os pacotes recebidos, começou a encher seus buffers de memória e a descartar os pacotes excedentes. Os computadores da rede perceberam as perdas e reduziram automaticamente sua taxa de envio.",
         question: "Qual é o nome do fenômeno que levou ao descarte de pacotes nesse cenário?",
@@ -537,12 +571,8 @@ const originalQuizData = [
         ],
         answer: 2,
         feedback: "✓ Resposta correta: C) Congestionamento.\n\nPor que está certa:\nO congestionamento surge quando a demanda supera a capacidade de entrega da rede, resultando em sobrecarga e perda de dados."
-      }
-    ]
-  },
-  {
-    subject: "Aula 5 — Topologias, Desempenhos e Padrões",
-    questions: [
+      },
+      // Q original 41 — Estrela / isolamento de falhas
       {
         texto: "Uma agência de publicidade reformulou recentemente sua rede local. Na nova configuração, todos os computadores estão conectados individualmente a um hardware central (switch), que encaminha os dados especificamente para o destinatário final. Durante uma semana de trabalho intensa, o cabo de conexão do computador de um designer rompeu-se acidentalmente. O restante da agência continuou operando normalmente, enquanto apenas a máquina do designer ficou sem acesso à rede.",
         question: "Qual topologia está sendo utilizada e qual sua principal vantagem demonstrada nesse incidente?",
@@ -556,6 +586,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Topologia em Estrela; isolamento de falhas.\n\nPor que está certa:\nNa topologia em estrela cada dispositivo conecta-se a um nó central (switch) de forma independente; se um cabo falha, apenas aquela conexão é afetada."
       },
+      // Q original 42 — Malha / roteamento dinâmico
       {
         texto: "Um provedor de backbone global é responsável por garantir a continuidade do tráfego de dados intercontinental mesmo diante de falhas físicas na infraestrutura. Para isso, a rede foi projetada com múltiplas conexões entre os nós, de forma que, se um cabo submarino ou um roteador de grande porte sofrer uma avaria, os pacotes sejam automaticamente redirecionados por rotas alternativas sem interrupção do serviço.",
         question: "Qual topologia e qual funcionalidade técnica são fundamentais para garantir essa resiliência?",
@@ -569,6 +600,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Topologia em Malha (Mesh) e roteamento dinâmico.\n\nPor que está certa:\nA topologia em malha oferece conexões redundantes e o roteamento dinâmico permite encontrar novos caminhos em caso de falhas."
       },
+      // Q original 43 — Jitter / vídeo
       {
         texto: "Durante uma transmissão de videoaula ao vivo para alunos de uma universidade federal, os participantes começaram a reportar que a imagem \"congela\" momentaneamente a cada poucos minutos e o áudio fica fora de sincronia com os movimentos do professor. O administrador da rede verificou que a largura de banda disponível era suficiente para a transmissão, mas identificou que o tempo de entrega dos pacotes variava de forma irregular entre cada envio.",
         question: "Esse problema de desempenho, causado pela variação irregular no tempo de entrega dos pacotes, é tecnicamente conhecido como:",
@@ -582,6 +614,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Jitter (Variação de Atraso).\n\nPor que está certa:\nO jitter é o atraso desigual na entrega de pacotes, o que prejudica a suavidade de aplicações em tempo real como áudio e vídeo."
       },
+      // Q original 44 — Multiplexação estatística
       {
         texto: "O engenheiro de redes de uma empresa multinacional precisa decidir como distribuir a capacidade de um link de comunicação entre os diferentes departamentos. Ele opta por um modelo dinâmico que aloca o recurso conforme a demanda real de cada setor — ao contrário de reservar fatias fixas de capacidade para cada departamento, independente do uso efetivo.",
         question: "Qual é o nome dessa técnica e qual o risco associado se a demanda total exceder a capacidade do link?",
@@ -595,6 +628,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Multiplexação Estatística; risco de congestionamento e descarte de pacotes.\n\nPor que está certa:\nA multiplexação estatística aloca o canal dinamicamente sob demanda; o risco é o congestionamento quando a demanda supera a capacidade."
       },
+      // Q original 45 — Padronização IEEE
       {
         texto: "Uma empresa está modernizando toda a sua infraestrutura de rede e adquirindo equipamentos de diferentes fabricantes: switches da marca A, access points da marca B e roteadores da marca C. O gerente técnico exige que todos os componentes adquiridos obedeçam obrigatoriamente aos padrões IEEE 802.3 (Ethernet cabeada) e IEEE 802.11 (Wi-Fi), independentemente do fabricante escolhido.",
         question: "Qual é o objetivo principal dessa exigência no contexto organizacional?",
@@ -608,6 +642,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Garantir a compatibilidade e interoperabilidade entre dispositivos de diferentes fabricantes.\n\nPor que está certa:\nÓrgãos como o IEEE garantem que interfaces e protocolos sejam universais, permitindo que produtos de marcas distintas funcionem juntos."
       },
+      // Q original 46 — Congestionamento / Black Friday
       {
         texto: "Durante um período de pico de acessos em uma empresa de e-commerce (como uma Black Friday), o roteador central passou a receber um volume de pacotes muito superior à sua capacidade de processamento. Os buffers de memória do equipamento ficaram completamente cheios, forçando o descarte dos pacotes que continuavam chegando. Os servidores e computadores da rede, ao perceberem as perdas, reduziram automaticamente a taxa de envio de dados.",
         question: "Esse cenário descreve um problema de:",
@@ -621,6 +656,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Congestionamento (Sobrecarga).\n\nPor que está certa:\nO congestionamento ocorre quando o volume de tráfego supera a capacidade de entrega, levando ao preenchimento de buffers e descarte de dados."
       },
+      // Q original 47 — Barramento / falha única
       {
         texto: "Um laboratório universitário de pesquisa em redes utiliza uma topologia legada onde todas as máquinas são conectadas por meio de um único cabo coaxial que percorre toda a sala em linha reta. Durante um experimento, um aluno acidentalmente cortou o cabo central ao reposicioná-lo na bancada.",
         question: "Qual foi a consequência imediata para a rede após o corte do cabo?",
@@ -634,6 +670,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Ocorreu a interrupção total da comunicação em toda a rede.\n\nPor que está certa:\nNa topologia em barramento, um rompimento no cabo central (backbone) resulta na falha total da rede."
       },
+      // Q original 48 — Detecção de erros
       {
         texto: "Uma rede de sensores industriais opera em um ambiente com muitos motores elétricos que geram intenso ruído eletromagnético. Para garantir a integridade dos dados, o sistema utiliza códigos redundantes que permitem identificar quando um bit foi corrompido durante a transmissão. Ao detectar um erro, o sistema solicita que o transmissor reenvie o pacote comprometido.",
         question: "Quais são as duas métricas de confiabilidade aplicadas nesse sistema?",
@@ -647,6 +684,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Detecção de Erros e Retransmissão.\n\nPor que está certa:\nO uso de códigos para localizar falhas é a detecção, e o pedido de novo envio é a retransmissão."
       },
+      // Q original 49 — Atraso de propagação
       {
         texto: "Uma empresa de tecnologia conectou seus escritórios em São Paulo e em Lisboa por meio de um cabo de fibra óptica submarino. A distância entre os dois pontos é de aproximadamente 5.000 km, e a velocidade de propagação da luz dentro da fibra é de aproximadamente 200.000 km/s.",
         question: "Qual seria o tempo mínimo para que um sinal chegue ao destino e como isso afeta aplicações de tempo real?",
@@ -660,6 +698,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) 25 milissegundos; pode causar atrasos perceptíveis em voz e jogos.\n\nPor que está certa:\nCom base no cálculo (5.000 / 200.000 = 0,025s ou 25ms), o atraso de propagação é o tempo para o sinal percorrer o meio e é crítico para aplicações em tempo real."
       },
+      // Q original 50 — VLAN / segmentação lógica
       {
         texto: "O administrador de rede de um grande hospital precisa garantir que o tráfego intenso de imagens de alta resolução gerado pelo setor de Radiologia não interfira na rede utilizada pela UTI para monitoramento de pacientes em tempo real. Ambos os setores, porém, compartilham a mesma infraestrutura física de switches do hospital. Para resolver o problema sem trocar os equipamentos, o administrador decide segmentar o tráfego de forma lógica, criando redes virtuais independentes sobre o mesmo hardware.",
         question: "Essa funcionalidade de segmentação lógica de redes é conhecida como:",
@@ -676,8 +715,9 @@ const originalQuizData = [
     ]
   },
   {
-    subject: "Aula 6 — Comunicação de Dados",
+    subject: "Aula 06 — Comunicação de Dados e Sinais",
     questions: [
+      // Q original 51 — Protocolo / comunicação
       {
         texto: "Dois computadores em uma sala de servidores estão conectados por um cabo de fibra óptica em perfeito estado físico. Apesar disso, eles não conseguem trocar informações: um utiliza um sistema operacional configurado em russo com padrões de estruturação de dados proprietários, e o outro opera com um sistema em português seguindo padrões completamente distintos. Não existe um \"idioma\" comum para a troca de mensagens entre as máquinas.",
         question: "De acordo com os fundamentos da comunicação, qual componente está ausente nesse cenário?",
@@ -691,6 +731,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Protocolo.\n\nPor que está certa:\nO protocolo é o conjunto de regras que governa a comunicação; sem ele, dispositivos conectados não se comunicam."
       },
+      // Q original 52 — Sincronização (Timeliness)
       {
         texto: "Um sistema hospitalar de monitoramento cardíaco transmite os dados de batimentos em tempo real para o tablet do médico plantonista. Durante uma falha momentânea na rede, os pacotes ficaram armazenados em um buffer e chegaram ao destino com atraso de um minuto. Embora os dados fossem tecnicamente corretos e chegassem ao destinatário certo, o médico não pôde utilizá-los para tomar uma decisão de emergência.",
         question: "Qual característica fundamental de desempenho da comunicação foi violada nesse cenário?",
@@ -704,6 +745,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Sincronização (Timeliness).\n\nPor que está certa:\nA sincronização exige que os dados sejam entregues em instantes de tempo adequados; dados tardios são inúteis em tempo real."
       },
+      // Q original 53 — Sinal analógico / voz
       {
         texto: "Em um estúdio de gravação musical, um microfone capta a voz de uma cantora. O sinal elétrico gerado pelo microfone varia de forma contínua ao longo do tempo, assumindo valores de intensidade que podem ser qualquer número real dentro de um determinado intervalo — não existe um conjunto finito de valores possíveis para esse sinal.",
         question: "Esse tipo de sinal, que varia continuamente e assume infinitos valores possíveis, é classificado como:",
@@ -717,6 +759,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Sinal Analógico.\n\nPor que está certa:\nSinais analógicos são contínuos e possuem infinitos valores em sua trajetória, sendo a voz humana o exemplo clássico."
       },
+      // Q original 54 — Sinal digital / ruído
       {
         texto: "Em um ambiente hospitalar com tomógrafos, aparelhos de ressonância magnética e outros equipamentos de alto consumo energético, os campos eletromagnéticos gerados são intensos. A equipe de TI precisa decidir qual tipo de sinal utilizar para transmitir dados médicos críticos por toda a instalação, garantindo que ruídos do ambiente não comprometam a integridade das informações.",
         question: "Qual a principal vantagem técnica dos sinais digitais em relação aos analógicos nesse cenário específico?",
@@ -730,6 +773,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Sinais digitais são menos suscetíveis a ruídos e permitem uma reconstrução mais fiel.\n\nPor que está certa:\nSinais digitais são discretos e menos sensíveis a interferências, o que facilita a recuperação da informação original."
       },
+      // Q original 55 — Período e Frequência
       {
         texto: "Um técnico de telecomunicações analisa um transmissor de rádio AM utilizado em uma estação. Ao medir o sinal portador, ele registra que a onda seno completa exatamente 1.000 ciclos idênticos em um segundo de observação.",
         question: "De acordo com os atributos de sinais analógicos periódicos, quais são o Período (T) e a Frequência (f) dessa onda?",
@@ -743,6 +787,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) T = 0,001s; f = 1.000 Hz.\n\nPor que está certa:\nA frequência (f) é o número de ciclos por segundo (1.000 Hz) e o período (T) é o inverso da frequência (1/1000 = 0,001s)."
       },
+      // Q original 56 — Amplitude de pico
       {
         texto: "Uma equipe de engenharia monitora a qualidade de uma transmissão de rádio entre dois postos avançados separados por longa distância. Com o aumento da distância, os técnicos observam que a \"força\" do sinal recebido diminui progressivamente, embora a frequência da onda permaneça constante. Esse enfraquecimento está diretamente relacionado à perda de energia ao longo do percurso.",
         question: "Qual atributo da onda seno está sendo afetado pela perda de energia durante a propagação?",
@@ -756,6 +801,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Amplitude de Pico.\n\nPor que está certa:\nA amplitude de pico é o valor absoluto da intensidade mais alta e é proporcional à energia transportada pelo sinal."
       },
+      // Q original 57 — Periódico vs não periódico
       {
         texto: "Um técnico em eletrônica analisa dois sinais distintos em seu osciloscópio. O primeiro, proveniente de um sensor de temperatura industrial, exibe um padrão de onda que se repete identicamente a cada 5 segundos. O segundo, capturado de uma linha de comunicação de chat entre usuários, apresenta formas de onda completamente irregulares, sem qualquer repetição previsível ao longo do tempo.",
         question: "Como são classificados esses dois tipos de sinais, respectivamente?",
@@ -769,6 +815,7 @@ const originalQuizData = [
         answer: 1,
         feedback: "✓ Resposta correta: B) Periódico e Não Periódico.\n\nPor que está certa:\nSinais periódicos repetem um ciclo em um intervalo determinado e sinais não periódicos mudam sem padrão repetitivo."
       },
+      // Q original 58 — Fase / deslocamento temporal
       {
         texto: "Em um laboratório de comunicações, um professor demonstra dois geradores de onda seno com a mesma frequência. O primeiro gerador inicia seu ciclo exatamente no instante zero, atingindo imediatamente o valor máximo. O segundo gerador, porém, começa a produzir o mesmo padrão de onda apenas um quarto de período após o primeiro, ou seja, existe um deslocamento temporal entre as duas ondas.",
         question: "Qual atributo descreve essa diferença entre as duas ondas e qual o valor aproximado em graus para o deslocamento do segundo gerador?",
@@ -782,6 +829,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Fase; 90 graus.\n\nPor que está certa:\nA fase descreve a posição da onda em relação ao tempo zero. Um deslocamento de 1/4 de período equivale a 90 graus (360/4)."
       },
+      // Q original 59 — Precisão (Accuracy)
       {
         texto: "O sistema de transferência eletrônica de um banco processa milhares de transações por segundo. Durante uma análise, descobriu-se que ruído na fiação interna do data center estava corrompendo bits durante a transmissão — um bit '0' estava sendo recebido como '1' em alguns pacotes, alterando valores monetários das transações. O banco exige que todos os dados cheguem com Precisão (Accuracy) absoluta.",
         question: "De acordo com as características fundamentais da comunicação, o que o sistema deve fazer ao detectar um bit corrompido?",
@@ -795,6 +843,7 @@ const originalQuizData = [
         answer: 2,
         feedback: "✓ Resposta correta: C) Detectar a alteração e, se possível, corrigir o dado ou solicitar retransmissão, pois dados alterados são inúteis.\n\nPor que está certa:\nA precisão exige que o sistema entregue dados com exatidão; dados alterados e não corrigidos perdem sua utilidade."
       },
+      // Q original 60 — Meio de transmissão e protocolo
       {
         texto: "Durante uma aula de redes, o professor utiliza a seguinte analogia para explicar os componentes da comunicação de dados: dois diplomatas de países diferentes precisam negociar um acordo importante por telefone. O aparelho telefônico e os fios que o conectam funcionam perfeitamente. No entanto, a negociação é impossível porque os dois diplomatas falam idiomas completamente diferentes e não chegam a um acordo sobre qual língua usar na conversa.",
         question: "Nessa analogia pedagógica, o hardware (telefone e fios) e o idioma representam, respectivamente, quais elementos da comunicação de dados?",

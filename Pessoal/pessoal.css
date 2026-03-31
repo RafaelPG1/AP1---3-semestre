@@ -405,19 +405,27 @@ body {
 .vbtn {
     display: flex; align-items: center; gap: .7rem;
     padding: .65rem .9rem; border-radius: 10px;
-    background: rgba(16,185,129,.07); border: 1px solid rgba(16,185,129,.18);
-    color: rgba(255,255,255,.72); text-decoration: none; font-size: .82rem;
+    background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.28);
+    color: rgba(255,255,255,.82); text-decoration: none; font-size: .82rem;
     transition: background .22s, border-color .22s, color .22s, transform .18s;
 }
-.vbtn:hover { background: rgba(16,185,129,.16); border-color: rgba(16,185,129,.4); color: white; transform: translateY(-2px); }
-.vbtn .vplay { width: 22px; height: 22px; border-radius: 6px; background: rgba(16,185,129,.18); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.vbtn:hover { 
+    background: rgba(16,185,129,.22); 
+    border-color: rgba(16,185,129,.5); 
+    color: white; 
+    transform: translateY(-2px); 
+}
+.vbtn .vplay { 
+    width: 22px; height: 22px; border-radius: 6px; 
+    background: rgba(16,185,129,.28); 
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; 
+}
 .vbtn .vplay i { font-size: .6rem; color: var(--c-green-l); }
 .vbtn span { flex: 1; }
 .vbtn .vext { font-size: .6rem; color: rgba(255,255,255,.2); }
-.vbtn.watched { border-color: rgba(16,185,129,.45); background: rgba(16,185,129,.14); }
-.vbtn.watched .vplay { background: rgba(16,185,129,.35); }
+.vbtn.watched { border-color: rgba(16,185,129,.55); background: rgba(16,185,129,.2); }
+.vbtn.watched .vplay { background: rgba(16,185,129,.4); }
 .vbtn.watched .vplay i { color: white; }
-
 
 /* ═══════════════════════════════════════════════
    CHECKLIST — REDESIGN v4
