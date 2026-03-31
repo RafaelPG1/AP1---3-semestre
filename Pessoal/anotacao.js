@@ -1,18 +1,27 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   anotacao.js — v21
+   anotacao.js — v24
 
-   Mudanças v21:
-     1. Backspace em code-block vazio remove o bloco
-     2. Botão de link abre modal customizado (texto + URL)
+   Mudanças v24:
+     1. Modal de link: campo "nome" opcional — se preenchido vira o texto
+        âncora; caso contrário usa a própria URL como texto.
+     2. Persistência migrada para Firebase:
+          coleção  → anotacoes/{nome}/notas/{notaId}
+        As funções salvarAnotacaoNoFirebase / deletarAnotacaoNoFirebase /
+        carregarAnotacoesDoFirebase são importadas de firebase.js.
 ════════════════════════════════════════════════════════════════════════ */
 
-const STORAGE_PREFIX  = 'anotacao_v5_';
-const AUTOSAVE_DELAY  = 1500;
+import {
+    salvarAnotacaoNoFirebase,
+    deletarAnotacaoNoFirebase,
+    carregarAnotacoesDoFirebase,
+} from './firebase.js';
+
+const AUTOSAVE_DELAY = 1500;
 
 /* ── Estado global ──────────────────────────────────────────────────── */
 const _st = {
     usuario:    null,
-    dados:      {},
+    dados:      {},   // { discId: { notaId: nota } } — espelho local do Firebase
     timer:      null,
     toastEl:    null,
     toastTimer: null,
@@ -27,7 +36,7 @@ const _st = {
 export async function initAnotacoes(usuario) {
     _st.usuario = usuario;
     _st.dados   = {};
-    await _carregarTodas();
+    _st.dados   = await carregarAnotacoesDoFirebase(usuario);
     if (!_st.toastEl) _criarToast();
     await _garantirQuill();
 }
@@ -111,30 +120,33 @@ function _getQuill(containerEl) {
 
 
 /* ═══════════════════════════════════════════════════════════════════════
-   STORAGE
+   STORAGE — Firebase
 ════════════════════════════════════════════════════════════════════════ */
 
-async function _carregarTodas() {
+async function _persistirNota(discId, id) {
+    const nota = _st.dados[discId]?.[id];
+    if (!nota) return;
     try {
-        const r = await window.Storage?.get?.(_storageKey());
-        if (r) _st.dados = r;
-    } catch (_) {}
+        await salvarAnotacaoNoFirebase(_st.usuario, { ...nota, discId });
+    } catch (err) {
+        console.warn('[Anotacao] Falha ao salvar no Firebase', err);
+    }
 }
 
-async function _persistir() {
+async function _deletarNotaFirebase(id) {
     try {
-        await window.Storage?.set?.(_storageKey(), _st.dados);
-    } catch (_) {}
+        await deletarAnotacaoNoFirebase(_st.usuario, id);
+    } catch (err) {
+        console.warn('[Anotacao] Falha ao deletar no Firebase', err);
+    }
 }
-
-function _storageKey() { return STORAGE_PREFIX + _st.usuario; }
 
 function _agendarSalvamento(discId, id, quill, statusEl) {
     clearTimeout(_st.timer);
     _atualizarStatus(statusEl, false);
     _st.timer = setTimeout(async () => {
         _capturarQuill(discId, id, quill);
-        await _persistir();
+        await _persistirNota(discId, id);
         _atualizarStatus(statusEl, true);
         _mostrarToast('Salvo automaticamente');
     }, AUTOSAVE_DELAY);
@@ -154,20 +166,24 @@ function _criarNota(discId, titulo) {
     if (!_st.dados[discId]) _st.dados[discId] = {};
     const agora = Date.now();
     const id    = `nota_${agora}`;
-    _st.dados[discId][id] = {
+    const nota  = {
         id,
         titulo: titulo.trim() || 'Sem título',
         delta: '',
+        discId,
         criadoEm: agora,
         editadoEm: agora,
     };
-    _persistir();
-    return _st.dados[discId][id];
+    _st.dados[discId][id] = nota;
+    salvarAnotacaoNoFirebase(_st.usuario, nota).catch(err =>
+        console.warn('[Anotacao] Falha ao criar nota no Firebase', err)
+    );
+    return nota;
 }
 
 function _deletarNota(discId, id) {
     delete _st.dados[discId]?.[id];
-    _persistir();
+    _deletarNotaFirebase(id);
 }
 
 function _renomearNota(discId, id, novoTitulo) {
@@ -177,7 +193,9 @@ function _renomearNota(discId, id, novoTitulo) {
     if (novo === nota.titulo) return false;
     nota.titulo    = novo;
     nota.editadoEm = Date.now();
-    _persistir();
+    salvarAnotacaoNoFirebase(_st.usuario, { ...nota, discId }).catch(err =>
+        console.warn('[Anotacao] Falha ao renomear nota no Firebase', err)
+    );
     return true;
 }
 
@@ -217,38 +235,13 @@ function _toggleLista(quill, tipo) {
     }
 
     const novoTipo = todasFormatadas ? false : tipo;
-
     quill.formatLine(inicioIdx, comprimento, 'list', novoTipo, 'user');
-    quill.setSelection(sel.index, sel.length, 'silent');
-}
-
-function _ajustarIndent(quill, aumentar) {
-    const sel = quill.getSelection(true);
-    if (!sel) return;
-
-    const [inicioLinha] = quill.getLine(sel.index);
-    const inicioIdx     = quill.getIndex(inicioLinha);
-
-    const fimIdx = sel.index + sel.length;
-    const [fimLinha] = quill.getLine(fimIdx);
-    const fimIdxLinha = quill.getIndex(fimLinha) + fimLinha.length();
-
-    const comprimento = fimIdxLinha - inicioIdx;
-
-    quill.formatLine(
-        inicioIdx,
-        comprimento,
-        'indent',
-        aumentar ? '+1' : '-1',
-        'user'
-    );
-
     quill.setSelection(sel.index, sel.length, 'silent');
 }
 
 
 /* ═══════════════════════════════════════════════════════════════════════
-   CÓDIGO: usa code-block (estilo Notion)
+   CÓDIGO: usa code-block
 ════════════════════════════════════════════════════════════════════════ */
 
 function _toggleCodeBlock(quill) {
@@ -263,11 +256,8 @@ function _toggleCodeBlock(quill) {
     const fimIdxLinha = quill.getIndex(fimLinha) + fimLinha.length();
 
     const comprimento = Math.max(fimIdxLinha - inicioIdx, 1);
-
     const fmt = quill.getFormat(inicioIdx, comprimento);
-    const jaAtivo = !!fmt['code-block'];
-
-    quill.formatLine(inicioIdx, comprimento, 'code-block', !jaAtivo, 'user');
+    quill.formatLine(inicioIdx, comprimento, 'code-block', !fmt['code-block'], 'user');
     quill.setSelection(sel.index, sel.length, 'silent');
 }
 
@@ -404,10 +394,10 @@ function _abrirModal({ titulo, icone, label, placeholder, btnLabel, btnIcone, va
 
 
 /* ═══════════════════════════════════════════════════════════════════════
-   MODAL DE LINK — v21
+   MODAL DE LINK  (v24 — campo "nome" opcional)
 ════════════════════════════════════════════════════════════════════════ */
 
-function _abrirModalLink(textoInicial, onConfirmar) {
+function _abrirModalLink(textoSelecionado, onConfirmar) {
     const overlay = document.createElement('div');
     overlay.style.cssText = `
         position:fixed;inset:0;z-index:2000;
@@ -419,9 +409,13 @@ function _abrirModalLink(textoInicial, onConfirmar) {
     modal.style.cssText = `
         background:#161616;border:1px solid rgba(255,255,255,.1);
         border-radius:16px;padding:1.6rem 1.8rem 1.4rem;
-        width:90%;max-width:400px;box-shadow:0 24px 60px rgba(0,0,0,.6);
+        width:90%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,.6);
         display:flex;flex-direction:column;gap:1rem;
         animation:ckFadeUp .22s ease both;`;
+
+    /* Campo "nome" fica oculto se já há texto selecionado no editor,
+       pois o texto selecionado já será o âncora. */
+    const temTextoSelecionado = textoSelecionado.trim().length > 0;
 
     modal.innerHTML = `
         <div style="display:flex;align-items:center;gap:.6rem;">
@@ -430,24 +424,32 @@ function _abrirModalLink(textoInicial, onConfirmar) {
             </div>
             <span style="font-size:.92rem;font-weight:700;color:#eaeaea;font-family:'DM Sans',sans-serif;">Inserir link</span>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.75rem;">
-            <div style="display:flex;flex-direction:column;gap:.35rem;">
-                <label style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">Texto</label>
-                <input id="_link_texto" maxlength="120" placeholder="Texto exibido (opcional)"
-                    style="font-family:'DM Sans',sans-serif;font-size:.88rem;color:#eaeaea;
-                           background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
-                           border-radius:8px;padding:.5rem .85rem;outline:none;width:100%;
-                           transition:border-color .18s;box-sizing:border-box;"/>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:.35rem;">
-                <label style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">URL <span style="color:rgba(239,68,68,.6);">*</span></label>
-                <input id="_link_url" maxlength="500" placeholder="https://..."
-                    style="font-family:'DM Sans',sans-serif;font-size:.88rem;color:#eaeaea;
-                           background:rgba(255,255,255,.06);border:1px solid rgba(96,174,245,.35);
-                           border-radius:8px;padding:.5rem .85rem;outline:none;width:100%;
-                           transition:border-color .18s;box-sizing:border-box;"/>
-            </div>
+
+        <!-- URL -->
+        <div style="display:flex;flex-direction:column;gap:.35rem;">
+            <label style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">
+                URL <span style="color:rgba(239,68,68,.6);">*</span>
+            </label>
+            <input id="_link_url" maxlength="500" placeholder="https://..."
+                style="font-family:'DM Sans',sans-serif;font-size:.88rem;color:#eaeaea;
+                       background:rgba(255,255,255,.06);border:1px solid rgba(96,174,245,.35);
+                       border-radius:8px;padding:.5rem .85rem;outline:none;width:100%;
+                       transition:border-color .18s;box-sizing:border-box;"/>
         </div>
+
+        <!-- Nome (âncora) — só aparece quando não há texto selecionado -->
+        ${temTextoSelecionado ? '' : `
+        <div style="display:flex;flex-direction:column;gap:.35rem;">
+            <label style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">
+                Nome <span style="color:rgba(255,255,255,.2);font-weight:400;">(opcional — padrão: URL)</span>
+            </label>
+            <input id="_link_nome" maxlength="120" placeholder="Ex: Documentação oficial"
+                style="font-family:'DM Sans',sans-serif;font-size:.88rem;color:#eaeaea;
+                       background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+                       border-radius:8px;padding:.5rem .85rem;outline:none;width:100%;
+                       transition:border-color .18s;box-sizing:border-box;"/>
+        </div>`}
+
         <div style="display:flex;gap:.5rem;justify-content:flex-end;">
             <button id="_link_canc" style="display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .85rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.45);font-family:'DM Sans',sans-serif;font-size:.78rem;cursor:pointer;">
                 <i class="fas fa-xmark" style="font-size:.7rem;"></i> Cancelar
@@ -460,19 +462,22 @@ function _abrirModalLink(textoInicial, onConfirmar) {
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    const inpUrl   = modal.querySelector('#_link_url');
-    const inpTexto = modal.querySelector('#_link_texto');
-    const btnOk    = modal.querySelector('#_link_ok');
-    const btnCanc  = modal.querySelector('#_link_canc');
+    const inpUrl  = modal.querySelector('#_link_url');
+    const inpNome = modal.querySelector('#_link_nome'); // pode ser null
+    const btnOk   = modal.querySelector('#_link_ok');
+    const btnCanc = modal.querySelector('#_link_canc');
 
-    // Preenche texto se havia seleção
-    inpTexto.value = textoInicial || '';
     inpUrl.focus();
 
-    inpUrl.addEventListener('focus',   () => inpUrl.style.borderColor   = 'rgba(96,174,245,.65)');
-    inpUrl.addEventListener('blur',    () => inpUrl.style.borderColor   = 'rgba(96,174,245,.35)');
-    inpTexto.addEventListener('focus', () => inpTexto.style.borderColor = 'rgba(255,255,255,.25)');
-    inpTexto.addEventListener('blur',  () => inpTexto.style.borderColor = 'rgba(255,255,255,.12)');
+    /* Estilo focus */
+    const focusBorder = (el, cor) => {
+        el.addEventListener('focus', () => el.style.borderColor = cor);
+        el.addEventListener('blur',  () => el.style.borderColor = el === inpUrl
+            ? 'rgba(96,174,245,.35)'
+            : 'rgba(255,255,255,.12)');
+    };
+    focusBorder(inpUrl, 'rgba(96,174,245,.65)');
+    if (inpNome) focusBorder(inpNome, 'rgba(255,255,255,.3)');
 
     const fechar    = () => overlay.remove();
     const confirmar = () => {
@@ -481,21 +486,25 @@ function _abrirModalLink(textoInicial, onConfirmar) {
             inpUrl.style.borderColor = 'rgba(239,68,68,.5)';
             inpUrl.focus(); return;
         }
-        // Adiciona https:// se não tiver protocolo
         if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+        /* Texto âncora: texto selecionado > campo nome > URL */
+        const nome = temTextoSelecionado
+            ? textoSelecionado          // usa a seleção já existente no editor
+            : (inpNome?.value.trim() || url);
+
         fechar();
-        onConfirmar(url, inpTexto.value.trim());
+        onConfirmar(url, nome);
     };
 
     btnOk.addEventListener('click', confirmar);
     btnCanc.addEventListener('click', fechar);
-    inpUrl.addEventListener('keydown', e => {
-        if (e.key === 'Enter')  { e.preventDefault(); confirmar(); }
-        if (e.key === 'Escape') fechar();
-    });
-    inpTexto.addEventListener('keydown', e => {
-        if (e.key === 'Enter')  { e.preventDefault(); inpUrl.focus(); }
-        if (e.key === 'Escape') fechar();
+
+    [inpUrl, inpNome].forEach(el => {
+        el?.addEventListener('keydown', e => {
+            if (e.key === 'Enter')  { e.preventDefault(); confirmar(); }
+            if (e.key === 'Escape') fechar();
+        });
     });
     overlay.addEventListener('mousedown', e => { if (e.target === overlay) fechar(); });
 
@@ -667,7 +676,6 @@ async function _abrirEditor(discId, id, containerEl) {
 
     if (!quill) return;
 
-    // Eventos Quill
     quill.on('text-change', () => {
         _agendarSalvamento(discId, id, quill, statusEl);
         _atualizarWC(wrapper, quill);
@@ -677,46 +685,24 @@ async function _abrirEditor(discId, id, containerEl) {
         _sincronizarToolbar(wrapper, quill);
     });
 
-    // Tab / Shift+Tab
-    quill.keyboard.addBinding({ key: 'Tab' }, function(range, context) {
-        if (context.format.list) {
-            _ajustarIndent(quill, true);
-            return false;
-        }
-        return true;
-    });
+    quill.keyboard.addBinding({ key: 'Tab' }, () => false);
+    quill.keyboard.addBinding({ key: 'Tab', shiftKey: true }, () => false);
 
-    quill.keyboard.addBinding({ key: 'Tab', shiftKey: true }, function(range, context) {
-        if (context.format.list) {
-            _ajustarIndent(quill, false);
-            return false;
-        }
-        return true;
-    });
-
-    // ── FIX v21: Backspace em code-block vazio remove o bloco ──────────
     quill.keyboard.addBinding({ key: 'Backspace' }, function(range, context) {
         if (!range || range.length !== 0) return true;
-
         const fmt = quill.getFormat(range.index, 1);
         if (!fmt['code-block']) return true;
-
         const [linha] = quill.getLine(range.index);
         if (!linha) return true;
-
-        // Linha vazia (só o \n) dentro de code-block → remove o bloco
         if (linha.length() === 1) {
             quill.formatLine(range.index, 1, 'code-block', false, 'user');
             return false;
         }
-
-        // Cursor no início da linha → remove o bloco da linha
         const inicioIdx = quill.getIndex(linha);
         if (range.index === inicioIdx) {
             quill.formatLine(range.index, 1, 'code-block', false, 'user');
             return false;
         }
-
         return true;
     });
 
@@ -724,6 +710,13 @@ async function _abrirEditor(discId, id, containerEl) {
     _atualizarWC(wrapper, quill);
     _sincronizarToolbar(wrapper, quill);
     quill.focus();
+
+    wrapper.querySelector('.ql-editor').addEventListener('click', e => {
+        const a = e.target.closest('a');
+        if (!a) return;
+        e.preventDefault();
+        window.open(a.href, '_blank', 'noopener,noreferrer');
+    });
 }
 
 
@@ -739,7 +732,7 @@ function _montarToolbar(discId, id, wrapper, containerEl, quill, statusEl) {
     wrapper.querySelector('.anot-btn-voltar').addEventListener('click', async () => {
         clearTimeout(_st.timer);
         _capturarQuill(discId, id, quill);
-        await _persistir();
+        await _persistirNota(discId, id);
         _destruirQuill(containerEl);
         _limparPainel(containerEl);
         _renderizarLista(discId, containerEl);
@@ -749,7 +742,7 @@ function _montarToolbar(discId, id, wrapper, containerEl, quill, statusEl) {
     wrapper.querySelector('.anot-btn-salvar').addEventListener('click', async () => {
         clearTimeout(_st.timer);
         _capturarQuill(discId, id, quill);
-        await _persistir();
+        await _persistirNota(discId, id);
         _atualizarStatus(statusEl, true);
         _mostrarToast('Anotação salva');
     });
@@ -789,8 +782,7 @@ function _montarToolbar(discId, id, wrapper, containerEl, quill, statusEl) {
     ];
     btnSimples.forEach(([cmd, fn]) => {
         toolbar.querySelector(`[data-cmd="${cmd}"]`)?.addEventListener('mousedown', e => {
-            e.preventDefault();
-            fn();
+            e.preventDefault(); fn();
             setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
         });
     });
@@ -814,75 +806,59 @@ function _montarToolbar(discId, id, wrapper, containerEl, quill, statusEl) {
 
     /* ── Listas ─────────────────────────────────────────────── */
     toolbar.querySelector('[data-cmd="ol"]')?.addEventListener('mousedown', e => {
-        e.preventDefault();
-        _toggleLista(quill, 'ordered');
+        e.preventDefault(); _toggleLista(quill, 'ordered');
         setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
     });
     toolbar.querySelector('[data-cmd="ul"]')?.addEventListener('mousedown', e => {
-        e.preventDefault();
-        _toggleLista(quill, 'bullet');
+        e.preventDefault(); _toggleLista(quill, 'bullet');
         setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
     });
     toolbar.querySelector('[data-cmd="check"]')?.addEventListener('mousedown', e => {
-        e.preventDefault();
-        _toggleLista(quill, 'unchecked');
+        e.preventDefault(); _toggleLista(quill, 'unchecked');
         setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
     });
 
-    /* ── Indent / Outdent ───────────────────────────────────── */
-    toolbar.querySelector('[data-cmd="indent"]')?.addEventListener('mousedown', e => {
-        e.preventDefault();
-        _ajustarIndent(quill, true);
-        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
-    });
-    toolbar.querySelector('[data-cmd="outdent"]')?.addEventListener('mousedown', e => {
-        e.preventDefault();
-        _ajustarIndent(quill, false);
-        setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
-    });
-
-    /* ── FIX v21: Link → modal customizado ─────────────────── */
+    /* ── Link → modal customizado (v24) ─────────────────────── */
     toolbar.querySelector('[data-cmd="link"]')?.addEventListener('mousedown', e => {
         e.preventDefault();
-        const sel        = quill.getSelection();
-        const textoSel   = sel && sel.length > 0 ? quill.getText(sel.index, sel.length) : '';
+        const sel      = quill.getSelection();
+        const textoSel = sel && sel.length > 0 ? quill.getText(sel.index, sel.length) : '';
 
-        _abrirModalLink(textoSel, (url, texto) => {
-            // Restaura o foco no editor antes de aplicar
+        _abrirModalLink(textoSel, (url, nome) => {
             quill.focus();
             const selAtual = quill.getSelection() ?? sel;
             if (!selAtual) return;
 
             if (selAtual.length > 0) {
-                // Tinha seleção: aplica link no texto selecionado
+                /* Há texto selecionado: apenas aplica o link */
                 quill.formatText(selAtual.index, selAtual.length, 'link', url, 'user');
             } else {
-                // Sem seleção: insere o texto digitado com o link
-                const txt = texto || url;
-                quill.insertText(selAtual.index, txt, 'link', url, 'user');
-                // Remove o formato link do cursor após o texto inserido
-                quill.formatText(selAtual.index + txt.length, 1, 'link', false, 'user');
-                quill.setSelection(selAtual.index + txt.length, 0, 'silent');
+                /* Sem seleção: insere o nome (ou URL) como texto âncora */
+                quill.insertText(selAtual.index, nome, 'link', url, 'user');
+                quill.formatText(selAtual.index + nome.length, 1, 'link', false, 'user');
+                quill.setSelection(selAtual.index + nome.length, 0, 'silent');
             }
-            setTimeout(() => _sincronizarToolbar(wrapper, quill), 30);
+
+            setTimeout(() => {
+                containerEl.querySelectorAll('.ql-editor a').forEach(a => {
+                    a.setAttribute('target', '_blank');
+                    a.setAttribute('rel', 'noopener noreferrer');
+                });
+                _sincronizarToolbar(wrapper, quill);
+            }, 30);
         });
     });
 
     /* ── COLOR PICKER CUSTOM ────────────────────────────────── */
     const colorBtn = toolbar.querySelector('.anot-color-wrap');
     const colorDot = toolbar.querySelector('.anot-color-dot');
-
-    let _selSalva = null;
+    let _selSalva  = null;
 
     colorBtn?.addEventListener('mousedown', e => {
-        e.preventDefault();
-        e.stopPropagation();
-
+        e.preventDefault(); e.stopPropagation();
         _selSalva = quill.getSelection();
-
         const existente = document.querySelector('.anot-color-popup');
         if (existente) { existente.remove(); return; }
-
         _abrirColorPopup(colorBtn, colorDot, cor => {
             if (_selSalva && _selSalva.length > 0) {
                 quill.setSelection(_selSalva.index, _selSalva.length, 'silent');
@@ -917,12 +893,10 @@ function _montarToolbar(discId, id, wrapper, containerEl, quill, statusEl) {
 
     /* ── Undo / Redo ────────────────────────────────────────── */
     toolbar.querySelector('[data-cmd="undo"]')?.addEventListener('mousedown', e => {
-        e.preventDefault();
-        quill.history.undo();
+        e.preventDefault(); quill.history.undo();
     });
     toolbar.querySelector('[data-cmd="redo"]')?.addEventListener('mousedown', e => {
-        e.preventDefault();
-        quill.history.redo();
+        e.preventDefault(); quill.history.redo();
     });
 }
 
@@ -955,7 +929,6 @@ const _COR_CLARA = new Set(['#ffffff','#fda4af','#fed7aa','#bbf7d0','#bfdbfe']);
 function _abrirColorPopup(anchorEl, dotEl, onPick) {
     const popup = document.createElement('div');
     popup.className = 'anot-color-popup';
-
     popup.innerHTML = `
         <div class="anot-cp-header">
             <span class="anot-cp-title"><i class="fas fa-palette"></i> Cor do texto</span>
@@ -966,19 +939,15 @@ function _abrirColorPopup(anchorEl, dotEl, onPick) {
         <div class="anot-cp-grid"></div>`;
 
     const grid = popup.querySelector('.anot-cp-grid');
-
     _COR_PALETA.forEach(({ hex, label }) => {
         const sw = document.createElement('button');
         sw.className        = 'anot-cp-swatch';
         sw.title            = label;
         sw.dataset.hex      = hex;
         sw.style.background = hex;
-        if (_COR_CLARA.has(hex)) {
-            sw.style.border = '1.5px solid rgba(255,255,255,.2)';
-        }
+        if (_COR_CLARA.has(hex)) sw.style.border = '1.5px solid rgba(255,255,255,.2)';
         sw.addEventListener('mousedown', e => {
-            e.preventDefault();
-            e.stopPropagation();
+            e.preventDefault(); e.stopPropagation();
             if (dotEl) dotEl.style.background = hex;
             onPick(hex);
             popup.remove();
@@ -988,8 +957,7 @@ function _abrirColorPopup(anchorEl, dotEl, onPick) {
     });
 
     popup.querySelector('.anot-cp-reset').addEventListener('mousedown', e => {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         if (dotEl) dotEl.style.background = '#ffffff';
         onPick(false);
         popup.remove();
@@ -1003,13 +971,10 @@ function _abrirColorPopup(anchorEl, dotEl, onPick) {
     const ph   = popup.offsetHeight || 148;
     const vw   = window.innerWidth;
     const vh   = window.innerHeight;
-
-    let top  = rect.bottom + window.scrollY + 6;
-    let left = rect.left   + window.scrollX;
-
+    let top    = rect.bottom + window.scrollY + 6;
+    let left   = rect.left   + window.scrollX;
     if (left + pw > vw - 8) left = vw - pw - 8;
     if (top  + ph > vh + window.scrollY - 8) top = rect.top + window.scrollY - ph - 6;
-
     popup.style.top  = `${top}px`;
     popup.style.left = `${left}px`;
 
@@ -1046,10 +1011,8 @@ function _rgbParaHex(cor) {
 function _sincronizarToolbar(wrapper, quill) {
     const toolbar = wrapper.querySelector('.anot-toolbar');
     if (!toolbar || !quill) return;
-
     const sel = quill.getSelection();
     if (!sel) return;
-
     const fmt = quill.getFormat(sel.index, sel.length);
 
     const mapCmds = { bold: 'bold', italic: 'italic', underline: 'underline', strike: 'strike' };
@@ -1095,7 +1058,6 @@ function _buildEditorDOM(discId, id, nota) {
         <button class="anot-tb-btn" data-cmd="undo"  title="Desfazer (Ctrl+Z)"><i class="fas fa-rotate-left"></i></button>
         <button class="anot-tb-btn" data-cmd="redo"  title="Refazer (Ctrl+Y)"><i class="fas fa-rotate-right"></i></button>
         <div class="anot-tb-sep"></div>
-
         <select class="anot-tb-select" title="Estilo do texto">
             <option value="0">Parágrafo</option>
             <option value="1">Título 1</option>
@@ -1103,27 +1065,19 @@ function _buildEditorDOM(discId, id, nota) {
             <option value="3">Título 3</option>
         </select>
         <div class="anot-tb-sep"></div>
-
         <button class="anot-tb-btn" data-cmd="bold"      title="Negrito (Ctrl+B)"><i class="fas fa-bold"></i></button>
         <button class="anot-tb-btn" data-cmd="italic"    title="Itálico (Ctrl+I)"><i class="fas fa-italic"></i></button>
         <button class="anot-tb-btn" data-cmd="underline" title="Sublinhado (Ctrl+U)"><i class="fas fa-underline"></i></button>
         <button class="anot-tb-btn" data-cmd="strike"    title="Tachado"><i class="fas fa-strikethrough"></i></button>
         <button class="anot-tb-btn" data-cmd="code"      title="Bloco de código"><i class="fas fa-code"></i></button>
         <div class="anot-tb-sep"></div>
-
         <button class="anot-tb-btn" data-cmd="ol"    title="Lista numerada"><i class="fas fa-list-ol"></i></button>
         <button class="anot-tb-btn" data-cmd="ul"    title="Lista com pontos"><i class="fas fa-list-ul"></i></button>
         <button class="anot-tb-btn" data-cmd="check" title="Checklist"><i class="fas fa-list-check"></i></button>
         <div class="anot-tb-sep"></div>
-
-        <button class="anot-tb-btn" data-cmd="indent"  title="Aumentar nível (Tab)"><i class="fas fa-indent"></i></button>
-        <button class="anot-tb-btn" data-cmd="outdent" title="Diminuir nível (Shift+Tab)"><i class="fas fa-outdent"></i></button>
-        <div class="anot-tb-sep"></div>
-
         <button class="anot-tb-btn" data-cmd="quote" title="Citação"><i class="fas fa-quote-left"></i></button>
         <button class="anot-tb-btn" data-cmd="link"  title="Link"><i class="fas fa-link"></i></button>
         <div class="anot-tb-sep"></div>
-
         <button class="anot-tb-btn anot-color-wrap" title="Cor do texto">
             <i class="fas fa-palette"></i>
             <span class="anot-color-dot"></span>

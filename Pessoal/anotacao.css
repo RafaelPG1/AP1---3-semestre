@@ -1,7 +1,8 @@
 /*Anotacoes.css*//* ═══════════════════════════════════════════════════════════════════════
-   anotacao.css — v8 (fix definitivo: lista duplicada)
+   anotacao.css — v9
 
-   Inclua APÓS o quill.snow.css para sobrescrever os defaults do Quill.
+   Mudanças v9:
+     1. Removidos estilos dos botões indent / outdent
 ════════════════════════════════════════════════════════════════════════ */
 
 /* ── Wrapper ─────────────────────────────────────────────────────────── */
@@ -533,11 +534,6 @@
 
 /* ═══════════════════════════════════════════════════════════════════════
    LISTAS — FIX DEFINITIVO v8
-   -----------------------------------------------------------------------
-   Estratégia em 3 camadas:
-     1. Reset total: zera marker nativo do browser e ::before do Snow
-     2. Nossas regras com especificidade MAIOR redefinem os marcadores
-     3. Indentação visual por nível
 ════════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. Reset base ─────────────────────────────────────────────────── */
@@ -558,17 +554,12 @@
     position: relative;
 }
 
-/* Zera ::marker nativo do browser */
 .ql-mount .ql-editor li::marker {
     content: "" !important;
     font-size: 0 !important;
     display: none !important;
 }
 
-/* ── NUCLEAR RESET: cobre TODOS os seletores possíveis do Quill Snow ─
-   Listamos explicitamente cada combinação para garantir que nenhuma
-   regra do quill.snow.css sobreviva, independente da sua especificidade.
-─────────────────────────────────────────────────────────────────────── */
 .ql-mount .ql-editor li::before,
 .ql-mount .ql-editor ol li::before,
 .ql-mount .ql-editor ul li::before,
@@ -585,12 +576,8 @@
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════
-   ── 2a. BULLET LIST — marcadores por nível
-   Especificidade (0,2,1) > Snow (0,1,1) ✓
-════════════════════════════════════════════════════════════════════════ */
+/* ── 2a. BULLET LIST ───────────────────────────────────────────────── */
 
-/* Nível 0 — • */
 .ql-mount .ql-editor ul li[data-list="bullet"]::before {
     content: "•" !important;
     display: inline-block !important;
@@ -601,7 +588,6 @@
     counter-increment: none !important;
 }
 
-/* Nível 1 — ◦ */
 .ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-1::before {
     content: "◦" !important;
     display: inline-block !important;
@@ -612,7 +598,6 @@
     counter-increment: none !important;
 }
 
-/* Nível 2 — ▪ */
 .ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-2::before {
     content: "▪" !important;
     display: inline-block !important;
@@ -624,7 +609,6 @@
     counter-increment: none !important;
 }
 
-/* Nível 3 — • */
 .ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-3::before {
     content: "•" !important;
     display: inline-block !important;
@@ -633,7 +617,6 @@
     counter-increment: none !important;
 }
 
-/* Nível 4 — ◦ */
 .ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-4::before {
     content: "◦" !important;
     display: inline-block !important;
@@ -642,7 +625,6 @@
     counter-increment: none !important;
 }
 
-/* Nível 5 — ▪ */
 .ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-5::before {
     content: "▪" !important;
     display: inline-block !important;
@@ -651,7 +633,6 @@
     counter-increment: none !important;
 }
 
-/* Nível 6 — • */
 .ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-6::before {
     content: "•" !important;
     display: inline-block !important;
@@ -660,7 +641,6 @@
     counter-increment: none !important;
 }
 
-/* Nível 7 — ◦ */
 .ql-mount .ql-editor ul li[data-list="bullet"].ql-indent-7::before {
     content: "◦" !important;
     display: inline-block !important;
@@ -670,23 +650,12 @@
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════
-   ── 2b. ORDERED LIST — contadores CSS por nível
-   Contador definido no próprio li para evitar conflito com o Snow.
-   Especificidade (0,2,1) > Snow (0,1,1) ✓
-════════════════════════════════════════════════════════════════════════ */
+/* ── 2b. ORDERED LIST ──────────────────────────────────────────────── */
 
-/*
-   IMPORTANTE: NÃO use counter-reset no <ol> pai — o Quill Snow
-   também faz isso e causa conflito. Em vez disso, cada nível
-   faz counter-reset dos níveis filhos dentro do próprio li.
-   O counter-reset do nível 0 fica no .ql-editor para ser neutro.
-*/
 .ql-mount .ql-editor {
     counter-reset: list-0 list-1 list-2 list-3 list-4 list-5 list-6 list-7;
 }
 
-/* ── Nível 0 — 1, 2, 3 … ─────────────────────────────────────────── */
 .ql-mount .ql-editor li[data-list="ordered"] {
     counter-increment: list-0 !important;
     counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 !important;
@@ -701,7 +670,6 @@
     font-style: normal !important;
 }
 
-/* ── Nível 1 — a, b, c … ─────────────────────────────────────────── */
 .ql-mount .ql-editor li[data-list="ordered"].ql-indent-1 {
     counter-increment: list-1 !important;
     counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 !important;
@@ -713,7 +681,6 @@
     color: rgba(255,255,255,.45) !important; font-style: normal !important;
 }
 
-/* ── Nível 2 — i, ii, iii … ──────────────────────────────────────── */
 .ql-mount .ql-editor li[data-list="ordered"].ql-indent-2 {
     counter-increment: list-2 !important;
     counter-reset: list-3 list-4 list-5 list-6 list-7 !important;
@@ -725,7 +692,6 @@
     color: rgba(255,255,255,.45) !important; font-style: normal !important;
 }
 
-/* ── Nível 3 — A, B, C … ─────────────────────────────────────────── */
 .ql-mount .ql-editor li[data-list="ordered"].ql-indent-3 {
     counter-increment: list-3 !important;
     counter-reset: list-4 list-5 list-6 list-7 !important;
@@ -737,7 +703,6 @@
     color: rgba(255,255,255,.45) !important; font-style: normal !important;
 }
 
-/* ── Nível 4 — I, II, III … ──────────────────────────────────────── */
 .ql-mount .ql-editor li[data-list="ordered"].ql-indent-4 {
     counter-increment: list-4 !important;
     counter-reset: list-5 list-6 list-7 !important;
@@ -749,7 +714,6 @@
     color: rgba(255,255,255,.45) !important; font-style: normal !important;
 }
 
-/* ── Nível 5 — 1, 2, 3 (cicla) ───────────────────────────────────── */
 .ql-mount .ql-editor li[data-list="ordered"].ql-indent-5 {
     counter-increment: list-5 !important;
     counter-reset: list-6 list-7 !important;
@@ -761,7 +725,6 @@
     color: rgba(255,255,255,.45) !important; font-style: normal !important;
 }
 
-/* ── Nível 6 — a, b, c (cicla) ───────────────────────────────────── */
 .ql-mount .ql-editor li[data-list="ordered"].ql-indent-6 {
     counter-increment: list-6 !important;
     counter-reset: list-7 !important;
@@ -773,7 +736,6 @@
     color: rgba(255,255,255,.45) !important; font-style: normal !important;
 }
 
-/* ── Nível 7 — i, ii, iii (cicla) ────────────────────────────────── */
 .ql-mount .ql-editor li[data-list="ordered"].ql-indent-7 {
     counter-increment: list-7 !important;
 }
@@ -785,9 +747,7 @@
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════
-   ── 3. INDENTAÇÃO VISUAL — padding-left por nível
-════════════════════════════════════════════════════════════════════════ */
+/* ── 3. INDENTAÇÃO VISUAL ──────────────────────────────────────────── */
 
 .ql-mount .ql-editor li.ql-indent-1 { padding-left: 3.0em  !important; }
 .ql-mount .ql-editor li.ql-indent-2 { padding-left: 4.5em  !important; }
@@ -799,7 +759,7 @@
 
 
 /* ═══════════════════════════════════════════════════════════════════════
-   CHECKLIST — data-list="checked" / "unchecked"
+   CHECKLIST
 ════════════════════════════════════════════════════════════════════════ */
 
 .ql-mount .ql-editor li[data-list="unchecked"],
@@ -807,7 +767,6 @@
     list-style: none !important;
 }
 
-/* Garante reset total para checklist também */
 .ql-mount .ql-editor ul li[data-list="unchecked"]::before,
 .ql-mount .ql-editor ul li[data-list="checked"]::before,
 .ql-mount .ql-editor ol li[data-list="unchecked"]::before,
@@ -816,7 +775,6 @@
     display: none !important;
 }
 
-/* Checkbox desmarcado */
 .ql-mount .ql-editor li[data-list="unchecked"]::before {
     content: '' !important;
     display: inline-block !important;
@@ -832,7 +790,6 @@
     counter-increment: none !important;
 }
 
-/* Checkbox marcado */
 .ql-mount .ql-editor li[data-list="checked"]::before {
     content: '' !important;
     display: inline-block !important;

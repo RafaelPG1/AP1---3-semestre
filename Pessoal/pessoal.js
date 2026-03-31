@@ -38,7 +38,9 @@ const USUARIOS = [
     { nome: 'Cid',      senha: '285' },
     { nome: 'Everardo', senha: '334' },
     { nome: 'Alvaro',   senha: '093' },
-    { nome: 'Isaac',    senha: '234' }
+    { nome: 'Isaac',    senha: '234' },
+    { nome: 'Cauê',    senha: '542' }
+
 ];
 
 
@@ -82,20 +84,25 @@ document.querySelector('.toggle-senha')?.addEventListener('click', function () {
 function tentarLogin() {
     const nome = inputNome.value.trim();
     const senha = inputSenha.value;
-    const user  = USUARIOS.find(u =>
-        u.nome.toLowerCase() === nome.toLowerCase() && u.senha === senha
+
+    const normalizar = str =>
+        str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+    const user = USUARIOS.find(u =>
+        normalizar(u.nome) === normalizar(nome) && u.senha === senha
     );
+
     if (!user) {
         loginError.classList.remove('hidden');
         inputNome.focus();
         return;
     }
+
     loginError.classList.add('hidden');
     usuarioAtual = user.nome;
     localStorage.setItem('sessao_usuario', user.nome);
     entrarNoDashboard();
 }
-
 btnEntrar.addEventListener('click', tentarLogin);
 inputNome.addEventListener('keydown',  e => { if (e.key === 'Enter') { e.preventDefault(); inputSenha.focus(); } });
 inputSenha.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); tentarLogin(); } });
