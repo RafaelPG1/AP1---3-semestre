@@ -2259,7 +2259,270 @@ export const resumoData = {
             }
         ]
     },
-
+redes_professor: {
+    resumos: [
+        {
+            id: 'redes_prof_aula1',
+            titulo: 'Modelos e Conceitos Gerais',
+            conteudo: [
+                {
+                    subtitulo: '1.1 Protocolos',
+                    texto: [
+                        'O Protocolo é o pilar intelectual de qualquer rede.',
+                        'Consiste em um conjunto de regras que governa a comunicação de dados, definindo:',
+                        [
+                            'O que é comunicado',
+                            'Como é comunicado',
+                            'Quando é comunicado'
+                        ],
+                        'Sem um protocolo comum, dois dispositivos fisicamente conectados seriam incapazes de trocar informações compreensíveis.'
+                    ]
+                },
+                {
+                    subtitulo: '1.2 Encapsulamento',
+                    texto: [
+                        'Encapsulamento é o processo de descida pela pilha de protocolos.',
+                        'À medida que os dados passam da camada de aplicação para as camadas inferiores, cada nível adiciona informações de controle chamadas cabeçalhos (headers).',
+                        'No destino, ocorre o processo inverso: o desencapsulamento.',
+                        'Cada camada remove e interpreta o cabeçalho correspondente, entregando apenas o dado original à aplicação final.'
+                    ]
+                },
+                {
+                    subtitulo: '1.3 PDU (Protocol Data Unit)',
+                    texto: [
+                        'A unidade de dados recebe nomes específicos dependendo da camada em que se encontra:',
+                        [
+                            'Bits — Camada Física (representação bruta)',
+                            'Quadros (Frames) — Camada de Enlace, contém endereços físicos (MAC)',
+                            'Pacotes/Datagramas — Camada de Rede, contém endereços lógicos (IP)',
+                            'Segmentos — Camada de Transporte (TCP), ou Datagramas de Usuário (UDP)'
+                        ]
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_prof_aula2',
+            titulo: 'Endereçamento',
+            conteudo: [
+                {
+                    subtitulo: '2.1 IPv4 vs IPv6',
+                    texto: [
+                        'A principal diferença entre os protocolos está no tamanho do espaço de endereçamento.',
+                        'IPv4:',
+                        [
+                            'Endereços de 32 bits',
+                            'Aproximadamente 4,3 bilhões de endereços únicos',
+                            'Número insuficiente com a explosão de dispositivos IoT'
+                        ],
+                        'IPv6:',
+                        [
+                            'Endereços de 128 bits',
+                            'Número virtualmente infinito de endereços (3,4 × 10³⁸)',
+                            'Simplifica o processamento nos roteadores'
+                        ]
+                    ]
+                },
+                {
+                    subtitulo: '2.2 Endereço IP',
+                    texto: [
+                        'O Endereço IP é a identificação lógica de um host na rede.',
+                        'Diferente do endereço MAC (físico), o IP é:',
+                        [
+                            'Hierárquico',
+                            'Permite que roteadores encaminhem pacotes através de diferentes redes'
+                        ],
+                        'Funciona como o endereço postal de uma carta, permitindo que a Camada de Rede determine a melhor rota da origem ao destino.'
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_prof_aula3',
+            titulo: 'Modelos de Arquitetura',
+            conteudo: [
+                {
+                    subtitulo: '3.1 Cliente-Servidor',
+                    texto: [
+                        'Existe uma distinção clara de papéis:',
+                        [
+                            'Servidor — host sempre ativo que fornece serviços (páginas web, e-mails)',
+                            'Cliente — inicia a comunicação solicitando esses serviços'
+                        ],
+                        'É a arquitetura predominante na Web (HTTP).'
+                    ]
+                },
+                {
+                    subtitulo: '3.2 P2P (Peer-to-Peer)',
+                    texto: [
+                        'Não há servidor central fixo.',
+                        'Todos os nós possuem capacidades equivalentes e podem atuar simultaneamente como clientes e servidores.',
+                        'Características:',
+                        [
+                            'Altamente escalável',
+                            'Cada novo nó adiciona capacidade de processamento e armazenamento à rede'
+                        ],
+                        'Exemplo: BitTorrent.'
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_prof_aula4',
+            titulo: 'Comutação',
+            conteudo: [
+                {
+                    subtitulo: '4.1 Comutação de Pacotes',
+                    texto: [
+                        'É a base da Internet moderna.',
+                        'Funcionamento:',
+                        [
+                            'Os dados são divididos em pequenos pedaços chamados pacotes',
+                            'Cada pacote é tratado de forma independente',
+                            'Os pacotes podem seguir caminhos diferentes até o destino',
+                            'No destino, os pacotes são reagrupados'
+                        ],
+                        'Vantagem: uso eficiente e compartilhado dos links de comunicação.',
+                        'Desvantagem: pode introduzir atrasos variáveis.'
+                    ]
+                },
+                {
+                    subtitulo: '4.2 Comutação de Circuitos',
+                    texto: [
+                        'Um canal de comunicação dedicado (circuito) é estabelecido entre dois nós antes da transmissão começar.',
+                        'Características:',
+                        [
+                            'Toda a capacidade do canal é reservada exclusivamente para aquela sessão',
+                            'Garante taxa de transferência constante'
+                        ],
+                        'Exemplo: telefonia convencional.',
+                        'Desvantagem: alto desperdício de recursos se não houver dados sendo enviados continuamente.'
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_prof_aula5',
+            titulo: 'Componentes da Comunicação de Dados',
+            conteudo: [
+                {
+                    subtitulo: '5. Os Cinco Componentes',
+                    texto: [
+                        'Um sistema de comunicação eficaz exige a integração de cinco elementos:',
+                        [
+                            'Mensagem — o conteúdo a ser transmitido (texto, áudio, vídeo)',
+                            'Emissor — o dispositivo que gera e envia a informação',
+                            'Receptor — o destino que processa a informação recebida',
+                            'Meio de Transmissão — o caminho físico (fio ou ar) por onde os sinais viajam',
+                            'Protocolo — as regras gramaticais e sintáticas da troca de dados'
+                        ]
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_prof_aula6',
+            titulo: 'Características da Comunicação e Métricas',
+            conteudo: [
+                {
+                    subtitulo: '6. Métricas de Qualidade',
+                    texto: [
+                        'Para que a rede seja considerada eficiente, ela deve garantir:',
+                        [
+                            'Entrega (Delivery) — os dados devem chegar exatamente ao destino pretendido',
+                            'Precisão (Accuracy) — os dados não podem sofrer alterações ou corrupção durante o trajeto',
+                            'Sincronização (Timeliness) — entrega em tempo útil, crucial para aplicações de voz e vídeo',
+                            'Jitter — variação estatística do atraso na chegada dos pacotes; um jitter alto causa instabilidade em chamadas VoIP',
+                            'Largura de Banda vs Throughput — a largura de banda é a capacidade máxima teórica de um link, enquanto o throughput é a taxa real de transferência medida na prática'
+                        ]
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_prof_aula7',
+            titulo: 'Dispositivos de Rede',
+            conteudo: [
+                {
+                    subtitulo: '7. Principais Dispositivos',
+                    texto: [
+                        [
+                            'Hosts — dispositivos finais que consomem ou produzem dados (PCs, smartphones)',
+                            'Switch — equipamento de Camada 2 (Enlace) que conecta dispositivos dentro de uma mesma LAN, encaminhando quadros baseando-se no endereço MAC',
+                            'Roteador — equipamento de Camada 3 (Rede) que interconecta redes diferentes e decide o melhor caminho para os pacotes baseado no endereço IP'
+                        ]
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_prof_aula8',
+            titulo: 'Modos de Transmissão e Topologias',
+            conteudo: [
+                {
+                    subtitulo: '8.1 Modos de Fluxo',
+                    texto: [
+                        [
+                            'Simplex — fluxo unidirecional; exemplo: teclado enviando dados ao computador',
+                            'Half-duplex — fluxo bidirecional, mas apenas um lado transmite por vez; exemplo: rádio comunicador',
+                            'Full-duplex — fluxo bidirecional simultâneo; exemplo: chamada telefônica moderna'
+                        ]
+                    ]
+                },
+                {
+                    subtitulo: '8.2 Topologias',
+                    texto: [
+                        'A topologia define a organização física da rede:',
+                        [
+                            'Barramento — usa um cabo central compartilhado',
+                            'Estrela — conecta todos os dispositivos ao switch central (mais comum hoje)',
+                            'Anel — passa a informação circularmente entre os nós',
+                            'Malha (Mesh) — conexões redundantes entre todos os nós; se um link falhar, os dados seguem por outro caminho (muito confiável, porém cara)'
+                        ]
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'redes_prof_aula9',
+            titulo: 'Classificação e Meios de Transmissão',
+            conteudo: [
+                {
+                    subtitulo: '9. Classificação por Abrangência e Meios',
+                    texto: [
+                        'Classificação por abrangência geográfica:',
+                        [
+                            'LAN — Local Area Network (rede local)',
+                            'MAN — Metropolitan Area Network (rede metropolitana)',
+                            'WAN — Wide Area Network (rede ampla/global)'
+                        ],
+                        'Meios de Transmissão:',
+                        [
+                            'Não Guiados (espaço livre) — oferecem mobilidade',
+                            'Guiados (cabos) — oferecem maior estabilidade'
+                        ],
+                        'Destaque — Fibra Óptica:',
+                        [
+                            'Transmite luz, não sinais elétricos',
+                            'Não sofre interferência eletromagnética',
+                            'Suporta as maiores distâncias e taxas de dados da atualidade',
+                            'É o meio guiado de elite'
+                        ]
+                    ]
+                }
+            ],
+            lida: false
+        }
+    ]
+},
 
     // ── BANCO DE DADOS ───────────────────────────────────────────────────
     banco: {

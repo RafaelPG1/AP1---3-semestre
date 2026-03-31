@@ -356,11 +356,14 @@ function _exibirAnotacaoWrapper(discId, panelEl) {
 function _exibirResumos(discId, panelEl) {
     const resumos = listarResumos(discId);
 
+    // ── resumos do professor (só para redes) ─────────────────────────
+    const resumosProf = discId === 'redes' ? listarResumos('redes_professor') : [];
+
     panelEl.querySelector('.panel-videos')?.remove();
     panelEl.querySelector('.panel-modules')?.remove();
     panelEl.querySelector('.panel-resumos')?.remove();
 
-    if (resumos.length === 0) {
+    if (resumos.length === 0 && resumosProf.length === 0) {
         const vazio = document.createElement('div');
         vazio.className = 'panel-resumos';
         vazio.innerHTML = `
@@ -375,52 +378,63 @@ function _exibirResumos(discId, panelEl) {
 
     const wrapper = document.createElement('div');
     wrapper.className = 'panel-resumos';
-    wrapper.innerHTML = `
-        <div class="resumo-header-bar">
-            <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
-            <span class="rh-count">${resumos.length} aula${resumos.length !== 1 ? 's' : ''}</span>
-        </div>
-        ${resumos.map(r => _renderCard(r, discId)).join('')}
-    `;
+
+    // ── bloco: resumos das aulas ─────────────────────────────────────
+    let htmlAulas = '';
+    if (resumos.length > 0) {
+        htmlAulas = `
+            <div class="resumo-header-bar">
+                <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
+                <span class="rh-count">${resumos.length} aula${resumos.length !== 1 ? 's' : ''}</span>
+            </div>
+            ${resumos.map(r => _renderCard(r, discId)).join('')}
+        `;
+    }
+
+    // ── bloco: resumo do professor ───────────────────────────────────
+    let htmlProf = '';
+    if (resumosProf.length > 0) {
+        htmlProf = `
+            <div class="resumo-header-bar" style="margin-top:1.5rem;">
+                <span class="rh-label"><i class="fas fa-chalkboard-teacher" style="margin-right:.35rem;"></i>Resumo do Professor</span>
+                <span class="rh-count">${resumosProf.length} tópico${resumosProf.length !== 1 ? 's' : ''}</span>
+            </div>
+            ${resumosProf.map(r => _renderCard(r, 'redes_professor')).join('')}
+        `;
+    }
+
+    wrapper.innerHTML = htmlAulas + htmlProf;
     panelEl.appendChild(wrapper);
 
+    // ── eventos (cards de aulas + cards do professor) ────────────────
     wrapper.querySelectorAll('.resumo-card').forEach(card => {
         const rid = card.dataset.resumoId;
 
-        // Toggle do card (aula inteira)
         card.querySelector('.resumo-card-header').addEventListener('click', () => {
             card.classList.toggle('expanded');
         });
 
-        // Toggle dos blocos internos (tópicos)
         card.querySelectorAll('.resumo-bloco-header').forEach(header => {
             header.addEventListener('click', () => {
                 header.closest('.resumo-bloco').classList.toggle('bloco-aberto');
             });
         });
 
-        // Botão expandir/contrair todos os tópicos do card
         card.querySelector('.btn-expandir-blocos')?.addEventListener('click', e => {
             e.stopPropagation();
             const blocos = card.querySelectorAll('.resumo-bloco');
             const todosAbertos = [...blocos].every(b => b.classList.contains('bloco-aberto'));
             blocos.forEach(b => {
-                if (todosAbertos) {
-                    b.classList.remove('bloco-aberto');
-                } else {
-                    b.classList.add('bloco-aberto');
-                }
+                todosAbertos
+                    ? b.classList.remove('bloco-aberto')
+                    : b.classList.add('bloco-aberto');
             });
-            // Atualiza o texto do botão
             const btn = card.querySelector('.btn-expandir-blocos');
-            if (todosAbertos) {
-                btn.innerHTML = '<i class="fas fa-expand-alt"></i> Expandir tópicos';
-            } else {
-                btn.innerHTML = '<i class="fas fa-compress-alt"></i> Contrair tópicos';
-            }
+            btn.innerHTML = todosAbertos
+                ? '<i class="fas fa-expand-alt"></i> Expandir tópicos'
+                : '<i class="fas fa-compress-alt"></i> Contrair tópicos';
         });
 
-        // Botão copiar
         card.querySelector('.btn-copiar')?.addEventListener('click', e => {
             e.stopPropagation();
             const r = getResumoPorId(rid);
@@ -439,7 +453,6 @@ function _exibirResumos(discId, panelEl) {
         });
     });
 }
-
 
 // ═════════════════════════════════════════════════════════════════════
 //  RENDER DE CARDS DE RESUMO
