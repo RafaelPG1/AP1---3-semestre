@@ -1420,784 +1420,846 @@ export const resumoData = {
         },
 
     // ── REDES DE COMPUTADORES ────────────────────────────────────────────
-    redes: {
-            resumos: [
-                {
-                    id: 'redes_aula1',
-                    titulo: 'Aula 01/02 — Introdução a Redes de Computadores',
-                    conteudo: [
-                        {
-                            subtitulo: '1.1 Contexto da Era da Informação',
-                            texto: [
-                                'O avanço tecnológico do século XX foi marcado principalmente pelo desenvolvimento na área de informação, incluindo:',
-                                [
-                                    'Aquisição de dados',
-                                    'Processamento',
-                                    'Armazenamento',
-                                    'Distribuição'
-                                ],
-                                'No século XXI, essas áreas passaram por um processo de convergência tecnológica, ou seja, começaram a se integrar completamente, eliminando diferenças práticas entre elas.',
-                                'Conceitos-chave:',
-                                [
-                                    'Revolução da Informação — surgimento de redes globais, crescimento da indústria da informática',
-                                    'Convergência Tecnológica — integração entre computação e comunicação, sistemas antes separados passam a funcionar juntos',
-                                    'Demanda por Sofisticação — quanto maior o poder de processamento, maior a necessidade de sistemas complexos de distribuição de dados'
-                                ]
+        redes: {
+        resumos: [
+            {
+                id: 'redes_aula1',
+                titulo: 'Aula 01/02 — Introdução a Redes de Computadores',
+                conteudo: [
+                    {
+                        subtitulo: '1.1 Contexto da Era da Informação',
+                        texto: [
+                            'O avanço tecnológico do século XX foi marcado principalmente pelo desenvolvimento na área de informação, incluindo:',
+                            [
+                                'Aquisição de dados',
+                                'Processamento',
+                                'Armazenamento',
+                                'Distribuição'
+                            ],
+                            'No século XXI, essas áreas passaram por um processo de convergência tecnológica, ou seja, começaram a se integrar completamente, eliminando diferenças práticas entre elas.',
+                            'Conceitos-chave:',
+                            [
+                                'Revolução da Informação — surgimento de redes globais, crescimento da indústria da informática',
+                                'Convergência Tecnológica — integração entre computação e comunicação, sistemas antes separados passam a funcionar juntos',
+                                'Demanda por Sofisticação — quanto maior o poder de processamento, maior a necessidade de sistemas complexos de distribuição de dados'
                             ]
+                        ]
+                    },
+                    {
+                        subtitulo: '2.1 O que é uma Rede de Computadores?',
+                        texto: [
+                            'Uma rede de computadores é um conjunto de computadores autônomos interconectados por uma tecnologia, capazes de trocar informações.',
+                            'Características fundamentais:',
+                            [
+                                'Autonomia — cada computador funciona de forma independente',
+                                'Interconexão — comunicação entre máquinas',
+                                'Diversidade de meios — comunicação pode ocorrer via cabos de cobre, fibra óptica ou ondas eletromagnéticas como Wi-Fi e satélite'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '3.1 Redes vs Sistemas Distribuídos',
+                        texto: [
+                            'Diferença principal:',
+                            [
+                                'Redes de Computadores — o usuário vê várias máquinas, com baixa transparência e sem software intermediário obrigatório',
+                                'Sistemas Distribuídos — o usuário vê um único sistema, com alta transparência e middleware essencial'
+                            ],
+                            'Conceitos importantes:',
+                            [
+                                'Middleware — software que cria a ilusão de um sistema único',
+                                'Coesão e Transparência — características dos sistemas distribuídos',
+                                'Visibilidade do Hardware — em redes, o usuário percebe diferentes máquinas e sistemas'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '4.1 Aplicações Comerciais — Compartilhamento de Recursos',
+                        texto: [
+                            'Objetivo principal: disponibilizar recursos independentemente da localização.',
+                            'Benefícios:',
+                            [
+                                'Economia de escala — compartilhamento de impressoras, servidores e armazenamento',
+                                'Disponibilidade de dados — acesso remoto a informações como sistemas financeiros',
+                                'VPN (Virtual Private Network) — conecta redes separadas como se fossem uma só'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '4.2 Modelo Cliente-Servidor',
+                        texto: [
+                            'Estrutura:',
+                            [
+                                'Servidor — fornece serviços ou dados',
+                                'Cliente — solicita serviços'
+                            ],
+                            'Características:',
+                            [
+                                'Comunicação baseada em requisições',
+                                'Alta escalabilidade — um servidor atende muitos clientes'
+                            ],
+                            'Representação: um servidor central conectado a vários clientes, comunicação ocorre via rede.'
+                        ]
+                    },
+                    {
+                        subtitulo: '4.3 Comunicação Empresarial',
+                        texto: [
+                            'Tecnologias:',
+                            [
+                                'VoIP (Voice over IP) — ligações pela internet',
+                                'Videoconferência — comunicação visual em tempo real',
+                                'Compartilhamento de desktop — controle remoto de telas',
+                                'E-commerce — comércio eletrônico'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '5.1 e 5.2 Aplicações Domésticas',
+                        texto: [
+                            'Uso da Internet: acesso à informação, comunicação e entretenimento.',
+                            'Lei de Metcalfe: o valor de uma rede cresce proporcionalmente ao quadrado do número de usuários.',
+                            'Tipos de Conteúdo:',
+                            [
+                                'Bibliotecas digitais — e-books, artigos científicos',
+                                'Conteúdo colaborativo — Wikis como a Wikipedia',
+                                'Entretenimento digital — música MP3, vídeos HD, IPTV'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '6.1 Comunicação Peer-to-Peer (P2P)',
+                        texto: [
+                            'Modelo onde não há hierarquia fixa e todos podem ser cliente e servidor.',
+                            'Características:',
+                            [
+                                'Descentralização',
+                                'Compartilhamento direto'
+                            ],
+                            'Exemplos: BitTorrent e redes sociais.',
+                            'Vários computadores conectados diretamente entre si, sem servidor central.'
+                        ]
+                    },
+                    {
+                        subtitulo: '7.1 Computação Ubíqua (IoT) — Internet das Coisas',
+                        texto: [
+                            'Integração de dispositivos do cotidiano com a internet.',
+                            'Tecnologias:',
+                            [
+                                'Sensores inteligentes — monitoramento em tempo real',
+                                'RFID (Radio Frequency Identification) — tecnologia sem fio que usa ondas de rádio para identificar, rastrear e gerenciar objetos, produtos ou pessoas; substitui códigos de barras',
+                                'Monitoramento remoto — segurança e saúde'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '8.1 Questões Sociais e Éticas',
+                        texto: [
+                            'Problemas principais:',
+                            [
+                                'Privacidade — uso de cookies e rastreamento',
+                                'Segurança — ataques: Phishing, Vírus, Botnets',
+                                'Anonimato vs Responsabilidade — liberdade vs controle',
+                                'Neutralidade da rede — debate sobre tratamento igual de dados'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '9.1 Hardware de Rede — Dimensões Técnicas',
+                        texto: [
+                            'Classificação baseada em:',
+                            [
+                                'Tecnologia de transmissão',
+                                'Escala física'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '10.1 e 10.2 Tecnologias de Transmissão',
+                        texto: [
+                            'Broadcast: canal único compartilhado, todos recebem a mensagem.',
+                            [
+                                'Unicast — um → um',
+                                'Multicast — um → grupo'
+                            ],
+                            'Analogia: como falar em uma sala onde todos escutam, mas só um responde.',
+                            'Ponto a Ponto: conexão direta entre pares.',
+                            'Características do Ponto a Ponto:',
+                            [
+                                'Uso de roteamento',
+                                'Pode passar por vários nós',
+                                'Maior eficiência (menos colisões)'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '11. Classificação por Escala',
+                        texto: [
+                            'PAN (Personal Area Network):',
+                            [
+                                'Alcance: ~1 metro',
+                                'Tecnologias: Bluetooth, RFID, Smartcards',
+                                'Aplicações: periféricos e dispositivos médicos'
+                            ],
+                            'LAN (Local Area Network):',
+                            [
+                                'Alcance: até 1 km',
+                                'Velocidade: 100 Mbps a 10 Gbps',
+                                'Baixo atraso',
+                                'Tecnologias: Wi-Fi (802.11) e Ethernet (switches)',
+                                'Recursos: VLAN (segmentação lógica)'
+                            ],
+                            'MAN (Metropolitan Area Network):',
+                            [
+                                'Alcance: cidade (~10 km)',
+                                'Exemplos: TV a cabo e internet urbana',
+                                'Tecnologia: WiMAX (802.16)'
+                            ],
+                            'WAN (Wide Area Network):',
+                            [
+                                'Alcance: países/continentes',
+                                'Componentes: Hosts, Roteadores e Backbone',
+                                'Características: longas distâncias e uso de sub-redes'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '12. Topologias de WAN',
+                        texto: [
+                            'Tipos:',
+                            [
+                                'WAN dedicada — linhas exclusivas',
+                                'VPN — rede virtual sobre a internet'
+                            ],
+                            'Vantagens da VPN: menor custo e maior flexibilidade.'
+                        ]
+                    },
+                    {
+                        subtitulo: '13. Redes Sem Fio e Móveis',
+                        texto: [
+                            'Diferença importante:',
+                            [
+                                'Sem fio — não usa cabos',
+                                'Móvel — dispositivo pode se mover'
+                            ],
+                            'Tecnologias: redes celulares (3G/4G), satélites e Bluetooth vs Wi-Fi.',
+                            'Combinações possíveis:',
+                            [
+                                'Desktop — não sem fio, não móvel',
+                                'Notebook — não sem fio, móvel',
+                                'Prédio sem fio — sem fio, não móvel',
+                                'Dispositivo móvel — sem fio e móvel'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '14.1 Redes Interligadas (Internets)',
+                        texto: [
+                            'Uma internet (minúsculo) é um conjunto de redes diferentes interligadas.',
+                            'Elementos:',
+                            [
+                                'Gateway — faz a conexão entre redes diferentes',
+                                'Heterogeneidade — integra tecnologias distintas',
+                                'A Internet — maior exemplo mundial'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: 'Resumo Final',
+                        texto: [
+                            'Redes permitem compartilhar dados e recursos.',
+                            'Existem diferentes modelos e arquiteturas.',
+                            'A classificação depende de:',
+                            [
+                                'Tecnologia — broadcast vs ponto a ponto',
+                                'Escala — PAN → WAN'
+                            ],
+                            'A internet é uma rede de redes.',
+                            'Redes impactam empresas, pessoas e a sociedade.'
+                        ]
+                    }
+                ],
+                lida: false
+            },
+            {
+                id: 'redes_aula2',
+                titulo: 'Aula 03/04 — Meios de Transmissão e Dispositivos de Rede',
+                conteudo: [
+                    {
+                        subtitulo: '1.1 Camada Física e Transmissão de Bits',
+                        texto: [
+                            'A camada física é responsável por transmitir bits puros (0 e 1) através de um meio de comunicação.',
+                            'Objetivo central: garantir que um bit enviado seja recebido corretamente.',
+                            'Trabalha com aspectos físicos, não lógicos.',
+                            'Elementos envolvidos:',
+                            [
+                                'Sinais elétricos ou ópticos',
+                                'Tempo de transmissão (nanosegundos)',
+                                'Sentido da comunicação — simplex, half-duplex, full-duplex'
+                            ],
+                            'Componentes fundamentais:',
+                            [
+                                'Representação Digital — bits são representados por níveis de tensão',
+                                'Interfaces Mecânicas — define conectores, cabos e pinagem',
+                                'Transmissão Bruta — apenas transporte de sinais, sem interpretação de dados'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '1.2.1 Meios Guiados — Fio de Cobre',
+                        texto: [
+                            'Muito usado em redes locais (LANs).',
+                            'Características: tecnologia madura, limitação de distância por atenuação do sinal (perda gradual de intensidade, potência ou amplitude de um sinal elétrico, luz ou rádio).',
+                            'Aplicações:',
+                            [
+                                'Ethernet clássica — um único cabo compartilhado (broadcast)',
+                                'DSL (Digital Subscriber Line) — usa linha telefônica para dados'
+                            ],
+                            'Limitações:',
+                            [
+                                'Atraso',
+                                'Erros de transmissão',
+                                'Perda de sinal com distância'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '1.2.2 Meios Guiados — Fibra Óptica',
+                        texto: [
+                            'Tecnologia moderna de alta velocidade.',
+                            'Características: muito maior desempenho que o cobre, usa luz para transmitir dados.',
+                            'Aplicações:',
+                            [
+                                'FTTH (Fiber to the Home) — fibra diretamente na casa do usuário',
+                                'Backbones de Internet — conectam grandes redes globais'
+                            ],
+                            'Vantagens:',
+                            [
+                                'Imune a interferência eletromagnética',
+                                'Baixíssimo atraso',
+                                'Alta largura de banda (Mbps → Gbps)'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '1.3.1 Meios Não Guiados — Rádio e Wi-Fi',
+                        texto: [
+                            'Base das redes wireless modernas.',
+                            'Características: usa frequências de rádio, comunicação compartilhada.',
+                            'Aplicações: Wi-Fi (IEEE 802.11) e redes locais sem fio.',
+                            'Vantagens: mobilidade e flexibilidade.'
+                        ]
+                    },
+                    {
+                        subtitulo: '1.3.2 e 1.3.3 Redes Celulares e Satélites',
+                        texto: [
+                            'Redes Celulares: redes WAN sem fio, controladas por estações-base.',
+                            'Satélites de Comunicação: comunicação via satélite em órbita, cada estação terrestre envia e recebe dados.',
+                            'Características:',
+                            [
+                                'Comunicação do tipo broadcast',
+                                'Cobertura de grandes áreas'
+                            ],
+                            'Uso: regiões remotas e redes globais.'
+                        ]
+                    },
+                    {
+                        subtitulo: '2.1 Dispositivos de Rede — Modems',
+                        texto: [
+                            'Dispositivo que converte sinais.',
+                            'Tipos:',
+                            [
+                                'DSL — usa linha telefônica',
+                                'Cabo — usa rede de TV',
+                                'Dial-up — conexão antiga, até 56 kbps'
+                            ],
+                            'Função: converter sinal digital ↔ analógico.'
+                        ]
+                    },
+                    {
+                        subtitulo: '2.2 Ponto de Acesso (Access Point — AP)',
+                        texto: [
+                            'Função: atua como estação-base Wi-Fi.',
+                            'Responsabilidades:',
+                            [
+                                'Conectar dispositivos sem fio à rede',
+                                'Encaminhar pacotes'
+                            ],
+                            'Modos:',
+                            [
+                                'Infraestrutura — com AP',
+                                'Ad hoc — P2P, sem AP'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '2.3 Switches (Camada 2)',
+                        texto: [
+                            'Função: encaminhar pacotes para o destino correto.',
+                            'Características:',
+                            [
+                                'Conexões ponto a ponto',
+                                'Usa endereço de destino'
+                            ],
+                            'Vantagens:',
+                            [
+                                'Evita colisões',
+                                'Escalabilidade'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '2.4 Roteadores (Camada 3)',
+                        texto: [
+                            'Função: conectar redes diferentes.',
+                            'Características:',
+                            [
+                                'Escolhe o melhor caminho (roteamento)',
+                                'Usa tabelas de roteamento'
+                            ],
+                            'Responsabilidades:',
+                            [
+                                'Controle de tráfego',
+                                'Interligação de LANs e WANs'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '2.5 Gateways',
+                        texto: [
+                            'Função: conectar redes incompatíveis.',
+                            'Características:',
+                            [
+                                'Tradução de protocolos',
+                                'Conversão de hardware/software'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '3.1 Modelos de Referência — Arquitetura em Camadas',
+                        texto: [
+                            'Objetivo: reduzir complexidade.',
+                            'Conceitos:',
+                            [
+                                'Camada — função específica',
+                                'Interface — comunicação entre camadas',
+                                'Entidades pares — comunicação entre sistemas'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '4. Sentido na Comunicação',
+                        texto: [
+                            'A comunicação em redes é classificada pela direção do fluxo e pela simultaneidade com que os dados trafegam entre dois pontos.',
+                            'Simplex (Unidirecional): o fluxo de dados ocorre em apenas um sentido. Existe um transmissor fixo e um receptor fixo. O receptor não tem hardware ou protocolo para responder.',
+                            [
+                                'Analogia: uma rua de mão única',
+                                'Exemplos: teclado/mouse, rádio/TV (sinal aberto), monitores de vídeo, sensores de alarme'
+                            ],
+                            'Half-Duplex (Bidirecional Alternada): a comunicação ocorre nos dois sentidos, mas apenas um de cada vez. Se ambos transmitirem ao mesmo tempo, ocorre uma "colisão" e os dados são perdidos.',
+                            [
+                                'Analogia: uma ponte estreita de uma única faixa',
+                                'Exemplos: walkie-talkie/rádio PTT, Wi-Fi (padrão 802.11), hubs de rede'
+                            ],
+                            'Full-Duplex (Bidirecional Simultânea): os dados trafegam nos dois sentidos ao mesmo tempo. É o modo mais eficiente, pois não há tempo de espera para troca de turno.',
+                            [
+                                'Analogia: uma rodovia de pista dupla com fluxos livres em ambos os sentidos',
+                                'Exemplos: telefonia (celular/fixo), redes Ethernet (cabo de rede), videochamadas (Zoom/Meet)'
+                            ]
+                        ]
+                    }
+                ],
+                lida: false
+            },
+            {
+                id: 'redes_aula3',
+                titulo: 'Aula 05 — Topologias de Rede, Métricas e Padronização',
+                conteudo: [
+                    {
+                        subtitulo: '1.1 Topologias de Rede — Conceito Geral',
+                        texto: [
+                            'A topologia de rede define como os dispositivos (computadores, roteadores, switches) estão organizados física e logicamente.',
+                            'Impactos da topologia:',
+                            [
+                                'Escalabilidade — facilidade de crescimento da rede',
+                                'Custo — quantidade de cabos e equipamentos',
+                                'Tolerância a falhas — capacidade de continuar funcionando'
+                            ]
+                        ]
+                    },
+                    {
+                        subtitulo: '1.2.1 Topologia em Barramento',
+                        imagem: {
+                            type: 'image',
+                            src: 'Imagens/Topologia em Barramento',
+                            alt: 'Topologia em Barramento'
                         },
-                        {
-                            subtitulo: '2.1 O que é uma Rede de Computadores?',
-                            texto: [
-                                'Uma rede de computadores é um conjunto de computadores autônomos interconectados por uma tecnologia, capazes de trocar informações.',
-                                'Características fundamentais:',
-                                [
-                                    'Autonomia — cada computador funciona de forma independente',
-                                    'Interconexão — comunicação entre máquinas',
-                                    'Diversidade de meios — comunicação pode ocorrer via cabos de cobre, fibra óptica ou ondas eletromagnéticas como Wi-Fi e satélite'
-                                ]
-                            ]
+                        texto: [
+                            'Definição: todos os dispositivos compartilham um único cabo central (backbone).',
+                            'Funcionamento: comunicação em broadcast (difusão), todos recebem os dados e apenas o destino processa, os outros ignoram.',
+                            'Características:',
+                            [
+                                'Meio compartilhado',
+                                'Necessidade de verificar se o canal está livre',
+                                'Uso histórico na Ethernet antiga'
+                            ],
+                            'Problema crítico: ponto único de falha — se o cabo quebra, toda a rede cai.'
+                        ]
+                    },
+                    {
+                        subtitulo: '1.2.2 Topologia Ponto a Ponto',
+                        imagem: {
+                            type: 'image',
+                            src: 'Imagens/Topologia Ponto a Ponto',
+                            alt: 'Topologia Ponto a Ponto'
                         },
-                        {
-                            subtitulo: '3.1 Redes vs Sistemas Distribuídos',
-                            texto: [
-                                'Diferença principal:',
-                                [
-                                    'Redes de Computadores — o usuário vê várias máquinas, com baixa transparência e sem software intermediário obrigatório',
-                                    'Sistemas Distribuídos — o usuário vê um único sistema, com alta transparência e middleware essencial'
-                                ],
-                                'Conceitos importantes:',
-                                [
-                                    'Middleware — software que cria a ilusão de um sistema único',
-                                    'Coesão e Transparência — características dos sistemas distribuídos',
-                                    'Visibilidade do Hardware — em redes, o usuário percebe diferentes máquinas e sistemas'
-                                ]
-                            ]
+                        texto: [
+                            'Definição: conexão direta entre dois dispositivos apenas.',
+                            'Funcionamento: comunicação exclusiva (unicast — único remetente/único destinatário).',
+                            'Características:',
+                            [
+                                'Simples e eficiente',
+                                'Sem colisões',
+                                'Base das redes WAN'
+                            ],
+                            'Aplicação: conexões entre cidades (ex: redes SONET).'
+                        ]
+                    },
+                    {
+                        subtitulo: '1.2.3 Topologia em Estrela',
+                        imagem: {
+                            type: 'image',
+                            src: 'Imagens/Topologia em Estrela',
+                            alt: 'Topologia em Estrela'
                         },
-                        {
-                            subtitulo: '4.1 Aplicações Comerciais — Compartilhamento de Recursos',
-                            texto: [
-                                'Objetivo principal: disponibilizar recursos independentemente da localização.',
-                                'Benefícios:',
-                                [
-                                    'Economia de escala — compartilhamento de impressoras, servidores e armazenamento',
-                                    'Disponibilidade de dados — acesso remoto a informações como sistemas financeiros',
-                                    'VPN (Virtual Private Network) — conecta redes separadas como se fossem uma só'
-                                ]
+                        texto: [
+                            'Definição: todos os dispositivos conectados a um nó central (switch).',
+                            'Funcionamento: o switch decide para onde enviar os dados.',
+                            'Características:',
+                            [
+                                'Isolamento de falhas — um cabo quebrado afeta só um dispositivo',
+                                'Fácil expansão',
+                                'Muito usada em redes atuais (LANs)'
                             ]
+                        ]
+                    },
+                    {
+                        subtitulo: '1.2.4 Topologia em Anel',
+                        imagem: {
+                            type: 'image',
+                            src: 'Imagens/Topologia em Anel',
+                            alt: 'Topologia em Anel'
                         },
-                        {
-                            subtitulo: '4.2 Modelo Cliente-Servidor',
-                            texto: [
-                                'Estrutura:',
-                                [
-                                    'Servidor — fornece serviços ou dados',
-                                    'Cliente — solicita serviços'
-                                ],
-                                'Características:',
-                                [
-                                    'Comunicação baseada em requisições',
-                                    'Alta escalabilidade — um servidor atende muitos clientes'
-                                ],
-                                'Representação: um servidor central conectado a vários clientes, comunicação ocorre via rede.'
-                            ]
+                        texto: [
+                            'Definição: dispositivos conectados formando um circuito fechado.',
+                            'Funcionamento: dados circulam em um único sentido e cada nó atua como repetidor.',
+                            'Características:',
+                            [
+                                'Regeneração de sinal',
+                                'Uso de token (controle de acesso)',
+                                'Latência previsível'
+                            ],
+                            'Ideal para sistemas que precisam de tempo real.'
+                        ]
+                    },
+                    {
+                        subtitulo: '1.2.5 Topologia em Árvore',
+                        imagem: {
+                            type: 'image',
+                            src: 'Imagens/Topologia em Árvore',
+                            alt: 'Topologia em Árvore'
                         },
-                        {
-                            subtitulo: '4.3 Comunicação Empresarial',
-                            texto: [
-                                'Tecnologias:',
-                                [
-                                    'VoIP (Voice over IP) — ligações pela internet',
-                                    'Videoconferência — comunicação visual em tempo real',
-                                    'Compartilhamento de desktop — controle remoto de telas',
-                                    'E-commerce — comércio eletrônico'
-                                ]
-                            ]
+                        texto: [
+                            'Definição: estrutura hierárquica baseada na estrela.',
+                            'Funcionamento: switches conectados em níveis (cascata).',
+                            'Características:',
+                            [
+                                'Organização por setores (ex: departamentos)',
+                                'Facilita gerenciamento',
+                                'Permite segmentação da rede'
+                            ],
+                            'Atenção: muitos níveis geram aumento da latência.'
+                        ]
+                    },
+                    {
+                        subtitulo: '1.2.6 Topologia em Malha (Mesh)',
+                        imagem: {
+                            type: 'image',
+                            src: 'Imagens/Topologia em Malha (Mesh)',
+                            alt: 'Topologia em Malha (Mesh)'
                         },
-                        {
-                            subtitulo: '5.1 e 5.2 Aplicações Domésticas',
-                            texto: [
-                                'Uso da Internet: acesso à informação, comunicação e entretenimento.',
-                                'Lei de Metcalfe: o valor de uma rede cresce proporcionalmente ao quadrado do número de usuários.',
-                                'Tipos de Conteúdo:',
-                                [
-                                    'Bibliotecas digitais — e-books, artigos científicos',
-                                    'Conteúdo colaborativo — Wikis como a Wikipedia',
-                                    'Entretenimento digital — música MP3, vídeos HD, IPTV'
-                                ]
+                        texto: [
+                            'Definição: dispositivos com múltiplas conexões redundantes.',
+                            'Funcionamento: dados podem seguir vários caminhos.',
+                            'Características:',
+                            [
+                                'Alta disponibilidade',
+                                'Roteamento dinâmico',
+                                'Base da Internet'
+                            ],
+                            'Trade-off:',
+                            [
+                                'Alta confiabilidade — vantagem',
+                                'Alto custo e complexidade — desvantagem'
                             ]
-                        },
-                        {
-                            subtitulo: '6.1 Comunicação Peer-to-Peer (P2P)',
-                            texto: [
-                                'Modelo onde não há hierarquia fixa e todos podem ser cliente e servidor.',
-                                'Características:',
-                                [
-                                    'Descentralização',
-                                    'Compartilhamento direto'
-                                ],
-                                'Exemplos: BitTorrent e redes sociais.',
-                                'Vários computadores conectados diretamente entre si, sem servidor central.'
+                        ]
+                    },
+                    {
+                        subtitulo: '2.1 Métricas de Desempenho — Vazão (Throughput)',
+                        texto: [
+                            'Definição: quantidade de dados transmitidos por unidade de tempo.',
+                            'Unidades:',
+                            [
+                                'Mbps — 1.000.000 bits/s',
+                                'Gbps — 1.000.000.000 bits/s'
+                            ],
+                            'Observação: redes cabeadas têm desempenho superior às redes sem fio.'
+                        ]
+                    },
+                    {
+                        subtitulo: '2.2 Atraso (Delay / Latência)',
+                        texto: [
+                            'Definição: tempo que os dados levam para chegar ao destino.',
+                            'Tipos:',
+                            [
+                                'Atraso de propagação — tempo no meio físico',
+                                'Atraso de processamento — tempo em roteadores'
+                            ],
+                            'Medidas: microssegundos (µs) e nanossegundos (ns).',
+                            'Importância: crítico para jogos online, streaming e chamadas de vídeo.'
+                        ]
+                    },
+                    {
+                        subtitulo: '2.3 Congestionamento e Perda de Dados',
+                        texto: [
+                            'Definição: ocorre quando a rede não suporta o volume de tráfego.',
+                            'Consequências:',
+                            [
+                                'Aumento de atraso',
+                                'Perda de pacotes'
+                            ],
+                            'Elementos:',
+                            [
+                                'Gargalos — caminhos sobrecarregados',
+                                'Buffers cheios — descarte de pacotes'
+                            ],
+                            'Solução: sistemas reduzem envio automaticamente.'
+                        ]
+                    },
+                    {
+                        subtitulo: '2.4 Qualidade de Serviço (QoS)',
+                        texto: [
+                            'Definição: mecanismos que priorizam determinados tipos de tráfego.',
+                            'Componentes:',
+                            [
+                                'Jitter — variação do atraso (a variação no tempo de atraso na chegada de pacotes de dados em uma rede, medido em milissegundos)',
+                                'Prioridade de tráfego'
+                            ],
+                            'Aplicações:',
+                            [
+                                'Voz e vídeo — precisam de baixa latência',
+                                'Downloads — precisam de alta vazão'
                             ]
-                        },
-                        {
-                            subtitulo: '7.1 Computação Ubíqua (IoT) — Internet das Coisas',
-                            texto: [
-                                'Integração de dispositivos do cotidiano com a internet.',
-                                'Tecnologias:',
-                                [
-                                    'Sensores inteligentes — monitoramento em tempo real',
-                                    'RFID (Radio Frequency Identification) — tecnologia sem fio que usa ondas de rádio para identificar, rastrear e gerenciar objetos, produtos ou pessoas; substitui códigos de barras',
-                                    'Monitoramento remoto — segurança e saúde'
-                                ]
+                        ]
+                    },
+                    {
+                        subtitulo: '2.5 Eficiência — Multiplexação Estatística',
+                        texto: [
+                            'Definição: compartilhamento dinâmico do canal de comunicação.',
+                            'Comparação:',
+                            [
+                                'Estática — recursos fixos, ineficiente',
+                                'Dinâmica — uso sob demanda, eficiente'
+                            ],
+                            'Vantagem: evita desperdício de banda.'
+                        ]
+                    },
+                    {
+                        subtitulo: '3.1 e 3.2 Padronização de Redes',
+                        texto: [
+                            'Objetivo: garantir que dispositivos diferentes consigam se comunicar.',
+                            'Benefícios:',
+                            [
+                                'Interoperabilidade',
+                                'Compatibilidade',
+                                'Evolução tecnológica'
+                            ],
+                            'Principais organizações:',
+                            [
+                                'ISO — criadora do modelo OSI, foco em modelos teóricos',
+                                'IEEE — foco em hardware e redes locais: IEEE 802.3 → Ethernet e IEEE 802.11 → Wi-Fi'
                             ]
-                        },
-                        {
-                            subtitulo: '8.1 Questões Sociais e Éticas',
-                            texto: [
-                                'Problemas principais:',
-                                [
-                                    'Privacidade — uso de cookies e rastreamento',
-                                    'Segurança — ataques: Phishing, Vírus, Botnets',
-                                    'Anonimato vs Responsabilidade — liberdade vs controle',
-                                    'Neutralidade da rede — debate sobre tratamento igual de dados'
-                                ]
+                        ]
+                    },
+                    {
+                        subtitulo: '3.3 Padronização da Internet',
+                        texto: [
+                            'IETF: define padrões da Internet.',
+                            'RFC: documentos oficiais dos protocolos.',
+                            'Exemplos: TCP e IP.',
+                            'Característica: desenvolvimento aberto e colaborativo.'
+                        ]
+                    },
+                    {
+                        subtitulo: '4.1 e 4.2 Métricas de Erro (Confiabilidade)',
+                        texto: [
+                            'Problema: transmissão pode sofrer interferências de ruído elétrico e alteração de bits.',
+                            'Soluções — técnicas:',
+                            [
+                                'Detecção de erros — identifica falhas',
+                                'Correção de erros — recupera dados',
+                                'Retransmissão — reenvio de dados'
                             ]
-                        },
-                        {
-                            subtitulo: '10.1 e 10.2 Tecnologias de Transmissão',
-                            texto: [
-                                'Broadcast: canal único compartilhado, todos recebem a mensagem.',
-                                [
-                                    'Unicast — um → um',
-                                    'Multicast — um → grupo'
-                                ],
-                                'Analogia: como falar em uma sala onde todos escutam, mas só um responde.',
-                                'Ponto a Ponto: conexão direta entre pares.',
-                                'Características do Ponto a Ponto:',
-                                [
-                                    'Uso de roteamento',
-                                    'Pode passar por vários nós',
-                                    'Maior eficiência (menos colisões)'
-                                ]
+                        ]
+                    },
+                    {
+                        subtitulo: 'Resumo Final',
+                        texto: [
+                            'Topologias definem a estrutura da rede.',
+                            'Desempenho envolve vazão, latência e congestionamento.',
+                            'QoS garante priorização de tráfego.',
+                            'Padronização garante comunicação global.',
+                            'Erros são detectados e corrigidos automaticamente.'
+                        ]
+                    }
+                ],
+                lida: false
+            },
+            {
+                id: 'redes_aula4',
+                titulo: 'Aula 06 — Representação de Dados e Fluxo de Transmissão',
+                conteudo: [
+                    {
+                        subtitulo: '1.1 Conceito Fundamental — Representação de Dados',
+                        texto: [
+                            'Na comunicação de dados, toda informação é convertida em bits (0 e 1).',
+                            'Isso permite que diferentes tipos de dados sejam transmitidos no mesmo sistema.',
+                            'Computadores não entendem texto, imagem ou som diretamente — eles trabalham apenas com dois estados: ligado (1) e desligado (0).'
+                        ]
+                    },
+                    {
+                        subtitulo: '1.2 Texto e Codificação',
+                        texto: [
+                            'O texto é representado por padrões binários, utilizando sistemas de codificação.',
+                            'Principais padrões:',
+                            [
+                                'ASCII — 7 bits → 128 símbolos',
+                                'Unicode — até 32 bits → suporta praticamente todos os idiomas'
+                            ],
+                            'Representação de números: diferente do texto, convertidos diretamente para binário.',
+                            'Exemplo: 6 → 110.'
+                        ]
+                    },
+                    {
+                        subtitulo: '1.3 Imagens e Digitalização',
+                        texto: [
+                            'Imagens são representadas por uma matriz de pixels.',
+                            'Pixel: menor unidade da imagem, define a resolução.',
+                            'Cores:',
+                            [
+                                'Monocromático — 1 bit, preto/branco',
+                                'Colorido — sistema RGB'
+                            ],
+                            'Profundidade de cor: número de bits por pixel, define a quantidade de cores possíveis.',
+                            'Representação: imagem dividida em grade (matriz), cada célula = pixel, cada pixel = valor binário de cor.'
+                        ]
+                    },
+                    {
+                        subtitulo: '1.4 Áudio e Vídeo',
+                        texto: [
+                            'São sinais contínuos (analógicos) que precisam ser convertidos para digital.',
+                            'Áudio — processo:',
+                            [
+                                'Captura do som (analógico)',
+                                'Amostragem',
+                                'Conversão para binário'
+                            ],
+                            'Cada amostra representa o valor do som em um instante.',
+                            'Vídeo: sequência de imagens (frames).',
+                            'Taxa de quadros (FPS):',
+                            [
+                                '24 — cinema',
+                                '30 — TV',
+                                '60 — alta fluidez'
+                            ],
+                            'Representação: sinal contínuo sendo "quebrado" em pontos (amostras) e depois convertido em números binários.'
+                        ]
+                    },
+                    {
+                        subtitulo: '1.5 Analogia: Alfabeto de Dois Símbolos',
+                        texto: [
+                            'Toda informação pode ser reduzida a dois estados: 0 e 1.',
+                            'Analogia: comunicação como piscar de lanterna, padrões de piscadas formam mensagens.',
+                            'Conceitos-chave:',
+                            [
+                                'Unificação — todos os dados viram bits',
+                                'Eficiência — permite compressão'
                             ]
-                        },
-                        {
-                            subtitulo: '11. Classificação por Escala',
-                            texto: [
-                                'PAN (Personal Area Network):',
-                                [
-                                    'Alcance: ~1 metro',
-                                    'Tecnologias: Bluetooth, RFID, Smartcards',
-                                    'Aplicações: periféricos e dispositivos médicos'
-                                ],
-                                'LAN (Local Area Network):',
-                                [
-                                    'Alcance: até 1 km',
-                                    'Velocidade: 100 Mbps a 10 Gbps',
-                                    'Baixo atraso',
-                                    'Tecnologias: Wi-Fi (802.11) e Ethernet (switches)',
-                                    'Recursos: VLAN (segmentação lógica)'
-                                ],
-                                'MAN (Metropolitan Area Network):',
-                                [
-                                    'Alcance: cidade (~10 km)',
-                                    'Exemplos: TV a cabo e internet urbana',
-                                    'Tecnologia: WiMAX (802.16)'
-                                ],
-                                'WAN (Wide Area Network):',
-                                [
-                                    'Alcance: países/continentes',
-                                    'Componentes: Hosts, Roteadores e Backbone',
-                                    'Características: longas distâncias e uso de sub-redes'
-                                ]
+                        ]
+                    },
+                    {
+                        subtitulo: '2.1 e 2.2 Fluxo de Dados',
+                        texto: [
+                            'Define como os dados trafegam entre dispositivos.',
+                            'Tipos de comunicação:',
+                            [
+                                'Simplex — uma direção, sem simultaneidade (só envia)',
+                                'Half-Duplex — duas direções, não simultâneo (envia e recebe, mas alternado)',
+                                'Full-Duplex — duas direções simultâneas (comunicação ao mesmo tempo)'
                             ]
-                        },
-                        {
-                            subtitulo: '12. Topologias de WAN',
-                            texto: [
-                                'Tipos:',
-                                [
-                                    'WAN dedicada — linhas exclusivas',
-                                    'VPN — rede virtual sobre a internet'
-                                ],
-                                'Vantagens da VPN: menor custo e maior flexibilidade.'
+                        ]
+                    },
+                    {
+                        subtitulo: '3.1 e 3.2 Deficiências na Transmissão',
+                        texto: [
+                            'Durante a transmissão, o sinal pode sofrer alterações e perdas.',
+                            'Principais problemas:',
+                            [
+                                'Atenuação — perda de energia do sinal; solução: amplificadores',
+                                'Distorção — alteração na forma do sinal; ocorre quando frequências chegam em tempos diferentes',
+                                'Ruído — interferência externa'
+                            ],
+                            'Tipos de ruído:',
+                            [
+                                'Térmico',
+                                'Induzido',
+                                'Crosstalk',
+                                'Impulso'
                             ]
-                        },
-                        {
-                            subtitulo: '13. Redes Sem Fio e Móveis',
-                            texto: [
-                                'Diferença importante:',
-                                [
-                                    'Sem fio — não usa cabos',
-                                    'Móvel — dispositivo pode se mover'
-                                ],
-                                'Tecnologias: redes celulares (3G/4G), satélites e Bluetooth vs Wi-Fi.',
-                                'Combinações possíveis:',
-                                [
-                                    'Desktop — não sem fio, não móvel',
-                                    'Notebook — não sem fio, móvel',
-                                    'Prédio sem fio — sem fio, não móvel',
-                                    'Dispositivo móvel — sem fio e móvel'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '14.1 Redes Interligadas (Internets)',
-                            texto: [
-                                'Uma internet (minúsculo) é um conjunto de redes diferentes interligadas.',
-                                'Elementos:',
-                                [
-                                    'Gateway — faz a conexão entre redes diferentes',
-                                    'Heterogeneidade — integra tecnologias distintas',
-                                    'A Internet — maior exemplo mundial'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: 'Resumo Final',
-                            texto: [
-                                'Redes permitem compartilhar dados e recursos.',
-                                'Existem diferentes modelos e arquiteturas.',
-                                'A classificação depende de:',
-                                [
-                                    'Tecnologia — broadcast vs ponto a ponto',
-                                    'Escala — PAN → WAN'
-                                ],
-                                'A internet é uma rede de redes.',
-                                'Redes impactam empresas, pessoas e a sociedade.'
-                            ]
-                        }
-                    ],
-                    lida: false
-                },
-                {
-                    id: 'redes_aula2',
-                    titulo: 'Aula 03/04 — Meios de Transmissão e Dispositivos de Rede',
-                    conteudo: [
-                        {
-                            subtitulo: '1.1 Camada Física e Transmissão de Bits',
-                            texto: [
-                                'A camada física é responsável por transmitir bits puros (0 e 1) através de um meio de comunicação.',
-                                'Objetivo central: garantir que um bit enviado seja recebido corretamente.',
-                                'Trabalha com aspectos físicos, não lógicos.',
-                                'Elementos envolvidos:',
-                                [
-                                    'Sinais elétricos ou ópticos',
-                                    'Tempo de transmissão (nanosegundos)',
-                                    'Sentido da comunicação — simplex, half-duplex, full-duplex'
-                                ],
-                                'Componentes fundamentais:',
-                                [
-                                    'Representação Digital — bits são representados por níveis de tensão',
-                                    'Interfaces Mecânicas — define conectores, cabos e pinagem',
-                                    'Transmissão Bruta — apenas transporte de sinais, sem interpretação de dados'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '1.2.1 Meios Guiados — Fio de Cobre',
-                            texto: [
-                                'Muito usado em redes locais (LANs).',
-                                'Características: tecnologia madura, limitação de distância por atenuação do sinal.',
-                                'Aplicações:',
-                                [
-                                    'Ethernet clássica — um único cabo compartilhado (broadcast)',
-                                    'DSL (Digital Subscriber Line) — usa linha telefônica para dados'
-                                ],
-                                'Limitações:',
-                                [
-                                    'Atraso',
-                                    'Erros de transmissão',
-                                    'Perda de sinal com distância'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '1.2.2 Meios Guiados — Fibra Óptica',
-                            texto: [
-                                'Tecnologia moderna de alta velocidade.',
-                                'Características: muito maior desempenho que o cobre, usa luz para transmitir dados.',
-                                'Aplicações:',
-                                [
-                                    'FTTH (Fiber to the Home) — fibra diretamente na casa do usuário',
-                                    'Backbones de Internet — conectam grandes redes globais'
-                                ],
-                                'Vantagens:',
-                                [
-                                    'Imune a interferência eletromagnética',
-                                    'Baixíssimo atraso',
-                                    'Alta largura de banda (Mbps → Gbps)'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '1.3.1 Meios Não Guiados — Rádio e Wi-Fi',
-                            texto: [
-                                'Base das redes wireless modernas.',
-                                'Características: usa frequências de rádio, comunicação compartilhada.',
-                                'Aplicações: Wi-Fi (IEEE 802.11) e redes locais sem fio.',
-                                'Vantagens: mobilidade e flexibilidade.'
-                            ]
-                        },
-                        {
-                            subtitulo: '1.3.2 e 1.3.3 Redes Celulares e Satélites',
-                            texto: [
-                                'Redes Celulares: redes WAN sem fio, controladas por estações-base.',
-                                'Satélites de Comunicação: comunicação via satélite em órbita, cada estação terrestre envia e recebe dados.',
-                                'Características:',
-                                [
-                                    'Comunicação do tipo broadcast',
-                                    'Cobertura de grandes áreas'
-                                ],
-                                'Uso: regiões remotas e redes globais.'
-                            ]
-                        },
-                        {
-                            subtitulo: '2.1 Dispositivos de Rede — Modems',
-                            texto: [
-                                'Dispositivo que converte sinais.',
-                                'Tipos:',
-                                [
-                                    'DSL — usa linha telefônica',
-                                    'Cabo — usa rede de TV',
-                                    'Dial-up — conexão antiga, até 56 kbps'
-                                ],
-                                'Função: converter sinal digital ↔ analógico.'
-                            ]
-                        },
-                        {
-                            subtitulo: '2.2 Ponto de Acesso (Access Point — AP)',
-                            texto: [
-                                'Função: atua como estação-base Wi-Fi.',
-                                'Responsabilidades:',
-                                [
-                                    'Conectar dispositivos sem fio à rede',
-                                    'Encaminhar pacotes'
-                                ],
-                                'Modos:',
-                                [
-                                    'Infraestrutura — com AP',
-                                    'Ad hoc — P2P, sem AP'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '2.3 Switches (Camada 2)',
-                            texto: [
-                                'Função: encaminhar pacotes para o destino correto.',
-                                'Características:',
-                                [
-                                    'Conexões ponto a ponto',
-                                    'Usa endereço de destino'
-                                ],
-                                'Vantagens:',
-                                [
-                                    'Evita colisões',
-                                    'Escalabilidade'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '2.4 Roteadores (Camada 3)',
-                            texto: [
-                                'Função: conectar redes diferentes.',
-                                'Características:',
-                                [
-                                    'Escolhe o melhor caminho (roteamento)',
-                                    'Usa tabelas de roteamento'
-                                ],
-                                'Responsabilidades:',
-                                [
-                                    'Controle de tráfego',
-                                    'Interligação de LANs e WANs'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '2.5 Gateways',
-                            texto: [
-                                'Função: conectar redes incompatíveis.',
-                                'Características:',
-                                [
-                                    'Tradução de protocolos',
-                                    'Conversão de hardware/software'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '3.1 Modelos de Referência — Arquitetura em Camadas',
-                            texto: [
-                                'Objetivo: reduzir complexidade.',
-                                'Conceitos:',
-                                [
-                                    'Camada — função específica',
-                                    'Interface — comunicação entre camadas',
-                                    'Entidades pares — comunicação entre sistemas'
-                                ]
-                            ]
-                        }
-                    ],
-                    lida: false
-                },
-                {
-                    id: 'redes_aula3',
-                    titulo: 'Aula 05 — Topologias de Rede, Métricas e Padronização',
-                    conteudo: [
-                        {
-                            subtitulo: '1.1 Topologias de Rede — Conceito Geral',
-                            texto: [
-                                'A topologia de rede define como os dispositivos (computadores, roteadores, switches) estão organizados física e logicamente.',
-                                'Impactos da topologia:',
-                                [
-                                    'Escalabilidade — facilidade de crescimento da rede',
-                                    'Custo — quantidade de cabos e equipamentos',
-                                    'Tolerância a falhas — capacidade de continuar funcionando'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '1.2.1 Topologia em Barramento',
-                            texto: [
-                                'Definição: todos os dispositivos compartilham um único cabo central (backbone).',
-                                'Funcionamento: comunicação em broadcast (difusão), todos recebem os dados e apenas o destino processa, os outros ignoram.',
-                                'Características:',
-                                [
-                                    'Meio compartilhado',
-                                    'Necessidade de verificar se o canal está livre',
-                                    'Uso histórico na Ethernet antiga'
-                                ],
-                                'Problema crítico: ponto único de falha — se o cabo quebra, toda a rede cai.'
-                            ]
-                        },
-                        {
-                            subtitulo: '1.2.2 Topologia Ponto a Ponto',
-                            texto: [
-                                'Definição: conexão direta entre dois dispositivos apenas.',
-                                'Funcionamento: comunicação exclusiva (unicast).',
-                                'Características:',
-                                [
-                                    'Simples e eficiente',
-                                    'Sem colisões',
-                                    'Base das redes WAN'
-                                ],
-                                'Aplicação: conexões entre cidades (ex: redes SONET).'
-                            ]
-                        },
-                        {
-                            subtitulo: '1.2.3 Topologia em Estrela',
-                            texto: [
-                                'Definição: todos os dispositivos conectados a um nó central (switch).',
-                                'Funcionamento: o switch decide para onde enviar os dados.',
-                                'Características:',
-                                [
-                                    'Isolamento de falhas — um cabo quebrado afeta só um dispositivo',
-                                    'Fácil expansão',
-                                    'Muito usada em redes atuais (LANs)'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '1.2.4 Topologia em Anel',
-                            texto: [
-                                'Definição: dispositivos conectados formando um circuito fechado.',
-                                'Funcionamento: dados circulam em um único sentido e cada nó atua como repetidor.',
-                                'Características:',
-                                [
-                                    'Regeneração de sinal',
-                                    'Uso de token (controle de acesso)',
-                                    'Latência previsível'
-                                ],
-                                'Ideal para sistemas que precisam de tempo real.'
-                            ]
-                        },
-                        {
-                            subtitulo: '1.2.5 Topologia em Árvore',
-                            texto: [
-                                'Definição: estrutura hierárquica baseada na estrela.',
-                                'Funcionamento: switches conectados em níveis (cascata).',
-                                'Características:',
-                                [
-                                    'Organização por setores (ex: departamentos)',
-                                    'Facilita gerenciamento',
-                                    'Permite segmentação da rede'
-                                ],
-                                'Atenção: muitos níveis geram aumento da latência.'
-                            ]
-                        },
-                        {
-                            subtitulo: '1.2.6 Topologia em Malha (Mesh)',
-                            texto: [
-                                'Definição: dispositivos com múltiplas conexões redundantes.',
-                                'Funcionamento: dados podem seguir vários caminhos.',
-                                'Características:',
-                                [
-                                    'Alta disponibilidade',
-                                    'Roteamento dinâmico',
-                                    'Base da Internet'
-                                ],
-                                'Trade-off:',
-                                [
-                                    'Alta confiabilidade — vantagem',
-                                    'Alto custo e complexidade — desvantagem'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '2.1 Métricas de Desempenho — Vazão (Throughput)',
-                            texto: [
-                                'Definição: quantidade de dados transmitidos por unidade de tempo.',
-                                'Unidades:',
-                                [
-                                    'Mbps — 1.000.000 bits/s',
-                                    'Gbps — 1.000.000.000 bits/s'
-                                ],
-                                'Observação: redes cabeadas têm desempenho superior às redes sem fio.'
-                            ]
-                        },
-                        {
-                            subtitulo: '2.2 Atraso (Delay / Latência)',
-                            texto: [
-                                'Definição: tempo que os dados levam para chegar ao destino.',
-                                'Tipos:',
-                                [
-                                    'Atraso de propagação — tempo no meio físico',
-                                    'Atraso de processamento — tempo em roteadores'
-                                ],
-                                'Medidas: microssegundos (µs) e nanossegundos (ns).',
-                                'Importância: crítico para jogos online, streaming e chamadas de vídeo.'
-                            ]
-                        },
-                        {
-                            subtitulo: '2.3 Congestionamento e Perda de Dados',
-                            texto: [
-                                'Definição: ocorre quando a rede não suporta o volume de tráfego.',
-                                'Consequências:',
-                                [
-                                    'Aumento de atraso',
-                                    'Perda de pacotes'
-                                ],
-                                'Elementos:',
-                                [
-                                    'Gargalos — caminhos sobrecarregados',
-                                    'Buffers cheios — descarte de pacotes'
-                                ],
-                                'Solução: sistemas reduzem envio automaticamente.'
-                            ]
-                        },
-                        {
-                            subtitulo: '2.4 Qualidade de Serviço (QoS)',
-                            texto: [
-                                'Definição: mecanismos que priorizam determinados tipos de tráfego.',
-                                'Componentes:',
-                                [
-                                    'Jitter — variação do atraso',
-                                    'Prioridade de tráfego'
-                                ],
-                                'Aplicações:',
-                                [
-                                    'Voz e vídeo — precisam de baixa latência',
-                                    'Downloads — precisam de alta vazão'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '2.5 Eficiência — Multiplexação Estatística',
-                            texto: [
-                                'Definição: compartilhamento dinâmico do canal de comunicação.',
-                                'Comparação:',
-                                [
-                                    'Estática — recursos fixos, ineficiente',
-                                    'Dinâmica — uso sob demanda, eficiente'
-                                ],
-                                'Vantagem: evita desperdício de banda.'
-                            ]
-                        },
-                        {
-                            subtitulo: '3.1 e 3.2 Padronização de Redes',
-                            texto: [
-                                'Objetivo: garantir que dispositivos diferentes consigam se comunicar.',
-                                'Benefícios:',
-                                [
-                                    'Interoperabilidade',
-                                    'Compatibilidade',
-                                    'Evolução tecnológica'
-                                ],
-                                'Principais organizações:',
-                                [
-                                    'ISO — criadora do modelo OSI, foco em modelos teóricos',
-                                    'IEEE — foco em hardware e redes locais: IEEE 802.3 → Ethernet e IEEE 802.11 → Wi-Fi'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '3.3 Padronização da Internet',
-                            texto: [
-                                'IETF: define padrões da Internet.',
-                                'RFC: documentos oficiais dos protocolos.',
-                                'Exemplos: TCP e IP.',
-                                'Característica: desenvolvimento aberto e colaborativo.'
-                            ]
-                        },
-                        {
-                            subtitulo: '4.1 e 4.2 Métricas de Erro (Confiabilidade)',
-                            texto: [
-                                'Problema: transmissão pode sofrer interferências de ruído elétrico e alteração de bits.',
-                                'Soluções — técnicas:',
-                                [
-                                    'Detecção de erros — identifica falhas',
-                                    'Correção de erros — recupera dados',
-                                    'Retransmissão — reenvio de dados'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: 'Resumo Final',
-                            texto: [
-                                'Topologias definem a estrutura da rede.',
-                                'Desempenho envolve vazão, latência e congestionamento.',
-                                'QoS garante priorização de tráfego.',
-                                'Padronização garante comunicação global.',
-                                'Erros são detectados e corrigidos automaticamente.'
-                            ]
-                        }
-                    ],
-                    lida: false
-                },
-                {
-                    id: 'redes_aula4',
-                    titulo: 'Aula 06 — Representação de Dados e Fluxo de Transmissão',
-                    conteudo: [
-                        {
-                            subtitulo: '1.1 Conceito Fundamental — Representação de Dados',
-                            texto: [
-                                'Na comunicação de dados, toda informação é convertida em bits (0 e 1).',
-                                'Isso permite que diferentes tipos de dados sejam transmitidos no mesmo sistema.',
-                                'Computadores não entendem texto, imagem ou som diretamente — eles trabalham apenas com dois estados: ligado (1) e desligado (0).'
-                            ]
-                        },
-                        {
-                            subtitulo: '1.2 Texto e Codificação',
-                            texto: [
-                                'O texto é representado por padrões binários, utilizando sistemas de codificação.',
-                                'Principais padrões:',
-                                [
-                                    'ASCII — 7 bits → 128 símbolos',
-                                    'Unicode — até 32 bits → suporta praticamente todos os idiomas'
-                                ],
-                                'Representação de números: diferente do texto, convertidos diretamente para binário.',
-                                'Exemplo: 6 → 110.'
-                            ]
-                        },
-                        {
-                            subtitulo: '1.3 Imagens e Digitalização',
-                            texto: [
-                                'Imagens são representadas por uma matriz de pixels.',
-                                'Pixel: menor unidade da imagem, define a resolução.',
-                                'Cores:',
-                                [
-                                    'Monocromático — 1 bit, preto/branco',
-                                    'Colorido — sistema RGB'
-                                ],
-                                'Profundidade de cor: número de bits por pixel, define a quantidade de cores possíveis.',
-                                'Representação: imagem dividida em grade (matriz), cada célula = pixel, cada pixel = valor binário de cor.'
-                            ]
-                        },
-                        {
-                            subtitulo: '1.4 Áudio e Vídeo',
-                            texto: [
-                                'São sinais contínuos (analógicos) que precisam ser convertidos para digital.',
-                                'Áudio — processo:',
-                                [
-                                    'Captura do som (analógico)',
-                                    'Amostragem',
-                                    'Conversão para binário'
-                                ],
-                                'Cada amostra representa o valor do som em um instante.',
-                                'Vídeo: sequência de imagens (frames).',
-                                'Taxa de quadros (FPS):',
-                                [
-                                    '24 — cinema',
-                                    '30 — TV',
-                                    '60 — alta fluidez'
-                                ],
-                                'Representação: sinal contínuo sendo "quebrado" em pontos (amostras) e depois convertido em números binários.'
-                            ]
-                        },
-                        {
-                            subtitulo: '1.5 Analogia: Alfabeto de Dois Símbolos',
-                            texto: [
-                                'Toda informação pode ser reduzida a dois estados: 0 e 1.',
-                                'Analogia: comunicação como piscar de lanterna, padrões de piscadas formam mensagens.',
-                                'Conceitos-chave:',
-                                [
-                                    'Unificação — todos os dados viram bits',
-                                    'Eficiência — permite compressão'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '2.1 e 2.2 Fluxo de Dados',
-                            texto: [
-                                'Define como os dados trafegam entre dispositivos.',
-                                'Tipos de comunicação:',
-                                [
-                                    'Simplex — uma direção, sem simultaneidade (só envia)',
-                                    'Half-Duplex — duas direções, não simultâneo (envia e recebe, mas alternado)',
-                                    'Full-Duplex — duas direções simultâneas (comunicação ao mesmo tempo)'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '3.1 e 3.2 Deficiências na Transmissão',
-                            texto: [
-                                'Durante a transmissão, o sinal pode sofrer alterações e perdas.',
-                                'Principais problemas:',
-                                [
-                                    'Atenuação — perda de energia do sinal; solução: amplificadores',
-                                    'Distorção — alteração na forma do sinal; ocorre quando frequências chegam em tempos diferentes',
-                                    'Ruído — interferência externa'
-                                ],
-                                'Tipos de ruído:',
-                                [
-                                    'Térmico',
-                                    'Induzido',
-                                    'Crosstalk',
-                                    'Impulso'
-                                ]
-                            ]
-                        },
-                        {
-                            subtitulo: '3.3 Relação Sinal-Ruído (SNR)',
-                            texto: [
-                                'Define a qualidade da comunicação.',
-                                'Interpretação:',
-                                [
-                                    'SNR Alta = boa qualidade',
-                                    'SNR Baixa = má qualidade'
-                                ],
-                                'Representação: sinal limpo → alta SNR; sinal distorcido → baixa SNR.'
-                            ]
-                        },
-                        {
-                            subtitulo: 'Conclusão',
-                            texto: [
-                                'Toda informação é convertida em bits (0 e 1).',
-                                'Dados podem ser texto, imagem, áudio ou vídeo.',
-                                'Comunicação depende do fluxo de dados:',
-                                [
-                                    'Simplex',
-                                    'Half-duplex',
-                                    'Full-duplex'
-                                ],
-                                'Sinais sofrem problemas como atenuação, distorção e ruído.',
-                                'A qualidade da transmissão depende da SNR.'
-                            ]
-                        }
-                    ],
-                    lida: false
-                }
-            ]
-        },
+                        ]
+                    },
+                    {
+                        subtitulo: '3.3 Relação Sinal-Ruído (SNR)',
+                        texto: [
+                            'Define a qualidade da comunicação.',
+                            'Interpretação:',
+                            [
+                                'SNR Alta = boa qualidade',
+                                'SNR Baixa = má qualidade'
+                            ],
+                            'Representação: sinal limpo → alta SNR; sinal distorcido → baixa SNR.'
+                        ]
+                    },
+                    {
+                        subtitulo: 'Conclusão',
+                        texto: [
+                            'Toda informação é convertida em bits (0 e 1).',
+                            'Dados podem ser texto, imagem, áudio ou vídeo.',
+                            'Comunicação depende do fluxo de dados:',
+                            [
+                                'Simplex',
+                                'Half-duplex',
+                                'Full-duplex'
+                            ],
+                            'Sinais sofrem problemas como atenuação, distorção e ruído.',
+                            'A qualidade da transmissão depende da SNR.'
+                        ]
+                    }
+                ],
+                lida: false
+            }
+        ]
+    },
+
 
     // ── BANCO DE DADOS ───────────────────────────────────────────────────
     banco: {
@@ -3504,15 +3566,15 @@ export const resumoData = {
 // ═══════════════════════════════════════════════════════════════════════
 //  FUNÇÕES UTILITÁRIAS
 // ═══════════════════════════════════════════════════════════════════════
-
+ 
 export function getResumoPorDisciplina(nome) {
     return resumoData[nome] ?? null;
 }
-
+ 
 export function listarResumos(disciplina) {
     return resumoData[disciplina]?.resumos ?? [];
 }
-
+ 
 export function getResumoPorId(id) {
     for (const disc of Object.values(resumoData)) {
         const encontrado = disc.resumos.find(r => r.id === id);
@@ -3520,12 +3582,12 @@ export function getResumoPorId(id) {
     }
     return null;
 }
-
+ 
 export function marcarComoLida(id, lida = true) {
     const resumo = getResumoPorId(id);
     if (resumo) resumo.lida = lida;
 }
-
+ 
 export function progressoLeitura(disciplina) {
     const lista = listarResumos(disciplina);
     return {
@@ -3533,13 +3595,14 @@ export function progressoLeitura(disciplina) {
         total: lista.length
     };
 }
-
+ 
 // ═════════════════════════════════════════════════════════════════════
 //  CONTROLE DE VISIBILIDADE DOS FABs
 // ═════════════════════════════════════════════════════════════════════
-
+ 
 export function mostrarFABs(visivel) {
     const fabGroup = document.getElementById('fab-group');
     if (!fabGroup) return;
     fabGroup.style.display = visivel ? 'flex' : 'none';
 }
+ 

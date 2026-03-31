@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   pessoal.js — Área Pessoal  (v14 — FABs controlados pelo resumo.js)
+   pessoal.js — Área Pessoal  (v15 — blocos de tópico colapsáveis)
 ════════════════════════════════════════════════════════════════════════ */
 
 import {
@@ -18,13 +18,13 @@ import {
     listarResumos,
     getResumoPorId,
     mostrarFABs
-} from './resumo.js';
+} from './Resumo/resumo.js';
 
 import {
     initAnotacoes,
     exibirAnotacao,
     removerAnotacao
-} from './anotacao.js';
+} from './Anotacao/anotacao.js';
 
 
 import {
@@ -40,8 +40,6 @@ const USUARIOS = [
     { nome: 'Alvaro',   senha: '093' },
     { nome: 'Isaac',    senha: '234' },
     { nome: 'Cauê',    senha: '542' }
-
-
 ];
 
 
@@ -148,7 +146,6 @@ btnSair.addEventListener('click', () => {
 //  STORAGE
 // ═════════════════════════════════════════════════════════════════════
 
-// DEPOIS:
 async function carregarDados() {
     try {
         const raw = await carregarDoFirebase(usuarioAtual);
@@ -390,10 +387,40 @@ function _exibirResumos(discId, panelEl) {
     wrapper.querySelectorAll('.resumo-card').forEach(card => {
         const rid = card.dataset.resumoId;
 
+        // Toggle do card (aula inteira)
         card.querySelector('.resumo-card-header').addEventListener('click', () => {
             card.classList.toggle('expanded');
         });
 
+        // Toggle dos blocos internos (tópicos)
+        card.querySelectorAll('.resumo-bloco-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.closest('.resumo-bloco').classList.toggle('bloco-aberto');
+            });
+        });
+
+        // Botão expandir/contrair todos os tópicos do card
+        card.querySelector('.btn-expandir-blocos')?.addEventListener('click', e => {
+            e.stopPropagation();
+            const blocos = card.querySelectorAll('.resumo-bloco');
+            const todosAbertos = [...blocos].every(b => b.classList.contains('bloco-aberto'));
+            blocos.forEach(b => {
+                if (todosAbertos) {
+                    b.classList.remove('bloco-aberto');
+                } else {
+                    b.classList.add('bloco-aberto');
+                }
+            });
+            // Atualiza o texto do botão
+            const btn = card.querySelector('.btn-expandir-blocos');
+            if (todosAbertos) {
+                btn.innerHTML = '<i class="fas fa-expand-alt"></i> Expandir tópicos';
+            } else {
+                btn.innerHTML = '<i class="fas fa-compress-alt"></i> Contrair tópicos';
+            }
+        });
+
+        // Botão copiar
         card.querySelector('.btn-copiar')?.addEventListener('click', e => {
             e.stopPropagation();
             const r = getResumoPorId(rid);
@@ -430,15 +457,30 @@ function _renderizarTexto(texto) {
 }
 
 function _renderCard(resumo, discId) {
-    const blocos    = resumo.conteudo.map(bloco => `
-        <div class="resumo-bloco">
-            <span class="resumo-bloco-titulo">
-                <i class="fas fa-circle-dot"></i>
-                ${bloco.subtitulo}
-            </span>
-            ${_renderizarTexto(bloco.texto)}
-        </div>
-    `).join('');
+    const blocos = resumo.conteudo.map(bloco => {
+        const imagemHTML = bloco.imagem
+            ? `<div class="resumo-bloco-imagem">
+                   <img src="Resumo/${bloco.imagem.src}.png" alt="${bloco.imagem.alt}">
+               </div>`
+            : '';
+
+        return `
+            <div class="resumo-bloco">
+                <div class="resumo-bloco-header">
+                    <span class="resumo-bloco-titulo">
+                        <i class="fas fa-circle-dot"></i>
+                        ${bloco.subtitulo}
+                    </span>
+                    <i class="fas fa-chevron-down bloco-chevron"></i>
+                </div>
+                <div class="resumo-bloco-conteudo">
+                    ${imagemHTML}
+                    ${_renderizarTexto(bloco.texto)}
+                </div>
+            </div>
+        `;
+    }).join('');
+
     const numBlocos = resumo.conteudo.length;
 
     return `
@@ -460,6 +502,9 @@ function _renderCard(resumo, discId) {
                 <div class="resumo-card-actions">
                     <button class="resumo-action-btn btn-copiar">
                         <i class="far fa-copy"></i> Copiar
+                    </button>
+                    <button class="resumo-action-btn btn-expandir-blocos">
+                        <i class="fas fa-expand-alt"></i> Expandir tópicos
                     </button>
                 </div>
             </div>
@@ -506,12 +551,12 @@ function _criarFABs() {
     const group = document.createElement('div');
     group.id = 'fab-group';
     group.className = 'fab-group';
-    group.style.display = 'none'; // oculto por padrão
+    group.style.display = 'none';
     group.innerHTML = `
         <button class="fab-btn" id="fab-up" title="Ir para o topo">
             <i class="fas fa-chevron-up"></i>
         </button>
-        <button class="fab-btn fab-collapse" id="fab-collapse" title="Contrair todos os resumos">
+        <button class="fab-btn fab-collapse" id="fab-collapse" title="Contrair tudo">
             <i class="fas fa-compress"></i>
         </button>
         <button class="fab-btn" id="fab-down" title="Ir para o final">
@@ -541,8 +586,17 @@ function _criarFABs() {
     document.getElementById('fab-down').addEventListener('click', scrollDown);
 
     document.getElementById('fab-collapse').addEventListener('click', () => {
-        const abertos = discPanel.querySelectorAll('.resumo-card.expanded');
-        abertos.forEach(c => c.classList.remove('expanded'));
+        // Fecha todos os cards de aula
+        discPanel.querySelectorAll('.resumo-card.expanded')
+            .forEach(c => c.classList.remove('expanded'));
+        // Fecha também todos os blocos de tópico abertos
+        discPanel.querySelectorAll('.resumo-bloco.bloco-aberto')
+            .forEach(b => b.classList.remove('bloco-aberto'));
+        // Reseta o texto dos botões de expandir tópicos
+        discPanel.querySelectorAll('.btn-expandir-blocos')
+            .forEach(btn => {
+                btn.innerHTML = '<i class="fas fa-expand-alt"></i> Expandir tópicos';
+            });
     });
 }
 

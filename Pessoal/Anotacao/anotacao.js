@@ -14,7 +14,7 @@ import {
     salvarAnotacaoNoFirebase,
     deletarAnotacaoNoFirebase,
     carregarAnotacoesDoFirebase,
-} from './firebase.js';
+} from '../firebase.js';
 
 const AUTOSAVE_DELAY = 1500;
 

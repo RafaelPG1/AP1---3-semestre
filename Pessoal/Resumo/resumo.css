@@ -1,11 +1,7 @@
-
 /* AREA DO RESUMO*/
 
 /* ═══════════════════════════════════════════════════════════════════════
-   resumo.css — Sistema de Resumos  (v3 — cards por tópico + chip)
-════════════════════════════════════════════════════════════════════════ */
-/* ═══════════════════════════════════════════════════════════════════════
-   resumo.css — Sistema de Resumos  (v4 — sem controle de leitura)
+   resumo.css — Sistema de Resumos  (v5 — blocos colapsáveis)
 ════════════════════════════════════════════════════════════════════════ */
 
 /* ── Toggle de modo ──────────────────────────────────────────────────── */
@@ -160,25 +156,67 @@
 .resumo-body-inner {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 16px 16px 6px;
+    gap: 8px;
+    padding: 14px 14px 6px;
 }
 
+
+/* ── Bloco de tópico (colapsável) ────────────────────────────────────── */
 .resumo-bloco {
     background: rgba(255,255,255,.03);
     border: 1px solid rgba(255,255,255,.06);
     border-radius: 12px;
-    padding: 14px 16px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    overflow: hidden;
     transition: background .18s, border-color .18s;
 }
 .resumo-bloco:hover {
-    background: rgba(255,255,255,.05);
+    background: rgba(255,255,255,.04);
     border-color: rgba(255,255,255,.1);
 }
 
+/* Header clicável do bloco */
+.resumo-bloco-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    cursor: pointer;
+    user-select: none;
+    gap: .5rem;
+    transition: background .15s;
+}
+.resumo-bloco-header:hover {
+    background: rgba(255,255,255,.03);
+}
+
+/* Chevron do bloco */
+.bloco-chevron {
+    color: rgba(255,255,255,.2);
+    font-size: .6rem;
+    transition: transform .22s ease, color .15s;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+.resumo-bloco.bloco-aberto .bloco-chevron {
+    transform: rotate(180deg);
+    color: rgba(255,255,255,.4);
+}
+
+/* Conteúdo colapsável do bloco */
+.resumo-bloco-conteudo {
+    display: none;
+    padding: 12px 14px 14px;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid rgba(255,255,255,.05);
+}
+.resumo-bloco.bloco-aberto .resumo-bloco-conteudo {
+    display: flex;
+    animation: resumoExpand .2s ease both;
+}
+
+
+/* ── Título do bloco (chip) ──────────────────────────────────────────── */
 .resumo-bloco-titulo {
     display: inline-flex;
     align-items: center;
@@ -265,6 +303,11 @@
     color: #a78bfa;
 }
 
+/* Botão expandir/contrair todos os tópicos */
+.resumo-action-btn.btn-expandir-blocos {
+    margin-left: auto;
+}
+
 
 /* ── Toast ───────────────────────────────────────────────────────────── */
 .resumo-toast {
@@ -292,8 +335,9 @@
 /* ── Responsivo ──────────────────────────────────────────────────────── */
 @media (max-width: 720px) {
     .mode-toggle { margin-left: 0; }
-    .resumo-body-inner { padding: 12px 10px 4px; gap: 8px; }
-    .resumo-bloco { padding: 12px 12px 14px; }
+    .resumo-body-inner { padding: 10px 8px 4px; gap: 6px; }
+    .resumo-bloco-header { padding: 9px 12px; }
+    .resumo-bloco-conteudo { padding: 10px 12px 12px; }
     .resumo-bloco-texto { font-size: .845rem; }
     .resumo-card-actions { padding: 10px 12px 14px; }
 }
@@ -315,7 +359,7 @@
 }
 
 
-/* ── Botões Flutuantes ─────────────────────────────────────── */
+/* ── Botões Flutuantes ─────────────────────────────────── */
 .fab-group {
     position: fixed;
     right: 1.4rem;
@@ -376,3 +420,28 @@
     }
 }
 
+
+/* ── Imagens de Topologia ────────────────────────────────────────────── */
+.resumo-bloco-imagem {
+    width: 100%;
+    max-width: 420px;
+    margin-right: auto;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(0,0,0,.2);
+}
+
+.resumo-bloco-imagem img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+    object-fit: contain;
+    transition: transform .3s ease, opacity .3s ease;
+}
+
+.resumo-bloco-imagem img[src=""],
+.resumo-bloco-imagem img:not([src]) {
+    display: none;
+}
