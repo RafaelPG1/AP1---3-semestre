@@ -601,17 +601,23 @@ function _criarFABs() {
     group.className = 'fab-group';
     group.style.display = 'none';
     group.innerHTML = `
-        <button class="fab-btn" id="fab-up" title="Ir para o topo">
-            <i class="fas fa-chevron-up"></i>
-        </button>
-        <button class="fab-btn fab-collapse" id="fab-collapse" title="Contrair tudo">
-            <i class="fas fa-compress"></i>
-        </button>
-        <button class="fab-btn" id="fab-down" title="Ir para o final">
-            <i class="fas fa-chevron-down"></i>
-        </button>
+        <div class="fab-ear"></div>
+        <div class="fab-group-inner">
+            <button class="fab-btn" id="fab-up" title="Ir para o topo">
+                <i class="fas fa-chevron-up"></i>
+            </button>
+            <div class="fab-divider"></div>
+            <button class="fab-btn fab-collapse" id="fab-collapse" title="Contrair tudo">
+                <i class="fas fa-compress"></i>
+            </button>
+            <div class="fab-divider"></div>
+            <button class="fab-btn" id="fab-down" title="Ir para o final">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
     `;
     document.body.appendChild(group);
+
 
     function scrollUp() {
         if (discPanel.scrollTop > 0) {

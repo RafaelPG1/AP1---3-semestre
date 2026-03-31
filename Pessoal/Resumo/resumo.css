@@ -358,66 +358,131 @@
     padding-left: 0.2rem;
 }
 
-
-/* ── Botões Flutuantes ─────────────────────────────────── */
+/* ── Botões Flutuantes — Tab lateral retrátil ────────────────────────── */
 .fab-group {
     position: fixed;
-    right: 1.4rem;
+    right: 0;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: .55rem;
+    align-items: flex-end;
+    gap: 0;
     z-index: 50;
+
+    /* Começa recolhida — só a "orelha" aparece */
+    --fab-w: 40px;
 }
 
+/* Trilho interno que desliza */
+.fab-group-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .45rem;
+    padding: .6rem .5rem;
+    background: rgba(14,14,14,.92);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,.08);
+    border-right: none;
+    border-radius: 14px 0 0 14px;
+    box-shadow: -4px 0 24px rgba(0,0,0,.45);
+
+    /* Escondida para fora */
+    transform: translateX(calc(100% + 1px));
+    opacity: 0;
+transition: transform .5s cubic-bezier(.4, 0, .2, 1),
+                opacity .4s ease; 
+
+    pointer-events: none;
+}
+
+/* Orelha sempre visível */
+.fab-ear {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 70px;
+    background: rgba(14,14,14,.88);
+    border: 1px solid rgba(255,255,255,.08);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: width .22s ease, background .18s;
+    box-shadow: -3px 0 12px rgba(0,0,0,.35);
+}
+.fab-ear::before {
+    content: '';
+    width: 2px;
+    height: 18px;
+    background: rgba(255,255,255,.18);
+    border-radius: 2px;
+    transition: background .18s;
+}
+
+/* Hover no grupo inteiro: abre o trilho */
+.fab-group:hover .fab-group-inner {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+.fab-group:hover .fab-ear {
+    width: 10px;
+    background: rgba(20,20,20,.95);
+}
+.fab-group:hover .fab-ear::before {
+    background: rgba(255,255,255,.35);
+}
+
+/* Botões individuais */
 .fab-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,.1);
-    background: rgba(18,18,18,.88);
-    backdrop-filter: blur(12px);
-    color: rgba(255,255,255,.55);
-    font-size: .78rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.45);
+    font-size: .75rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background .18s, border-color .18s, color .18s, transform .15s;
-    box-shadow: 0 4px 16px rgba(0,0,0,.4);
+    flex-shrink: 0;
 }
 .fab-btn:hover {
-    background: rgba(30,30,30,.98);
-    border-color: rgba(255,255,255,.2);
+    background: rgba(255,255,255,.09);
+    border-color: rgba(255,255,255,.18);
     color: rgba(255,255,255,.9);
-    transform: translateY(-2px);
+    transform: scale(1.07);
 }
-.fab-btn:active { transform: scale(.94); }
+.fab-btn:active { transform: scale(.93); }
 
 .fab-btn.fab-collapse {
-    border-color: rgba(124,90,243,.25);
-    color: #a78bfa;
+    border-color: rgba(124,90,243,.2);
+    color: rgba(167,139,250,.7);
 }
 .fab-btn.fab-collapse:hover {
-    background: rgba(124,90,243,.15);
-    border-color: rgba(124,90,243,.5);
+    background: rgba(124,90,243,.12);
+    border-color: rgba(124,90,243,.45);
     color: #c4b5fd;
 }
 
+/* Divisor entre botões */
 .fab-divider {
-    width: 1px;
-    height: 10px;
-    background: rgba(255,255,255,.08);
+    width: 22px;
+    height: 1px;
+    background: rgba(255,255,255,.07);
+    margin: .05rem 0;
 }
 
 @media (max-width: 720px) {
-    .fab-group {
-        right: .75rem;
-        top: 50%;
-        transform: translateY(-50%);
-    }
+    .fab-group { top: auto; bottom: 5rem; transform: none; }
 }
 
 
