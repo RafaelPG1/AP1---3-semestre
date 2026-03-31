@@ -373,7 +373,17 @@ export const DISCIPLINAS_DATA = {
                 ]
             },
         ],
-        videos: []
+        videos: [
+            { label:'Vídeo Geral (todos os conteúdos)', url:'https://drive.google.com/file/d/1vP3yVEA86ybNSZDMt2AJ61Kquc-UZHkf/view?usp=drive_link' },
+            { label:'Aula 1', url:'https://drive.google.com/file/d/1BQ3qiR1Rk-9Sh3ERFkKnKT4gSN4qBfko/view?usp=drive_link' },
+            { label:'Aula 2', url:'https://drive.google.com/file/d/1BQ3qiR1Rk-9Sh3ERFkKnKT4gSN4qBfko/view?usp=drive_link' },
+            { label:'Aula 3', url:'https://drive.google.com/file/d/1xerybYBcESckEivxS5FEGTbMFpW6lrHX/view?usp=drive_link' },
+            { label:'Aula 4', url:'https://drive.google.com/file/d/14uMg0tp1x5ua3cRuIS3YcfGYmAji96Cx/view?usp=drive_link' },
+            { label:'Aula 5', url:'https://drive.google.com/file/d/1h8a2ZCaFp0pw5x39BVTEEoeOfJ9d3X68/view?usp=drive_link' },
+            { label:'Aula 6', url:'' },
+            { label:'Aula 7', url:'' },
+            { label:'Aula 8', url:'' },
+        ]
     }
 };
 
