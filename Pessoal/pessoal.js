@@ -38,7 +38,9 @@ const USUARIOS = [
     { nome: 'Cid',      senha: '285' },
     { nome: 'Everardo', senha: '334' },
     { nome: 'Alvaro',   senha: '093' },
-    { nome: 'Isaac',    senha: '234' }
+    { nome: 'Isaac',    senha: '234' },
+    { nome: 'Caue',    senha: '542' }
+
 ];
 
 
