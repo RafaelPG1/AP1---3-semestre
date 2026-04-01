@@ -87,12 +87,13 @@ body {
     gap: 0.55rem;
 }
 
+/* ── Ícone laranja ─────────────────────────────── */
 .icon-wrapper {
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: rgba(55, 138, 221, 0.12);
-    border: 1px solid rgba(55, 138, 221, 0.35);
+    background: rgba(249, 115, 22, 0.12);
+    border: 1px solid rgba(249, 115, 22, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -101,7 +102,7 @@ body {
 
 .icon-wrapper i {
     font-size: 1.6rem;
-    color: #60aef5;
+    color: #f97316;
 }
 
 h1 {
@@ -130,16 +131,16 @@ h1 {
     gap: 0;
 }
 
-/* ── Subject Title ─────────────────────────────── */
+/* ── Subject Title — laranja ───────────────────── */
 .subject-title {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.72rem;
+    font-size: 1.02rem;
     font-weight: 700;
-    color: #60aef5;
+    color: #f97316;
     letter-spacing: 2px;
     text-transform: uppercase;
     padding: 1.8rem 0 0.9rem;
-    border-bottom: 1px solid rgba(55, 138, 221, 0.2);
+    border-bottom: 1px solid rgba(249, 115, 22, 0.25);
     margin-bottom: 0.2rem;
     animation: fadeInUp 0.6s ease-out both;
 }
@@ -156,21 +157,47 @@ h1 {
 }
 
 .question-container:hover {
-    border-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(249, 115, 22, 0.18);
 }
 
-/* ── Question Number ───────────────────────────── */
+/* ── Question Number — laranja ─────────────────── */
 .question-number {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.7rem;
+    font-size: 1rem;
     font-weight: 700;
-    color: #60aef5;
+    color: #f97316;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     margin-bottom: 0.75rem;
 }
 
-/* ── Question Text ─────────────────────────────── */
+/* ── Question Texto (contexto ENADE) ───────────── */
+.question-texto {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.7;
+    margin-bottom: 0.85rem;
+    padding: 0.75rem 1rem;
+    background: rgba(249, 115, 22, 0.04);
+    border-left: 2px solid rgba(249, 115, 22, 0.3);
+    border-radius: 0 8px 8px 0;
+    text-align: left;
+}
+
+/* ── Question Enunciado (pergunta ENADE) ───────── */
+.question-enunciado {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.65;
+    margin-bottom: 1.2rem;
+    text-align: left;
+}
+
+/* ── Question Text (fallback genérico) ─────────── */
 .question-text {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.95rem;
@@ -204,16 +231,18 @@ h1 {
     line-height: 1.5;
 }
 
+/* ── Hover laranja ─────────────────────────────── */
 .option:hover {
-    background: rgba(55, 138, 221, 0.1);
-    border-color: rgba(55, 138, 221, 0.3);
+    background: rgba(249, 115, 22, 0.10);
+    border-color: rgba(249, 115, 22, 0.35);
     color: white;
     transform: translateX(3px);
 }
 
+/* ── Selecionado laranja ───────────────────────── */
 .option.selected {
-    background: rgba(55, 138, 221, 0.18);
-    border-color: rgba(55, 138, 221, 0.55);
+    background: rgba(249, 115, 22, 0.15);
+    border-color: rgba(249, 115, 22, 0.50);
     color: white;
 }
 
@@ -303,18 +332,20 @@ h1 {
     color: white;
 }
 
+/* ── Submit button — verde ─────────────────────── */
 .submit-button {
-    background: rgba(55, 138, 221, 0.15);
-    border-color: rgba(55, 138, 221, 0.4);
-    color: #60aef5;
+    background: rgba(29, 158, 117, 0.15);
+    border-color: rgba(29, 158, 117, 0.4);
+    color: #3ecfa0;
 }
 
 .submit-button:hover {
-    background: rgba(55, 138, 221, 0.25);
-    border-color: rgba(55, 138, 221, 0.6);
+    background: rgba(29, 158, 117, 0.28);
+    border-color: rgba(29, 158, 117, 0.65);
     color: white;
 }
 
+/* ── Restart button — verde ────────────────────── */
 .restart-button {
     background: rgba(29, 158, 117, 0.12);
     border-color: rgba(29, 158, 117, 0.35);
@@ -386,11 +417,12 @@ h1 {
     margin-bottom: 0.5rem;
 }
 
+/* ── Percentagem laranja ───────────────────────── */
 .percentage {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 3rem;
     font-weight: 700;
-    color: #60aef5;
+    color: #f97316;
     line-height: 1;
     margin: 0.5rem 0 1rem;
 }
@@ -430,6 +462,7 @@ h1 {
     margin: 4px 0;
 }
 
+/* ── Nav buttons laranja ───────────────────────── */
 .nav-btn {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -446,9 +479,9 @@ h1 {
 }
 
 .nav-btn:hover {
-    background: rgba(55, 138, 221, 0.15);
-    border-color: rgba(55, 138, 221, 0.35);
-    color: #60aef5;
+    background: rgba(249, 115, 22, 0.15);
+    border-color: rgba(249, 115, 22, 0.4);
+    color: #f97316;
     transform: scale(1.08);
 }
 
@@ -498,4 +531,261 @@ h1 {
         height: 34px;
         font-size: 0.78rem;
     }
+}
+
+
+/* ── Resultado por Aula ────────────────────────────────────────────────────── */
+.subject-result {
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    margin: 0.5rem 0 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    animation: fadeInUp 0.5s ease-out both;
+    transition: all 0.4s ease;
+}
+
+/* Progresso parcial */
+.subject-result--progress {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.9rem 1.2rem;
+}
+
+.sr-progress-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.5px;
+}
+
+.sr-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+/* barra de progresso — azul mantido (notificação de progresso restaurado) */
+.sr-progress-fill {
+    height: 100%;
+    background: rgba(55, 138, 221, 0.5);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+/* Aula completa — bom (≥70%) */
+.subject-result--good {
+    background: rgba(29, 158, 117, 0.1);
+    border: 1px solid rgba(29, 158, 117, 0.3);
+}
+
+/* Aula completa — médio (50–69%) */
+.subject-result--mid {
+    background: rgba(243, 156, 18, 0.08);
+    border: 1px solid rgba(243, 156, 18, 0.25);
+}
+
+/* Aula completa — ruim (<50%) */
+.subject-result--bad {
+    background: rgba(231, 76, 60, 0.08);
+    border: 1px solid rgba(231, 76, 60, 0.25);
+}
+
+.sr-icon {
+    font-size: 1.7rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.sr-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1;
+}
+
+.sr-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.sr-score {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.sr-pct {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.subject-result--good  .sr-pct { color: #3ecfa0; }
+.subject-result--mid   .sr-pct { color: #f5c46a; }
+.subject-result--bad   .sr-pct { color: #e07a73; }
+
+/* Opções bloqueadas após resposta */
+.option.locked {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   BLOCO DE CÓDIGO — tom laranja
+   ══════════════════════════════════════════════════════════════════════════════ */
+.code-block {
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 3px solid #f97316;
+    border-radius: 0 10px 10px 0;
+    padding: 0.9rem 1.1rem;
+    margin: 0.7rem 0 1rem;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.85);
+    overflow-x: auto;
+    white-space: pre;
+    tab-size: 4;
+}
+
+.code-block::-webkit-scrollbar { height: 4px; }
+.code-block::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); }
+.code-block::-webkit-scrollbar-thumb { background: rgba(249, 115, 22, 0.3); border-radius: 2px; }
+
+.jk-keyword    { color: #7ba7c4; font-weight: 600; }
+.jk-annotation { color: #7ba7c4; font-weight: 600; }
+.jk-string     { color: #a3e635; }
+.jk-comment    { color: rgba(255, 255, 255, 0.32); font-style: italic; }
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   AFIRMATIVAS ROMANAS (I. II. III. IV.)
+   ══════════════════════════════════════════════════════════════════════════════ */
+.assertions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.5rem 0 1rem;
+}
+
+.assertion {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    padding: 0.55rem 0.85rem;
+    background: rgba(249, 115, 22, 0.03);
+    border: 1px solid rgba(249, 115, 22, 0.1);
+    border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.6;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.assertion:hover {
+    background: rgba(249, 115, 22, 0.06);
+    border-color: rgba(249, 115, 22, 0.2);
+}
+
+.assertion-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #f97316;
+    letter-spacing: 0.5px;
+    min-width: 24px;
+    padding-top: 1px;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+/* ── Inline code dentro de afirmativas ──────────── */
+.assertion code,
+.question-texto code,
+.question-enunciado code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 0.82em;
+    color: #fb923c;
+    background: rgba(249, 115, 22, 0.12);
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+/* ── Responsivo ─────────────────────────────────── */
+@media (max-width: 600px) {
+    .code-block {
+        font-size: 0.72rem;
+        padding: 0.7rem 0.85rem;
+    }
+
+    .assertion {
+        font-size: 0.84rem;
+        padding: 0.5rem 0.7rem;
+    }
+}
+
+/* ── Syntax highlight ───────────────────────────── */
+/* palavras-chave: cinza azulado escuro */
+.jk-keyword    { color: #7ba7c4; font-weight: 600; }
+/* anotações (@Override etc): mesmo cinza azulado */
+.jk-annotation { color: #7ba7c4; font-weight: 600; }
+/* strings: verde claro */
+.jk-string     { color: #a3e635; }
+/* comentários: cinza suave */
+.jk-comment    { color: rgba(255,255,255,0.32); font-style: italic; }
+
+/* ── Mini-enunciado (frase de transição antes do código) ───────────────────── */
+.question-mini-enunciado {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.6;
+    margin: 0.5rem 0 0.4rem;
+    font-style: italic;
+}
+
+/* ── Conector PORQUE (questões de asserção-razão) ──────────────────────────── */
+.assertion-connector {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.3rem 0;
+}
+
+.assertion-connector::before,
+.assertion-connector::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(249, 115, 22, 0.2);
+}
+
+.connector-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: rgba(249, 115, 22, 0.6);
+    text-transform: uppercase;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    border-radius: 20px;
+    white-space: nowrap;
 }
