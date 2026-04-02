@@ -1,11 +1,12 @@
-//qu.js
+//qu.js tudo ok esse é o modelo
 // Configuração do quiz
 const originalQuizData = [
   {
     subject: "Aula 1 — Introdução e Ferramentas",
     questions: [
       {
-        question: "Uma equipe de desenvolvedores está migrando um sistema procedural legado para o paradigma de Orientação a Objetos. No sistema antigo, os dados dos clientes (nome, CPF, saldo) ficam armazenados em variáveis globais separadas, e as funções que operam sobre esses dados estão dispersas pelo código.\n\nQual é o principal benefício arquitetural esperado após a migração para POO?",
+        texto: "Uma equipe de desenvolvedores está migrando um sistema procedural legado para o paradigma de Orientação a Objetos. No sistema antigo, os dados dos clientes (nome, CPF, saldo) ficam armazenados em variáveis globais separadas, e as funções que operam sobre esses dados estão dispersas pelo código.",
+        question: "Qual é o principal benefício arquitetural esperado após a migração para POO?",
         options: [
           "O código se torna mais lento, pois criar objetos consome mais memória do que variáveis simples.",
           "Os dados e os comportamentos relacionados passam a ser agrupados em unidades coesas chamadas objetos, reduzindo o acoplamento e facilitando a manutenção.",
@@ -17,7 +18,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> A POO une dados (atributos) e comportamentos (métodos) em objetos coesos. Isso promove menor acoplamento entre os módulos, maior coesão interna e facilita a evolução do sistema sem quebrar outras partes."
       },
       {
-        question: "Um arquiteto de software analisa um sistema procedural onde os dados de clientes (arrays de strings e inteiros) estão separados das funções que calculam descontos. Ele propõe a transição para POO para mitigar a baixa confiabilidade e o alto custo de evolução.\n\nAo projetar a classe <code>Cliente</code> sob o paradigma de Orientação a Objetos, qual implicação arquitetural é esperada?",
+        texto: "Um arquiteto de software analisa um sistema procedural onde os dados de clientes (arrays de strings e inteiros) estão separados das funções que calculam descontos. Ele propõe a transição para POO para mitigar a baixa confiabilidade e o alto custo de evolução.",
+        question: "Ao projetar a classe <code>Cliente</code> sob o paradigma de Orientação a Objetos, qual implicação arquitetural é esperada?",
         options: [
           "Aumento do acoplamento entre os módulos de cálculo e os dados do cliente.",
           "Separação rigorosa entre o estado (conhecimento) e o comportamento (serviços) do cliente.",
@@ -29,7 +31,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> A POO unifica dados e funções em objetos, o que resulta em maior coesão e acoplamento mais fraco entre módulos, facilitando a robustez. As outras opções contradizem os princípios básicos de POO ou as motivações de design descritas nas fontes."
       },
       {
-        question: "Uma desenvolvedora está criando um sistema de biblioteca digital para gerenciamento de acervo. Ela modela a classe <code>Livro</code> com os atributos <code>titulo</code>, <code>autor</code> e <code>numeroDePaginas</code>, e os métodos <code>abrir()</code>, <code>fechar()</code> e <code>exibirDetalhes()</code>.\n\nNa anatomia desta classe, o que os atributos e os métodos representam, respectivamente, dentro do paradigma de Orientação a Objetos?",
+        texto: "Uma desenvolvedora está criando um sistema de biblioteca digital para gerenciamento de acervo. Ela modela a classe <code>Livro</code> com os atributos <code>titulo</code>, <code>autor</code> e <code>numeroDePaginas</code>, e os métodos <code>abrir()</code>, <code>fechar()</code> e <code>exibirDetalhes()</code>.",
+        question: "Na anatomia desta classe, o que os atributos e os métodos representam, respectivamente, dentro do paradigma de Orientação a Objetos?",
         options: [
           "Os comportamentos do objeto e os dados fixos que nunca mudam.",
           "As ações que o objeto realiza e as variáveis que definem seu estado interno.",
@@ -41,7 +44,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Atributos representam o estado do objeto — o que ele conhece ou é (ex: título, autor). Métodos representam o comportamento — o que o objeto sabe fazer (ex: exibirDetalhes). A alternativa B inverte esses conceitos."
       },
       {
-        question: "Em um sistema de Gestão Hospitalar, a equipe de desenvolvimento modela a classe <code>Paciente</code> para monitoramento em tempo real. A classe possui os atributos <code>registroGeral</code> e <code>frequenciaCardiaca</code>, além de métodos que processam e exibem os dados coletados pelos sensores.\n\nNa anatomia desta classe, o que os atributos e métodos representam, respectivamente?",
+        texto: "Em um sistema de Gestão Hospitalar, a equipe de desenvolvimento modela a classe <code>Paciente</code> para monitoramento em tempo real. A classe possui os atributos <code>registroGeral</code> e <code>frequenciaCardiaca</code>, além de métodos que processam e exibem os dados coletados pelos sensores.",
+        question: "Na anatomia desta classe, o que os atributos e métodos representam, respectivamente?",
         options: [
           "Comportamentos essenciais e estados internos fixos.",
           "Serviços que o objeto faz e as variáveis que definem sua condição (dados que o objeto conhece).",
@@ -53,7 +57,18 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Atributos representam o estado (o que o objeto conhece) e métodos representam o comportamento (o que o objeto faz). A alternativa B inverte os conceitos."
       },
       {
-        question: "Durante o onboarding de novos desenvolvedores em uma empresa de software, o time técnico apresenta o seguinte trecho de código como exemplo de estrutura básica em Java:\n<pre><code>public class Principal {\n    public static void main(String[] args) {\n        int releaseAmbiente = 17;\n        if (releaseAmbiente >= 17) {\n            System.out.println(\"Ambiente em conformidade técnica.\");\n        }\n    }\n}</code></pre>\n\nSobre a estrutura desta classe e o método <code>main</code>, é correto afirmar que:",
+        texto: "Durante o onboarding de novos desenvolvedores em uma empresa de software, o time técnico apresenta o seguinte trecho de código como exemplo de estrutura básica em Java:",
+        miniEnunciado: "Analise a estrutura da classe e o método apresentados:",
+        code:
+`public class Principal {
+    public static void main(String[] args) {
+        int releaseAmbiente = 17;
+        if (releaseAmbiente >= 17) {
+            System.out.println("Ambiente em conformidade técnica.");
+        }
+    }
+}`,
+        question: "Sobre a estrutura desta classe e o método <code>main</code>, é correto afirmar que:",
         options: [
           "O nome do arquivo físico não precisa coincidir com o identificador da classe <code>Principal</code>.",
           "O parâmetro <code>String[] args</code> é obrigatório para que a JVM localize o ponto de entrada, mas seu conteúdo vem apenas de variáveis de ambiente.",
@@ -70,7 +85,8 @@ const originalQuizData = [
     subject: "Aula 2 — Sintaxe, Tipagem e Estruturas de Controle",
     questions: [
       {
-        question: "Um desenvolvedor de uma fintech está implementando um módulo de câmbio internacional. Durante o processamento, os valores monetários são calculados com precisão decimal usando o tipo <code>double</code>. Para uma etapa específica de auditoria, o sistema precisa trabalhar apenas com centavos inteiros, descartando as casas decimais.\n\nQual técnica de conversão deve ser utilizada e qual o risco associado?",
+        texto: "Um desenvolvedor de uma fintech está implementando um módulo de câmbio internacional. Durante o processamento, os valores monetários são calculados com precisão decimal usando o tipo <code>double</code>. Para uma etapa específica de auditoria, o sistema precisa trabalhar apenas com centavos inteiros, descartando as casas decimais.",
+        question: "Qual técnica de conversão deve ser utilizada e qual o risco associado?",
         options: [
           "Promoção Implícita; risco de NullPointerException.",
           "Casting Explícito; risco de perda de informação (a parte decimal é descartada).",
@@ -82,7 +98,17 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O casting explícito é necessário para converter um tipo maior (<code>double</code>) em um menor (<code>int</code>), e o programador assume o risco da perda da parte decimal."
       },
       {
-        question: "Uma plataforma de ensino online implementa um módulo de controle de acesso. O trecho a seguir gerencia o status de uma conta de usuário e verifica se ele está ativo antes de persistir dados:\n<pre><code>String status = (nota >= 7) ? \"Aprovado\" : \"Reprovado\"; // Linha 1\nif (usuario != null &amp;&amp; usuario.isAtivo()) { salvar(); } // Linha 2</code></pre>\n\nSobre as estruturas de controle e operadores utilizados, analise as afirmações:\nI. A Linha 1 utiliza um Operador Ternário, uma forma condensada de <code>if-else</code> que retorna valor.\nII. A Linha 2 utiliza curto-circuito com o operador <code>&amp;&amp;</code>; se <code>usuario</code> for nulo, a segunda parte não é testada, evitando erro.\nIII. O uso de <code>var</code> na Linha 1 tornaria a tipagem fraca.\n\nEstá(ão) correta(s):",
+        texto: "Uma plataforma de ensino online implementa um módulo de controle de acesso. O trecho a seguir gerencia o status de uma conta de usuário e verifica se ele está ativo antes de persistir dados:",
+        miniEnunciado: "Analise o código e as afirmações a seguir:",
+        code:
+`String status = (nota >= 7) ? "Aprovado" : "Reprovado"; // Linha 1
+if (usuario != null && usuario.isAtivo()) { salvar(); }   // Linha 2`,
+        assertions: [
+          "A Linha 1 utiliza um Operador Ternário, uma forma condensada de if-else que retorna valor.",
+          "A Linha 2 utiliza curto-circuito com o operador &&; se usuario for nulo, a segunda parte não é testada, evitando erro.",
+          "O uso de var na Linha 1 tornaria a tipagem fraca."
+        ],
+        question: "Está(ão) correta(s):",
         options: [
           "Apenas I está correta.",
           "Apenas II está correta.",
@@ -94,7 +120,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> A afirmação III está incorreta porque o <code>var</code> mantém a tipagem forte, apenas deduz o tipo no momento da atribuição. I e II descrevem corretamente o operador ternário e o curto-circuito."
       },
       {
-        question: "Em um sistema de e-commerce, ao finalizar uma compra, o cliente digita um cupom de desconto. O sistema precisa verificar se o texto digitado (\"NATAL10\") corresponde ao cupom cadastrado no banco de dados, que também é uma String de mesmo conteúdo, mas criada em contexto diferente.\n\nQual a forma correta e segura de realizar essa comparação em Java?",
+        texto: "Em um sistema de e-commerce, ao finalizar uma compra, o cliente digita um cupom de desconto. O sistema precisa verificar se o texto digitado (\"NATAL10\") corresponde ao cupom cadastrado no banco de dados, que também é uma String de mesmo conteúdo, mas criada em contexto diferente.",
+        question: "Qual a forma correta e segura de realizar essa comparação em Java?",
         options: [
           "<code>if (cupomDigitado == cupomCadastrado)</code> pois o String Pool garante o mesmo endereço.",
           "<code>if (cupomDigitado.equals(cupomCadastrado))</code> pois verifica o conteúdo do texto letra por letra.",
@@ -106,7 +133,15 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O operador <code>==</code> compara endereços de memória. Para comparar conteúdo de Strings, deve-se usar <code>.equals()</code>."
       },
       {
-        question: "Um sistema de monitoramento térmico industrial coleta leituras de sensores de temperatura e classifica o ambiente automaticamente. O trecho abaixo foi implementado utilizando a sintaxe moderna do Java:\n<pre><code>String tipo = switch (temperatura) {\n    case 0, 10 -> \"Frio\";\n    case 20, 30 -> \"Agradável\";\n    default -> \"Quente\";\n};</code></pre>\n\nEsta sintaxe, introduzida no Java moderno (Java 14+), oferece qual vantagem técnica em relação ao <code>switch</code> tradicional?",
+        texto: "Um sistema de monitoramento térmico industrial coleta leituras de sensores de temperatura e classifica o ambiente automaticamente. O trecho abaixo foi implementado utilizando a sintaxe moderna do Java:",
+        miniEnunciado: "Observe a sintaxe moderna de switch utilizada:",
+        code:
+`String tipo = switch (temperatura) {
+    case 0, 10 -> "Frio";
+    case 20, 30 -> "Agradável";
+    default -> "Quente";
+};`,
+        question: "Esta sintaxe, introduzida no Java moderno (Java 14+), oferece qual vantagem técnica em relação ao <code>switch</code> tradicional?",
         options: [
           "Permite o uso de tipos primitivos como <code>long</code> e <code>float</code> nos casos.",
           "Elimina a necessidade de <code>break</code> repetitivos e pode retornar valores diretamente (Arrow Syntax).",
@@ -118,7 +153,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O <code>switch</code> moderno com Arrow Syntax é mais conciso, evita o erro comum de esquecer o <code>break</code> e permite atribuição direta."
       },
       {
-        question: "Durante uma revisão de código em uma startup de tecnologia, o tech lead identifica um problema no módulo de cadastro de usuários. Um desenvolvedor júnior declarou <code>int x;</code> dentro de um bloco <code>if</code> e tentou imprimir o valor de <code>x</code> fora desse bloco. O compilador apontou erro antes mesmo da execução.\n\nQual o conceito de gerenciamento de variáveis justifica o erro de compilação?",
+        texto: "Durante uma revisão de código em uma startup de tecnologia, o tech lead identifica um problema no módulo de cadastro de usuários. Um desenvolvedor júnior declarou <code>int x;</code> dentro de um bloco <code>if</code> e tentou imprimir o valor de <code>x</code> fora desse bloco. O compilador apontou erro antes mesmo da execução.",
+        question: "Qual o conceito de gerenciamento de variáveis justifica o erro de compilação?",
         options: [
           "Variáveis locais (de método ou bloco) não recebem valor padrão e seu escopo limita-se às chaves <code>{ }</code> onde foram criadas.",
           "Ocorreu um NullPointerException pois tipos primitivos são sempre referências na Stack.",
@@ -135,7 +171,8 @@ const originalQuizData = [
     subject: "Aula 3 — Métodos e Encapsulamento",
     questions: [
       {
-        question: "Um sistema de folha de pagamento de uma grande empresa possui a classe <code>Funcionario</code>. Durante os testes de integração, a equipe identificou que valores negativos de salário estavam sendo persistidos no banco de dados por erro de entrada. O arquiteto determinou que o estado do objeto deve ser protegido contra modificações externas inválidas.\n\nQual pilar da POO e quais ferramentas técnicas devem ser aplicados para resolver esse problema?",
+        texto: "Um sistema de folha de pagamento de uma grande empresa possui a classe <code>Funcionario</code>. Durante os testes de integração, a equipe identificou que valores negativos de salário estavam sendo persistidos no banco de dados por erro de entrada. O arquiteto determinou que o estado do objeto deve ser protegido contra modificações externas inválidas.",
+        question: "Qual pilar da POO e quais ferramentas técnicas devem ser aplicados para resolver esse problema?",
         options: [
           "Herança e modificador <code>protected</code>.",
           "Polimorfismo e sobrescrita de métodos.",
@@ -147,7 +184,14 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O encapsulamento protege os dados. Atributos privados e métodos <code>set</code> permitem validar os dados (ex: impedir valores negativos) antes de gravá-los."
       },
       {
-        question: "Em um sistema de gestão de usuários, o desenvolvedor implementa o método abaixo para atualizar dados de um cadastro. O método recebe um tipo primitivo e um objeto como parâmetros:\n<pre><code>public void atualizar(int idade, Usuario user) {\n    idade = 30;\n    user.setNome(\"Ana\");\n}</code></pre>\nO método é chamado passando a variável <code>int i = 20</code> e um objeto <code>Usuario u</code> com nome \"José\".\n\nApós a execução do método, quais serão os valores de <code>i</code> e do nome em <code>u</code> no código chamador?",
+        texto: "Em um sistema de gestão de usuários, o desenvolvedor implementa o método abaixo para atualizar dados de um cadastro. O método recebe um tipo primitivo e um objeto como parâmetros:",
+        miniEnunciado: "Analise o método e o comportamento da passagem de parâmetros:",
+        code:
+`public void atualizar(int idade, Usuario user) {
+    idade = 30;
+    user.setNome("Ana");
+}`,
+        question: "O método é chamado passando a variável <code>int i = 20</code> e um objeto <code>Usuario u</code> com nome \"José\". Após a execução do método, quais serão os valores de <code>i</code> e do nome em <code>u</code> no código chamador?",
         options: [
           "<code>i</code> será 30 e o nome será \"Ana\".",
           "<code>i</code> será 20 e o nome será \"José\".",
@@ -159,7 +203,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Em Java, a passagem é por valor. Para primitivos, o método recebe uma cópia do valor (não altera o original). Para objetos, recebe uma cópia da referência, permitindo alterar o estado do objeto apontado."
       },
       {
-        question: "Uma biblioteca de manipulação de imagens para aplicações mobile é desenvolvida por uma equipe. Para facilitar o uso da API pelos desenvolvedores clientes, o time decide oferecer flexibilidade no método de redimensionamento: um aceita dois inteiros (largura, altura), outro aceita um <code>double</code> (fator de escala) e um terceiro aceita um objeto <code>Dimensoes</code>. Todos os três se chamam <code>redimensionar()</code>.\n\nEste cenário exemplifica qual conceito de POO e qual seu benefício?",
+        texto: "Uma biblioteca de manipulação de imagens para aplicações mobile é desenvolvida por uma equipe. Para facilitar o uso da API pelos desenvolvedores clientes, o time decide oferecer flexibilidade no método de redimensionamento: um aceita dois inteiros (largura, altura), outro aceita um <code>double</code> (fator de escala) e um terceiro aceita um objeto <code>Dimensoes</code>. Todos os três se chamam <code>redimensionar()</code>.",
+        question: "Este cenário exemplifica qual conceito de POO e qual seu benefício?",
         options: [
           "Sobrescrita (Override); permite mudar o comportamento da classe pai.",
           "Encapsulamento; esconde a implementação do redimensionamento.",
@@ -171,7 +216,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Sobrecarga é a criação de métodos com mesmo nome e parâmetros diferentes na mesma classe."
       },
       {
-        question: "Um desenvolvedor está criando a classe <code>Produto</code> para um sistema de estoque, seguindo o padrão JavaBean adotado pela equipe. Ele define o atributo <code>private double preco</code> e, conforme as boas práticas do padrão, precisa expor esse valor para leitura por outros módulos do sistema.\n\nSeguindo a convenção de nomes Java, como deve ser a assinatura do método de leitura?",
+        texto: "Um desenvolvedor está criando a classe <code>Produto</code> para um sistema de estoque, seguindo o padrão JavaBean adotado pela equipe. Ele define o atributo <code>private double preco</code> e, conforme as boas práticas do padrão, precisa expor esse valor para leitura por outros módulos do sistema.",
+        question: "Seguindo a convenção de nomes Java, como deve ser a assinatura do método de leitura?",
         options: [
           "<code>public double preco()</code>",
           "<code>public void setPreco(double p)</code>",
@@ -183,7 +229,16 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> A convenção JavaBean dita o uso de <code>get</code> seguido do nome do atributo com a primeira letra maiúscula para leitura."
       },
       {
-        question: "Em um sistema bancário de alto volume de transações, o método <code>transferir</code> da classe <code>Conta</code> é responsável por mover valores entre contas de forma segura. Sua implementação é:\n<pre><code>public void transferir(double valor, Conta destino) {\n    if (this.saldo >= valor) {\n        this.sacar(valor);\n        destino.depositar(valor);\n    }\n}</code></pre>\n\nQual a função técnica da palavra-chave <code>this</code> utilizada neste contexto?",
+        texto: "Em um sistema bancário de alto volume de transações, o método <code>transferir</code> da classe <code>Conta</code> é responsável por mover valores entre contas de forma segura.",
+        miniEnunciado: "Analise a implementação do método a seguir:",
+        code:
+`public void transferir(double valor, Conta destino) {
+    if (this.saldo >= valor) {
+        this.sacar(valor);
+        destino.depositar(valor);
+    }
+}`,
+        question: "Qual a função técnica da palavra-chave <code>this</code> utilizada neste contexto?",
         options: [
           "Invocar o Garbage Collector para limpar o saldo.",
           "Referenciar o objeto atual da instância, diferenciando atributos de variáveis locais e permitindo chamadas de métodos internos.",
@@ -200,7 +255,8 @@ const originalQuizData = [
     subject: "Aula 4 — Construtores, Membros Estáticos e Herança",
     questions: [
       {
-        question: "No desenvolvimento de um RPG multiplayer online, a equipe de backend modela os personagens jogáveis. A classe <code>Personagem</code> possui atributos como <code>nome</code> e <code>nivel</code>. Os designers de jogo definem que todo herói recém-criado deve iniciar obrigatoriamente no nível 1, garantindo o balanceamento.\n\nQual estrutura de código garante que o objeto nasça com este estado válido?",
+        texto: "No desenvolvimento de um RPG multiplayer online, a equipe de backend modela os personagens jogáveis. A classe <code>Personagem</code> possui atributos como <code>nome</code> e <code>nivel</code>. Os designers de jogo definem que todo herói recém-criado deve iniciar obrigatoriamente no nível 1, garantindo o balanceamento.",
+        question: "Qual estrutura de código garante que o objeto nasça com este estado válido?",
         options: [
           "Um método estático chamado <code>main</code>.",
           "Um construtor com a assinatura <code>public Personagem(String nome)</code>, que inicializa os atributos.",
@@ -212,11 +268,22 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O construtor é o bloco executado no momento do <code>new</code> para garantir que o objeto nasça com um estado válido."
       },
       {
-        question: "Durante a revisão de código de um sistema de gerenciamento de usuários, a equipe analisa a seguinte classe de configuração:\n<pre><code>public class Config {\n    public static int limiteUsuarios = 100;\n    public String versao = \"1.0\";\n    public static void exibir() {\n        System.out.println(limiteUsuarios); // Linha A\n        System.out.println(versao);        // Linha B\n    }\n}</code></pre>\n\nAo tentar compilar esta classe, o que ocorrerá e por quê?",
+        texto: "Durante a revisão de código de um sistema de gerenciamento de usuários, a equipe analisa a seguinte classe de configuração:",
+        miniEnunciado: "Observe a classe e identifique o problema de compilação:",
+        code:
+`public class Config {
+    public static int limiteUsuarios = 100;
+    public String versao = "1.0";
+    public static void exibir() {
+        System.out.println(limiteUsuarios); // Linha A
+        System.out.println(versao);         // Linha B
+    }
+}`,
+        question: "Ao tentar compilar esta classe, o que ocorrerá e por quê?",
         options: [
           "Compila com sucesso; métodos estáticos acessam tudo.",
           "Erro na Linha A; <code>limiteUsuarios</code> deveria ser <code>private</code>.",
-          "Erro na Linha B; métodos estáticos (\"Forma de Bolo\") não enxergam variáveis de instância (normais) pois elas só existem após o <code>new</code>.",
+          "Erro na Linha B; métodos estáticos não enxergam variáveis de instância pois elas só existem após o <code>new</code>.",
           "Erro em ambas; o <code>main</code> está ausente.",
           "Sucesso, mas o Garbage Collector removerá <code>versao</code> da memória Stack."
         ],
@@ -224,7 +291,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Membros <code>static</code> pertencem à classe e não podem acessar diretamente membros de instância, que dependem de um objeto criado."
       },
       {
-        question: "Um arquiteto de software está desenhando o módulo de frota de um sistema de logística. Ele identifica que as classes <code>Carro</code>, <code>Moto</code> e <code>Caminhao</code> possuem atributos comuns como <code>placa</code> e <code>ano</code>, além de comportamentos compartilhados. Para evitar repetição de código e facilitar a manutenção, ele decide criar uma superclasse <code>Veiculo</code>.\n\nComo é chamada essa relação e qual a regra fundamental para aplicá-la corretamente em Java?",
+        texto: "Um arquiteto de software está desenhando o módulo de frota de um sistema de logística. Ele identifica que as classes <code>Carro</code>, <code>Moto</code> e <code>Caminhao</code> possuem atributos comuns como <code>placa</code> e <code>ano</code>, além de comportamentos compartilhados. Para evitar repetição de código e facilitar a manutenção, ele decide criar uma superclasse <code>Veiculo</code>.",
+        question: "Como é chamada essa relação e qual a regra fundamental para aplicá-la corretamente em Java?",
         options: [
           "Composição; regra do \"tem-um\".",
           "Generalização; regra do \"é-um\" (ex: Carro É UM Veiculo).",
@@ -236,7 +304,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> A herança representa generalização e deve seguir a relação semântica \"é-um\"."
       },
       {
-        question: "Um sistema de vendas online possui a classe <code>Pedido</code> com um atributo <code>static int totalPedidos = 0</code>, que é incrementado toda vez que um novo pedido é criado no construtor. O gerente de produto percebe que, ao consultar <code>Pedido.totalPedidos</code> a qualquer momento, o valor reflete com precisão todos os objetos já instanciados durante a sessão.\n\nPor que membros <code>static</code> têm esse comportamento compartilhado entre todas as instâncias?",
+        texto: "Um sistema de vendas online possui a classe <code>Pedido</code> com um atributo <code>static int totalPedidos = 0</code>, que é incrementado toda vez que um novo pedido é criado no construtor. O gerente de produto percebe que, ao consultar <code>Pedido.totalPedidos</code> a qualquer momento, o valor reflete com precisão todos os objetos já instanciados durante a sessão.",
+        question: "Por que membros <code>static</code> têm esse comportamento compartilhado entre todas as instâncias?",
         options: [
           "Porque membros <code>static</code> são copiados para cada objeto no momento do <code>new</code>.",
           "Porque membros <code>static</code> pertencem à classe em si, e não a nenhum objeto específico, sendo compartilhados por todas as instâncias.",
@@ -245,10 +314,11 @@ const originalQuizData = [
           "Porque atributos <code>static</code> são imutáveis por definição e nunca mudam de valor."
         ],
         answer: 1,
-        feedback: "<strong>✓ Por que está certa:</strong> Membros <code>static</code> pertencem à classe (não a objetos individuais). Eles existem independentemente de qualquer instância e são compartilhados por todos os objetos da classe, tornando-os ideais para contadores e configurações globais."
+        feedback: "<strong>✓ Por que está certa:</strong> Membros <code>static</code> pertencem à classe (molde) e são compartilhados entre todas as instâncias."
       },
       {
-        question: "No desenvolvimento de um sistema de torneios de e-sports, a classe <code>Jogador</code> precisa ser criada de duas formas: apenas com o apelido (nick), quando o jogador ainda não está em uma equipe, ou com nick e equipe. O desenvolvedor aplica encadeamento de construtores usando <code>this(nick, \"Sem Equipe\")</code> no construtor simples.\n\nQual a vantagem dessa técnica e qual a restrição imposta pelo Java?",
+        texto: "No desenvolvimento de um sistema de torneios de e-sports, a classe <code>Jogador</code> precisa ser criada de duas formas: apenas com o apelido (nick), quando o jogador ainda não está em uma equipe, ou com nick e equipe. O desenvolvedor aplica encadeamento de construtores usando <code>this(nick, \"Sem Equipe\")</code> no construtor simples.",
+        question: "Qual a vantagem dessa técnica e qual a restrição imposta pelo Java?",
         options: [
           "Aumenta o uso de memória; deve ser a última linha do bloco.",
           "Facilita a manutenção evitando repetição (DRY); a chamada <code>this()</code> deve ser obrigatoriamente a primeira linha do construtor.",
@@ -265,7 +335,8 @@ const originalQuizData = [
     subject: "Aula 5 — Herança, Reuso e Membros static",
     questions: [
       {
-        question: "Em um sistema financeiro, a classe <code>ContaPoupanca</code> estende a classe <code>ContaBanco</code>. Durante a implementação dos cálculos de rendimento, o desenvolvedor percebe que precisa acessar o atributo <code>saldo</code> definido na classe pai. No entanto, tornar esse atributo público exporia dados sensíveis a qualquer parte do sistema.\n\nQual modificador de acesso na classe pai permite esse equilíbrio entre encapsulamento e reuso?",
+        texto: "Em um sistema financeiro, a classe <code>ContaPoupanca</code> estende a classe <code>ContaBanco</code>. Durante a implementação dos cálculos de rendimento, o desenvolvedor percebe que precisa acessar o atributo <code>saldo</code> definido na classe pai. No entanto, tornar esse atributo público exporia dados sensíveis a qualquer parte do sistema.",
+        question: "Qual modificador de acesso na classe pai permite esse equilíbrio entre encapsulamento e reuso?",
         options: [
           "<code>public</code>",
           "<code>private</code>",
@@ -277,7 +348,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O modificador <code>protected</code> torna o membro visível para a própria classe, subclasses e classes do mesmo pacote, sendo ideal para herança."
       },
       {
-        question: "Em um sistema de RH, a classe <code>Gerente</code> estende <code>Funcionario</code>. Ao implementar o construtor de <code>Gerente</code>, o desenvolvedor precisa repassar o nome recebido ao construtor da classe pai para que os atributos herdados sejam corretamente inicializados.\n\nQual a sintaxe correta e a justificativa técnica para essa obrigatoriedade?",
+        texto: "Em um sistema de RH, a classe <code>Gerente</code> estende <code>Funcionario</code>. Ao implementar o construtor de <code>Gerente</code>, o desenvolvedor precisa repassar o nome recebido ao construtor da classe pai para que os atributos herdados sejam corretamente inicializados.",
+        question: "Qual a sintaxe correta e a justificativa técnica para essa obrigatoriedade?",
         options: [
           "<code>this.nome = nome;</code> para garantir o sombreamento.",
           "<code>super(nome);</code> na primeira linha, para garantir que os \"alicerces\" do objeto pai sejam montados antes da especialização do filho.",
@@ -289,7 +361,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Construtores não são herdados. Deve-se usar <code>super()</code> na primeira linha do construtor filho para inicializar a superclasse."
       },
       {
-        question: "Em um sistema de simulação de zoológico virtual, a classe <code>Animal</code> define o método <code>emitirSom()</code> com uma implementação genérica. A classe <code>Cachorro</code> herda de <code>Animal</code> e reimplementa esse método para exibir \"Au Au\", utilizando a anotação <code>@Override</code> para sinalizar explicitamente ao compilador a intenção de especialização.\n\nComo é chamado esse mecanismo e o que ele permite?",
+        texto: "Em um sistema de simulação de zoológico virtual, a classe <code>Animal</code> define o método <code>emitirSom()</code> com uma implementação genérica. A classe <code>Cachorro</code> herda de <code>Animal</code> e reimplementa esse método para exibir \"Au Au\", utilizando a anotação <code>@Override</code> para sinalizar explicitamente ao compilador a intenção de especialização.",
+        question: "Como é chamado esse mecanismo e o que ele permite?",
         options: [
           "Sobrecarga; permite múltiplos métodos com nomes diferentes.",
           "Sobrescrita; permite que a subclasse forneça uma implementação específica para um método já definido na superclasse.",
@@ -301,7 +374,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> A sobrescrita (<code>override</code>) especializa o comportamento herdado, mantendo a mesma assinatura."
       },
       {
-        question: "Uma equipe de desenvolvimento está projetando a classe <code>Smartphone</code> para um sistema de inventário de dispositivos. O tech lead sugere que ela herde comportamentos tanto de <code>Telefone</code> quanto de <code>Camera</code>, pois um smartphone é ambos. Um desenvolvedor tenta escrever <code>public class Smartphone extends Telefone, Camera</code>.\n\nQual será o resultado e qual a alternativa recomendada pelas boas práticas?",
+        texto: "Uma equipe de desenvolvimento está projetando a classe <code>Smartphone</code> para um sistema de inventário de dispositivos. O tech lead sugere que ela herde comportamentos tanto de <code>Telefone</code> quanto de <code>Camera</code>, pois um smartphone é ambos. Um desenvolvedor tenta escrever <code>public class Smartphone extends Telefone, Camera</code>.",
+        question: "Qual será o resultado e qual a alternativa recomendada pelas boas práticas?",
         options: [
           "Funciona normalmente, pois Java suporta herança múltipla baseada em estado.",
           "Erro de compilação; Java proíbe herança múltipla de classes para evitar o \"erro do diamante\". Recomenda-se o uso de Interfaces ou Composição.",
@@ -313,7 +387,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Java não permite que uma classe tenha mais de um pai direto (<code>extends</code>). O reuso deve ser buscado via composição ou interfaces."
       },
       {
-        question: "O Banco Central atualiza a taxa de juros de referência, e o sistema bancário de uma instituição financeira precisa refletir essa mudança imediatamente para todas as contas cadastradas. A classe <code>Banco</code> possui o atributo <code>public static double taxaJuros = 0.05;</code>, e o sistema realiza a atualização para <code>0.06</code>.\n\nO que acontece com todas as instâncias de contas já criadas?",
+        texto: "O Banco Central atualiza a taxa de juros de referência, e o sistema bancário de uma instituição financeira precisa refletir essa mudança imediatamente para todas as contas cadastradas. A classe <code>Banco</code> possui o atributo <code>public static double taxaJuros = 0.05;</code>, e o sistema realiza a atualização para <code>0.06</code>.",
+        question: "O que acontece com todas as instâncias de contas já criadas?",
         options: [
           "Nada, pois cada conta tem sua própria cópia da taxa na memória Heap.",
           "Todas as instâncias verão o novo valor de <code>0.06</code> simultaneamente, pois atributos estáticos são compartilhados através da Classe.",
@@ -330,7 +405,8 @@ const originalQuizData = [
     subject: "Aula 6 — Polimorfismo e Abstração",
     questions: [
       {
-        question: "Uma plataforma de pagamentos digitais precisa processar diferentes modalidades de transação de forma unificada. O módulo principal recebe uma <code>List&lt;Pagamento&gt;</code>, que pode conter instâncias de <code>Pix</code>, <code>Cartao</code> e <code>Boleto</code>. O código percorre a lista chamando <code>p.pagar(valor)</code> para cada item sem verificar o tipo concreto.\n\nEste cenário ilustra qual conceito e qual mecanismo da JVM?",
+        texto: "Uma plataforma de pagamentos digitais precisa processar diferentes modalidades de transação de forma unificada. O módulo principal recebe uma <code>List&lt;Pagamento&gt;</code>, que pode conter instâncias de <code>Pix</code>, <code>Cartao</code> e <code>Boleto</code>. O código percorre a lista chamando <code>p.pagar(valor)</code> para cada item sem verificar o tipo concreto.",
+        question: "Este cenário ilustra qual conceito e qual mecanismo da JVM?",
         options: [
           "Encapsulamento e Ocultação de Informação.",
           "Polimorfismo e Dynamic Method Dispatch (despacho dinâmico de métodos), onde a JVM decide em tempo de execução qual implementação executar.",
@@ -342,7 +418,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O polimorfismo permite tratar diferentes objetos por uma interface comum, e a JVM decide qual método rodar na hora da execução."
       },
       {
-        question: "Em um sistema de simulação de ecossistemas, o arquiteto define que a classe <code>Animal</code> deve servir apenas como modelo base — nenhum objeto do tipo genérico \"Animal\" deve ser instanciado diretamente. Ao mesmo tempo, todo animal concreto do sistema deve obrigatoriamente implementar o método <code>emitirSom()</code>.\n\nQual a definição técnica correta para essa classe e seu método?",
+        texto: "Em um sistema de simulação de ecossistemas, o arquiteto define que a classe <code>Animal</code> deve servir apenas como modelo base — nenhum objeto do tipo genérico \"Animal\" deve ser instanciado diretamente. Ao mesmo tempo, todo animal concreto do sistema deve obrigatoriamente implementar o método <code>emitirSom()</code>.",
+        question: "Qual a definição técnica correta para essa classe e seu método?",
         options: [
           "Classe Privada com método Final.",
           "Classe Estática com método Nativo.",
@@ -354,7 +431,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Classes abstratas não podem ser instanciadas e servem para definir modelos incompletos que devem ser especializados."
       },
       {
-        question: "Em uma API de mapas urbanos, diferentes tipos de estabelecimentos precisam fornecer sua localização geográfica. Define-se <code>public interface Localizavel { void getCoordenadas(); }</code>. As classes <code>Restaurante</code>, <code>Escola</code> e <code>Parque</code> implementam essa interface, cada uma com sua própria lógica de obtenção de coordenadas.\n\nNo contexto de engenharia de software, o que a interface representa e qual seu principal benefício?",
+        texto: "Em uma API de mapas urbanos, diferentes tipos de estabelecimentos precisam fornecer sua localização geográfica. Define-se <code>public interface Localizavel { void getCoordenadas(); }</code>. As classes <code>Restaurante</code>, <code>Escola</code> e <code>Parque</code> implementam essa interface, cada uma com sua própria lógica de obtenção de coordenadas.",
+        question: "No contexto de engenharia de software, o que a interface representa e qual seu principal benefício?",
         options: [
           "Representa um \"Molde Físico\" e aumenta o acoplamento.",
           "Representa um \"Contrato de Software\" e promove o desacoplamento, permitindo que o código dependa de contratos e não de implementações.",
@@ -366,7 +444,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Interfaces funcionam como contratos. Elas garantem comportamentos sem impor como eles devem ser feitos, reduzindo dependências entre módulos."
       },
       {
-        question: "Em um sistema de automação residencial, a classe <code>ControleRemoto</code> é projetada para comandar qualquer dispositivo inteligente da casa. Ela depende apenas da interface <code>Dispositivo</code>, chamando <code>dispositivo.ligar()</code> sem conhecer a implementação concreta, seja uma <code>TV</code> ou um <code>ArCondicionado</code>.\n\nDe acordo com os princípios de design discutidos, essa abordagem facilita qual aspecto do desenvolvimento?",
+        texto: "Em um sistema de automação residencial, a classe <code>ControleRemoto</code> é projetada para comandar qualquer dispositivo inteligente da casa. Ela depende apenas da interface <code>Dispositivo</code>, chamando <code>dispositivo.ligar()</code> sem conhecer a implementação concreta, seja uma <code>TV</code> ou um <code>ArCondicionado</code>.",
+        question: "De acordo com os princípios de design discutidos, essa abordagem facilita qual aspecto do desenvolvimento?",
         options: [
           "Aumento da carga cognitiva do desenvolvedor.",
           "Manutenibilidade e Escalabilidade, pois novos dispositivos podem ser adicionados ao sistema sem alterar o código do <code>ControleRemoto</code>.",
@@ -378,7 +457,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O desacoplamento via abstração permite que o sistema evolua com novos componentes (novas implementações da interface) sem quebrar as estruturas existentes."
       },
       {
-        question: "Uma equipe de arquitetura de software discute quando utilizar uma Classe Abstrata versus uma Interface no projeto de um novo módulo. O tech lead pede que um desenvolvedor explique a diferença fundamental entre as duas construções em Java, tanto em termos de estrutura quanto de regras de herança.\n\nQual a diferença fundamental entre uma Classe Abstrata e uma Interface em relação à estrutura e herança em Java?",
+        texto: "Uma equipe de arquitetura de software discute quando utilizar uma Classe Abstrata versus uma Interface no projeto de um novo módulo. O tech lead pede que um desenvolvedor explique a diferença fundamental entre as duas construções em Java, tanto em termos de estrutura quanto de regras de herança.",
+        question: "Qual a diferença fundamental entre uma Classe Abstrata e uma Interface em relação à estrutura e herança em Java?",
         options: [
           "Interfaces podem ser instanciadas; Classes Abstratas não.",
           "Classes Abstratas podem ter estado (atributos) e métodos concretos; Interfaces definem apenas comportamentos e permitem múltiplas implementações por uma única classe.",
@@ -395,7 +475,8 @@ const originalQuizData = [
     subject: "Aula 7 — Revisão Geral",
     questions: [
       {
-        question: "Uma empresa de segurança digital desenvolve um sistema de autenticação multifator. Para proteger as credenciais dos usuários, a equipe decide que a senha nunca deve ser acessada diretamente por módulos externos. O desenvolvedor cria a classe <code>Usuario</code> com o atributo de senha como <code>private</code> e implementa um método <code>validarSenha(String tentativa)</code> que retorna <code>true</code> ou <code>false</code>.\n\nEste cenário aplica quais conceitos fundamentais, respectivamente?",
+        texto: "Uma empresa de segurança digital desenvolve um sistema de autenticação multifator. Para proteger as credenciais dos usuários, a equipe decide que a senha nunca deve ser acessada diretamente por módulos externos. O desenvolvedor cria a classe <code>Usuario</code> com o atributo de senha como <code>private</code> e implementa um método <code>validarSenha(String tentativa)</code> que retorna <code>true</code> ou <code>false</code>.",
+        question: "Este cenário aplica quais conceitos fundamentais, respectivamente?",
         options: [
           "Herança e Polimorfismo.",
           "Abstração e static.",
@@ -407,7 +488,13 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O uso de modificador privado para proteger o dado é encapsulamento, e a validação é um comportamento definido por método."
       },
       {
-        question: "Em uma aula de revisão de POO, o professor apresenta três afirmações sobre os pilares do paradigma. Os alunos devem analisar cada uma e identificar quais estão corretas:\nI. O polimorfismo permite que uma lista de <code>FormaGeometrica</code> contenha <code>Circulo</code> e <code>Quadrado</code>.\nII. A abstração foca nos detalhes internos de como o motor do carro funciona.\nIII. O construtor padrão desaparece se o programador definir manualmente um construtor com parâmetros.\n\nEstá(ão) correta(s):",
+        texto: "Em uma aula de revisão de POO, o professor apresenta três afirmações sobre os pilares do paradigma. Os alunos devem analisar cada uma e identificar quais estão corretas:",
+        assertions: [
+          "O polimorfismo permite que uma lista de FormaGeometrica contenha Circulo e Quadrado.",
+          "A abstração foca nos detalhes internos de como o motor do carro funciona.",
+          "O construtor padrão desaparece se o programador definir manualmente um construtor com parâmetros."
+        ],
+        question: "Está(ão) correta(s):",
         options: [
           "I e II apenas.",
           "I e III apenas.",
@@ -419,7 +506,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> A afirmação II está incorreta porque a abstração foca no essencial e ignora detalhes de implementação. I e III estão corretas conforme as regras de polimorfismo e construtores."
       },
       {
-        question: "Um analista de sistemas recebe o seguinte requisito: \"O sistema bancário permite saques, depósitos e emissão de extratos. Cada tipo de conta (Corrente e Poupança) tem sua própria regra de cálculo de taxa mensal.\" Ele deve modelar esse sistema aplicando as melhores práticas de POO.\n\nPara modelar esse sistema usando as melhores práticas de POO, deve-se:",
+        texto: "Um analista de sistemas recebe o seguinte requisito: \"O sistema bancário permite saques, depósitos e emissão de extratos. Cada tipo de conta (Corrente e Poupança) tem sua própria regra de cálculo de taxa mensal.\"",
+        question: "Para modelar esse sistema usando as melhores práticas de POO, deve-se:",
         options: [
           "Criar uma única classe <code>Banco</code> com muitos <code>if-else</code> para cada tipo de conta.",
           "Criar uma classe abstrata <code>Conta</code> com o método abstrato <code>calcularTaxa()</code> e estendê-la nas contas específicas.",
@@ -431,7 +519,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O uso de classes abstratas e herança permite especializar o comportamento (taxas) mantendo uma base comum."
       },
       {
-        question: "Durante um treinamento de nivelamento em Java, o instrutor explica como a JVM gerencia a memória durante a execução de um programa. Ele destaca a diferença entre a memória Stack, usada para execução rápida, e a Heap, usada para armazenamento dinâmico de objetos.\n\nQual afirmação está correta sobre a relação entre a memória Stack e as referências de objetos?",
+        texto: "Durante um treinamento de nivelamento em Java, o instrutor explica como a JVM gerencia a memória durante a execução de um programa. Ele destaca a diferença entre a memória Stack, usada para execução rápida, e a Heap, usada para armazenamento dinâmico de objetos.",
+        question: "Qual afirmação está correta sobre a relação entre a memória Stack e as referências de objetos?",
         options: [
           "O objeto completo reside na Stack para acesso rápido.",
           "A Stack guarda apenas o endereço (ponteiro/referência) do objeto, enquanto os dados reais do objeto ficam na Heap.",
@@ -443,7 +532,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> A Stack é para execução rápida de variáveis locais e endereços; a Heap é para armazenamento dinâmico de objetos."
       },
       {
-        question: "Uma equipe de desenvolvimento discute as características que diferenciam Java de linguagens de script como Python e JavaScript. Um dos pontos levantados é a tipagem da linguagem, que impacta diretamente na segurança do código e na detecção precoce de erros pelo compilador.\n\nO que caracteriza a \"Tipagem Forte\" do Java?",
+        texto: "Uma equipe de desenvolvimento discute as características que diferenciam Java de linguagens de script como Python e JavaScript. Um dos pontos levantados é a tipagem da linguagem, que impacta diretamente na segurança do código e na detecção precoce de erros pelo compilador.",
+        question: "O que caracteriza a \"Tipagem Forte\" do Java?",
         options: [
           "Variáveis podem mudar de tipo a qualquer momento como no Python.",
           "É obrigatório declarar o tipo da variável, e o compilador impede operações entre tipos incompatíveis (ex: somar String com int diretamente sem conversão).",
@@ -460,7 +550,8 @@ const originalQuizData = [
     subject: "Aula 8 — Tratamento de Exceções",
     questions: [
       {
-        question: "Em um sistema de caixa eletrônico, um cliente tenta realizar um saque de R$ 500,00 em uma conta com saldo de R$ 200,00. O requisito funcional exige que o sistema não trave nem encerre abruptamente, mas sim informe ao usuário que a operação não é possível e permaneça disponível para novas interações.\n\nComo esse evento é classificado tecnicamente em Java e qual a estrutura básica para lidar com ele?",
+        texto: "Em um sistema de caixa eletrônico, um cliente tenta realizar um saque de R$ 500,00 em uma conta com saldo de R$ 200,00. O requisito funcional exige que o sistema não trave nem encerre abruptamente, mas sim informe ao usuário que a operação não é possível e permaneça disponível para novas interações.",
+        question: "Como esse evento é classificado tecnicamente em Java e qual a estrutura básica para lidar com ele?",
         options: [
           "É um Bytecode malformado; usa-se <code>javac</code>.",
           "É uma Exceção; utiliza-se o bloco <code>try-catch</code> para capturar e tratar o erro.",
@@ -472,7 +563,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Exceções são erros em tempo de execução que interrompem o fluxo. O <code>try</code> tenta o código perigoso e o <code>catch</code> trata a falha."
       },
       {
-        question: "Um desenvolvedor está implementando um módulo de leitura de arquivos de configuração para um sistema corporativo. Ao revisar o código com o tech lead, surge a dúvida sobre o uso correto das palavras-chave <code>throw</code> e <code>throws</code> no contexto do método que lê os arquivos.\n\nQual a diferença técnica entre elas?",
+        texto: "Um desenvolvedor está implementando um módulo de leitura de arquivos de configuração para um sistema corporativo. Ao revisar o código com o tech lead, surge a dúvida sobre o uso correto das palavras-chave <code>throw</code> e <code>throws</code> no contexto do método que lê os arquivos.",
+        question: "Qual a diferença técnica entre elas?",
         options: [
           "<code>throw</code> indica que o método pode falhar; <code>throws</code> lança o erro.",
           "<code>throw</code> é usado para lançar uma exceção manualmente dentro do código; <code>throws</code> é usado na assinatura do método para declarar que ele pode gerar aquela exceção.",
@@ -484,7 +576,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> <code>throw</code> é a ação de disparar a exceção; <code>throws</code> é o aviso obrigatório na assinatura para exceções que o método não trata internamente."
       },
       {
-        question: "Um desenvolvedor de um sistema bancário percebe que as exceções genéricas do Java não descrevem com clareza os erros de regra de negócio. Para resolver isso, ele cria a classe <code>SaldoInsuficienteException</code> que herda de <code>Exception</code>, permitindo que o sistema identifique e trate especificamente tentativas de saques acima do saldo disponível.\n\nComo é chamada essa prática e qual a vantagem?",
+        texto: "Um desenvolvedor de um sistema bancário percebe que as exceções genéricas do Java não descrevem com clareza os erros de regra de negócio. Para resolver isso, ele cria a classe <code>SaldoInsuficienteException</code> que herda de <code>Exception</code>, permitindo que o sistema identifique e trate especificamente tentativas de saques acima do saldo disponível.",
+        question: "Como é chamada essa prática e qual a vantagem?",
         options: [
           "Polimorfismo de erro; aumenta a velocidade da JVM.",
           "Exceção Personalizada; permite criar mensagens claras e tratamentos específicos para regras de negócio do sistema.",
@@ -496,7 +589,18 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> Criar subclasses de <code>Exception</code> permite personalizar o tratamento de erros críticos do negócio."
       },
       {
-        question: "Em um sistema de integração com banco de dados, o desenvolvedor implementa um módulo de processamento de transações que abre conexões com recursos externos. O trecho abaixo é extraído desse módulo:\n<pre><code>try {\n    conexao.abrir();\n    processar();\n} catch (SQLException e) {\n    log(e);\n} finally {\n    conexao.fechar();\n}</code></pre>\n\nQual o papel fundamental do bloco <code>finally</code> neste código?",
+        texto: "Em um sistema de integração com banco de dados, o desenvolvedor implementa um módulo de processamento de transações que abre conexões com recursos externos.",
+        miniEnunciado: "Analise o trecho e o papel de cada bloco:",
+        code:
+`try {
+    conexao.abrir();
+    processar();
+} catch (SQLException e) {
+    log(e);
+} finally {
+    conexao.fechar();
+}`,
+        question: "Qual o papel fundamental do bloco <code>finally</code> neste código?",
         options: [
           "Executar apenas se ocorrer um erro na abertura.",
           "Substituir o uso de <code>throws</code> na assinatura do método.",
@@ -508,7 +612,8 @@ const originalQuizData = [
         feedback: "<strong>✓ Por que está certa:</strong> O bloco <code>finally</code> sempre executa, sendo ideal para liberação de recursos como fechar arquivos ou conexões."
       },
       {
-        question: "Durante os testes de um sistema de e-commerce, a equipe de QA identifica uma falha recorrente: ao tentar acessar atributos de um objeto de pedido que não foi corretamente inicializado, o sistema lança um erro em tempo de execução. Ao investigar, o desenvolvedor confirma que a variável de pedido está com valor <code>null</code>.\n\nComo esse erro é classificado e qual a boa prática para evitá-lo?",
+        texto: "Durante os testes de um sistema de e-commerce, a equipe de QA identifica uma falha recorrente: ao tentar acessar atributos de um objeto de pedido que não foi corretamente inicializado, o sistema lança um erro em tempo de execução. Ao investigar, o desenvolvedor confirma que a variável de pedido está com valor <code>null</code>.",
+        question: "Como esse erro é classificado e qual a boa prática para evitá-lo?",
         options: [
           "Exceção Checada (Checked); deve-se usar <code>throws</code>.",
           "Erro de Compilação; deve-se inicializar na Stack.",
@@ -522,29 +627,6 @@ const originalQuizData = [
     ]
   }
 ];
-
-// ─── Função para separar texto e enunciado ─────────────────────────────────────
-function splitQuestionParts(questionText) {
-    const text = questionText.trim();
-    const sentencePattern = /^([\s\S]+?)\s{0,5}([A-ZÁÉÍÓÚÂÊÎÔÛÃÕÇ][^.!?]*[?:])$/;
-    const match = text.match(sentencePattern);
-    if (match) {
-        const contexto = match[1].trim();
-        const enunciado = match[2].trim();
-        if (contexto.length > 80 && enunciado !== text) {
-            return { context: contexto, statement: enunciado };
-        }
-    }
-    const lastSentenceMatch = text.match(/^([\s\S]+\.)(\s+[A-ZÁÉÍÓÚÂÊÎÔÛÃÕÇ][\s\S]*[?:])$/);
-    if (lastSentenceMatch) {
-        const contexto = lastSentenceMatch[1].trim();
-        const enunciado = lastSentenceMatch[2].trim();
-        if (contexto.length > 80) {
-            return { context: contexto, statement: enunciado };
-        }
-    }
-    return { context: null, statement: text };
-}
 
 // ─── Estado do quiz ───────────────────────────────────────────────────────────
 let quizData = [];
@@ -590,7 +672,7 @@ function createOriginalQuizData() {
     return originalQuizData.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
 }
 
-// ─── Monta o feedback dinamicamente (evita duplicação) ───────────────────────
+// ─── Monta o feedback dinamicamente ──────────────────────────────────────────
 function buildFeedbackHTML(question, isCorrect) {
     const letters = ['A', 'B', 'C', 'D', 'E'];
     const correctLetter = letters[question.answer];
@@ -600,6 +682,91 @@ function buildFeedbackHTML(question, isCorrect) {
     return `<div class="feedback ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}">
         ${correctLine}${body}
     </div>`;
+}
+
+// ─── Highlight de sintaxe Java (idêntico ao ava.js) ──────────────────────────
+function highlightJava(raw) {
+    let code = raw
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    code = code.replace(/"([^"]*)"/g,
+        '<span class="jk-string">"$1"</span>');
+
+    code = code.replace(/(@\w+)/g,
+        '<span class="jk-annotation">$1</span>');
+
+    code = code.replace(/\b(public|private|protected|class|interface|extends|implements|return|void|double|int|long|float|boolean|char|byte|short|String|new|this|super|static|final|abstract|null|true|false|if|else|for|while|do|switch|case|break|continue|try|catch|finally|throw|throws|import|package|default)\b/g,
+        '<span class="jk-keyword">$1</span>');
+
+    code = code.replace(/(\/\/.*)$/gm,
+        '<span class="jk-comment">$1</span>');
+
+    return code;
+}
+
+// ─── Renderiza bloco de código ────────────────────────────────────────────────
+function renderCodeBlock(code) {
+    if (!code) return '';
+    return `<div class="code-block"><pre>${highlightJava(code)}</pre></div>`;
+}
+
+// ─── Renderiza afirmativas romanas ────────────────────────────────────────────
+function renderAssertions(assertions) {
+    if (!assertions || assertions.length === 0) return '';
+
+    const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+
+    const items = assertions.map((text, idx) => {
+        const isPorque = text.startsWith('[PORQUE]');
+        const cleanText = text.replace('[PORQUE]', '').trim();
+
+        if (isPorque) {
+            return `
+                <div class="assertion-connector">
+                    <span class="connector-label">PORQUE</span>
+                </div>
+                <div class="assertion">
+                    <span class="assertion-num">${romanNumerals[idx]}.</span>
+                    <span>${cleanText}</span>
+                </div>`;
+        }
+
+        return `
+            <div class="assertion">
+                <span class="assertion-num">${romanNumerals[idx]}.</span>
+                <span>${cleanText}</span>
+            </div>`;
+    }).join('');
+
+    return `<div class="assertions">${items}</div>`;
+}
+
+// ─── Monta o corpo de cada questão ────────────────────────────────────────────
+function buildQuestionBody(question) {
+    let html = '';
+
+    if (question.texto) {
+        html += `<div class="question-context">${question.texto.replace(/\n/g, '<br>')}</div>`;
+        html += `<div class="question-divider"></div>`;
+    }
+
+    if (question.miniEnunciado) {
+        html += `<div class="question-mini-enunciado">${question.miniEnunciado}</div>`;
+    }
+
+    if (question.code) {
+        html += renderCodeBlock(question.code);
+    }
+
+    if (question.assertions && question.assertions.length > 0) {
+        html += renderAssertions(question.assertions);
+    }
+
+    html += `<div class="question-statement">${question.question}</div>`;
+
+    return html;
 }
 
 // ─── Inicialização ────────────────────────────────────────────────────────────
@@ -625,20 +792,15 @@ function initializeQuiz() {
 function showAllQuestions() {
     let html = "";
     let globalIndex = 0;
-quizContainer.innerHTML = html;
+
     quizData.forEach((subject, sIdx) => {
         html += `<div class="subject-title">${subject.subject}</div>`;
 
         subject.questions.forEach((question, qIdx) => {
             const gi = globalIndex;
             const answered = userAnswers[gi] !== null;
-            const parts = splitQuestionParts(question.question);
 
-            let questionBodyHTML = parts.context
-                ? `<div class="question-context">${parts.context}</div>
-                   <div class="question-divider"></div>
-                   <div class="question-statement">${parts.statement}</div>`
-                : `<div class="question-text">${parts.statement}</div>`;
+            const questionBodyHTML = buildQuestionBody(question);
 
             const optionsHTML = question.options.map((option, oi) => {
                 let cls = "option";
@@ -661,7 +823,6 @@ quizContainer.innerHTML = html;
                 <div class="question-number">Questão ${gi + 1}</div>
                 ${questionBodyHTML}
                 ${question.image ? `<div class="question-image"><img src="${question.image}" alt="Imagem da questão"></div>` : ''}
-                ${question.questionContinuation ? `<div class="question-text">${question.questionContinuation}</div>` : ''}
                 <div class="options">${optionsHTML}</div>
                 ${feedbackHTML}
             </div>`;
@@ -922,7 +1083,6 @@ function stopAutoSave() {
 }
 
 function showProgressNotification(message) {
-    // 1. Gerenciador de Container (empilhamento vertical)
     let container = document.getElementById('notification-container');
     if (!container) {
         container = document.createElement('div');
@@ -935,7 +1095,6 @@ function showProgressNotification(message) {
         document.body.appendChild(container);
     }
 
-    // 2. Criação da notificação — paleta Âmbar/Gold (mantida conforme solicitado)
     const el = document.createElement('div');
     el.style.cssText = `
         background: rgba(239, 159, 39, 0.15);
@@ -959,22 +1118,18 @@ function showProgressNotification(message) {
     el.innerText = message;
     container.appendChild(el);
 
-    // 3. Entrada suave
     requestAnimationFrame(() => {
         el.style.opacity = '1';
         el.style.transform = 'translateX(0)';
     });
 
-    // 4. Ciclo de saída
     setTimeout(() => {
         el.style.opacity = '0';
         el.style.transform = 'translateX(20px)';
 
         el.addEventListener('transitionend', () => {
             el.remove();
-            if (container && container.childNodes.length === 0) {
-                container.remove();
-            }
+            if (container && container.childNodes.length === 0) container.remove();
         });
     }, 4000);
 }
@@ -989,30 +1144,21 @@ setTimeout(initializeStorage, 500);
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MODO STEP — Bloco corrigido (substitui o bloco MODO STEP existente no qu.js)
-//
-// Correções aplicadas:
-//   1. renderShellStep: wrapper envolve APENAS .question-container,
-//      não subject-title nem subject-result (evita quebra de layout interno)
-//   2. deslizarParaQuestao: translateX(-${index * 100}%) simples e correto
-//   3. ativarModoScroll: desmonta wrapper na ordem certa antes de showAllQuestions
-//   4. Nenhuma propriedade de display/flex é tocada nas question-container
+// MODO STEP
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Estado ───────────────────────────────────────────────────────────────────
-let quizModo       = "scroll"; // "scroll" | "step"
+let quizModo       = "scroll";
 let currentQuestion = 0;
-let stepWrapper     = null;    // referência ao .step-quiz-wrapper
+let stepWrapper     = null;
 
-// ── Rastrear questão visível no modo scroll ──────────────────────────────────
 let scrollObserver = null;
 
 function iniciarScrollObserver() {
     if (scrollObserver) scrollObserver.disconnect();
 
     const opcoes = {
-        root: null,           // viewport
-        rootMargin: '-30% 0px -50% 0px',  // gatilho quando questão ocupa ~centro
+        root: null,
+        rootMargin: '-30% 0px -50% 0px',
         threshold: 0
     };
 
@@ -1020,14 +1166,13 @@ function iniciarScrollObserver() {
         if (quizModo !== 'scroll') return;
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                const id = entry.target.id; // "q-0", "q-7" etc.
+                const id = entry.target.id;
                 const gi = parseInt(id.replace('q-', ''), 10);
                 if (!isNaN(gi)) currentQuestion = gi;
             }
         });
     }, opcoes);
 
-    // Observar todas as questões renderizadas
     document.querySelectorAll('.question-container').forEach(el => {
         scrollObserver.observe(el);
     });
@@ -1044,7 +1189,6 @@ function getTotalQuestions() {
     return questionMap.length;
 }
 
-// ─── Navegar para questão por índice ──────────────────────────────────────────
 function irParaQuestao(index) {
     const total = getTotalQuestions();
     if (index < 0 || index >= total) return;
@@ -1057,44 +1201,38 @@ function irParaQuestao(index) {
 function proximaQuestao()  { irParaQuestao(currentQuestion + 1); }
 function questaoAnterior() { irParaQuestao(currentQuestion - 1); }
 
-// ─── Slide horizontal via translateX ──────────────────────────────────────────
 function deslizarParaQuestao(index) {
     if (!stepWrapper) return;
     stepWrapper.style.transform = `translateX(-${index * 100}%)`;
 }
 
-// ─── Ativar modo Step ─────────────────────────────────────────────────────────
 function ativarModoStep() {
     quizModo = "step";
-smoothScrollToTop()
-    // Garantir questões renderizadas
+    smoothScrollToTop();
     const qc = document.getElementById('quiz-container');
     if (!qc.querySelector('.question-container')) showAllQuestions();
 
-    // Ocultar cromo do modo scroll
+    // ── Esconde apenas header, botões de ação, resultado e footer ──
+    // A .nav-float NÃO é escondida, permanece visível no modo step
     document.querySelector('.quiz-header')?.classList.add('step-hidden');
     document.querySelector('.submit-container')?.classList.add('step-hidden');
     document.querySelector('#results')?.classList.add('step-hidden');
     document.querySelector('.page-footer')?.classList.add('step-hidden');
-    document.querySelector('.nav-float')?.classList.add('step-hidden');
 
-    // Montar estrutura step
     renderShellStep();
 
-    // Primeira questão sem resposta (ou começa do zero)
-pararScrollObserver();
-const jaTemQuestaoVisivel = currentQuestion > 0 ||
-    (currentQuestion === 0 && userAnswers[0] !== null);
+    pararScrollObserver();
+    const jaTemQuestaoVisivel = currentQuestion > 0 ||
+        (currentQuestion === 0 && userAnswers[0] !== null);
 
-if (!jaTemQuestaoVisivel) {
-    const primeiraUnanswered = userAnswers.findIndex(a => a === null);
-    currentQuestion = primeiraUnanswered === -1 ? 0 : primeiraUnanswered;
-}
-    // Posicionar sem animação na abertura
+    if (!jaTemQuestaoVisivel) {
+        const primeiraUnanswered = userAnswers.findIndex(a => a === null);
+        currentQuestion = primeiraUnanswered === -1 ? 0 : primeiraUnanswered;
+    }
+
     if (stepWrapper) {
         stepWrapper.style.transition = 'none';
         deslizarParaQuestao(currentQuestion);
-        // Reativar transição após dois frames
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 if (stepWrapper) {
@@ -1107,92 +1245,65 @@ if (!jaTemQuestaoVisivel) {
 
     atualizarControlesStep();
     atualizarBotaoModo();
-    setTimeout(sincronizarAlturaStep, 50); // ← adicionar aqui
+    setTimeout(sincronizarAlturaStep, 50);
     smoothScrollToTop();
     document.querySelector('.page-wrapper').classList.add('modo-step-wrapper');
 }
 
-// ─── Ativar modo Scroll ───────────────────────────────────────────────────────
 function ativarModoScroll() {
     quizModo = "scroll";
 
     const qc = document.getElementById('quiz-container');
 
-    // 1. Resetar transform antes de desmontar
     if (stepWrapper) {
         stepWrapper.style.transition = 'none';
         stepWrapper.style.transform  = 'translateX(0)';
     }
 
-    // 2. Remover wrapper flex — mover .question-container de volta para qc
     if (stepWrapper && stepWrapper.parentNode === qc) {
-        // Coletar filhos em array (NodeList muda durante remoção)
         const filhos = Array.from(stepWrapper.children);
         filhos.forEach(filho => qc.appendChild(filho));
         stepWrapper.remove();
     }
     stepWrapper = null;
 
-    // 3. Remover classe modo-step
     qc.classList.remove('modo-step');
-    qc.style.height = '';           // ← adicionar aqui
-    if (stepWrapper) stepWrapper.style.height = ''; // ← e aqui
-    // 4. Restaurar separadores estruturais ocultos
+    qc.style.height = '';
+
     qc.querySelectorAll('.step-structural-hidden').forEach(el => {
         el.classList.remove('step-structural-hidden');
     });
 
-    // 5. Remover shell (header/footer step)
     document.getElementById('step-shell-header')?.remove();
-document.getElementById('step-shell-footer')?.remove();
+    document.getElementById('step-shell-footer')?.remove();
 
-    // 6. Restaurar cromo do scroll
+    // ── Restaura apenas o que foi escondido ──
+    // A .nav-float nunca foi escondida, não precisa restaurar
     document.querySelector('.quiz-header')?.classList.remove('step-hidden');
     document.querySelector('.submit-container')?.classList.remove('step-hidden');
     document.querySelector('#results')?.classList.remove('step-hidden');
     document.querySelector('.page-footer')?.classList.remove('step-hidden');
-    document.querySelector('.nav-float')?.classList.remove('step-hidden');
 
-    // 7. Re-renderizar quiz no modo scroll com estado preservado
     showAllQuestions();
     updateGlobalResults();
     atualizarBotaoModo();
 
-        iniciarScrollObserver();
+    iniciarScrollObserver();
 
-    // Rolar até a questão que estava ativa no modo step
     requestAnimationFrame(() => {
         const alvo = document.getElementById(`q-${currentQuestion}`);
         if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 }
 
-// ─── Toggle ───────────────────────────────────────────────────────────────────
 function toggleModo() {
     quizModo === "scroll" ? ativarModoStep() : ativarModoScroll();
 }
 
-// ─── Construir shell step ─────────────────────────────────────────────────────
-//
-// Estrutura DOM resultante:
-//
-//   #step-shell          ← header + footer (FORA do quiz-container)
-//   #quiz-container.modo-step   ← overflow:hidden
-//     .step-quiz-wrapper        ← display:flex + transition (SÓ AQUI)
-//       .question-container     ← min-width:100%, layout interno intacto
-//       .question-container
-//       ...
-//     .subject-title            ← oculto via .step-structural-hidden
-//     .subject-result           ← oculto via .step-structural-hidden
-//
-// IMPORTANTE: subject-title e subject-result NÃO entram no wrapper.
-// O wrapper contém APENAS as .question-container.
-//
 function renderShellStep() {
     const qc = document.getElementById('quiz-container');
     if (!qc) return;
 
-    // Evitar dupla montagem
     if (qc.querySelector('.step-quiz-wrapper')) {
         stepWrapper = qc.querySelector('.step-quiz-wrapper');
         qc.classList.add('modo-step');
@@ -1200,27 +1311,21 @@ function renderShellStep() {
         return;
     }
 
-    // --- Criar wrapper e mover APENAS as .question-container ---
     const wrapper = document.createElement('div');
     wrapper.className = 'step-quiz-wrapper';
 
-    // Selecionar SOMENTE question-container (não titles nem results)
     const questoes = Array.from(qc.querySelectorAll('.question-container'));
     questoes.forEach(q => wrapper.appendChild(q));
 
-    // Ocultar separadores que ficam fora do wrapper
     qc.querySelectorAll('.subject-title, .subject-result').forEach(el => {
         el.classList.add('step-structural-hidden');
     });
 
-    // Inserir wrapper como primeiro filho do qc
     qc.insertBefore(wrapper, qc.firstChild);
     stepWrapper = wrapper;
 
-    // Ativar overflow:hidden no container
     qc.classList.add('modo-step');
 
-    // Montar o shell (header + footer) fora do qc
     _montarShellHTML(qc);
 }
 
@@ -1228,7 +1333,6 @@ function _montarShellHTML(qc) {
     document.getElementById('step-shell-header')?.remove();
     document.getElementById('step-shell-footer')?.remove();
 
-    // ── Header (acima da questão) ──
     const header = document.createElement('div');
     header.id = 'step-shell-header';
     header.innerHTML = `
@@ -1245,7 +1349,6 @@ function _montarShellHTML(qc) {
     `;
     qc.parentNode.insertBefore(header, qc);
 
-    // ── Footer (abaixo da questão) ──
     const footer = document.createElement('div');
     footer.id = 'step-shell-footer';
     footer.innerHTML = `
@@ -1264,27 +1367,22 @@ function _montarShellHTML(qc) {
     qc.parentNode.insertBefore(footer, qc.nextSibling);
 }
 
-// ─── Atualizar todos os controles do step ─────────────────────────────────────
 function atualizarControlesStep() {
     const total = getTotalQuestions();
     const gi    = currentQuestion;
 
-    // Counter
     const counter = document.getElementById('step-counter');
     if (counter) counter.textContent = `${gi + 1} / ${total}`;
 
-    // Barra de progresso
     const fill = document.getElementById('step-progress-fill');
     if (fill) fill.style.width = `${((gi + 1) / total) * 100}%`;
 
-    // Nome da aula
     const subjectLabel = document.getElementById('step-subject-label');
     if (subjectLabel) {
         const { sIdx } = questionMap[gi];
         subjectLabel.textContent = quizData[sIdx].subject;
     }
 
-    // Badges acertos/erros
     const badges = document.getElementById('step-score-badges');
     if (badges) {
         let acertos = 0, erros = 0;
@@ -1303,7 +1401,6 @@ function atualizarControlesStep() {
         `;
     }
 
-    // Dots de navegação
     const dots = document.getElementById('step-dots');
     if (dots) {
         const range = getDotsRange(gi, total, 9);
@@ -1322,11 +1419,9 @@ function atualizarControlesStep() {
         }).join('');
     }
 
-    // Botão Voltar
     const prevBtn = document.getElementById('step-prev');
     if (prevBtn) prevBtn.disabled = gi === 0;
 
-    // Botão Avançar / Finalizar
     const nextBtn = document.getElementById('step-next');
     if (nextBtn) {
         const isLast = gi === total - 1;
@@ -1344,7 +1439,6 @@ function atualizarControlesStep() {
     }
 }
 
-// ─── Helper: range de dots visíveis ───────────────────────────────────────────
 function getDotsRange(current, total, maxVisible) {
     if (total <= maxVisible) return Array.from({ length: total }, (_, i) => i);
     const half  = Math.floor(maxVisible / 2);
@@ -1354,18 +1448,15 @@ function getDotsRange(current, total, maxVisible) {
     return Array.from({ length: end - start }, (_, i) => start + i);
 }
 
-// ─── Patch: atualizar badges/dots ao responder no modo step ───────────────────
 const _selectOptionOriginal = window.selectOption;
 window.selectOption = function(gi, oi) {
     _selectOptionOriginal(gi, oi);
     if (quizModo === 'step') {
         atualizarControlesStep();
-        // Aguardar o DOM renderizar o feedback antes de medir
-        setTimeout(sincronizarAlturaStep, 50); // ← adicionar aqui
+        setTimeout(sincronizarAlturaStep, 50);
     }
 };
 
-// ─── Visual do botão de toggle ────────────────────────────────────────────────
 function atualizarBotaoModo() {
     const btn = document.getElementById('btn-toggle-modo');
     if (!btn) return;
@@ -1380,7 +1471,6 @@ function atualizarBotaoModo() {
     }
 }
 
-// ─── Criar botão flutuante de toggle ──────────────────────────────────────────
 function criarBotaoToggleModo() {
     if (document.getElementById('btn-toggle-modo')) return;
     const btn = document.createElement('button');
@@ -1392,14 +1482,12 @@ function criarBotaoToggleModo() {
     document.body.appendChild(btn);
 }
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', criarBotaoToggleModo);
 } else {
     criarBotaoToggleModo();
 }
 
-// ─── Sincronizar altura do container com a questão atual ──────────────────────
 function sincronizarAlturaStep() {
     if (quizModo !== 'step' || !stepWrapper) return;
 
@@ -1407,7 +1495,6 @@ function sincronizarAlturaStep() {
     const atual = questoes[currentQuestion];
     if (!atual) return;
 
-    // Aplicar altura exata da questão atual ao wrapper e ao container
     const altura = atual.scrollHeight;
     stepWrapper.style.height = altura + 'px';
     document.getElementById('quiz-container').style.height = altura + 'px';
