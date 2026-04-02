@@ -1,3 +1,4 @@
+//qu.js
 // Configuração do quiz
 const originalQuizData = [
   {
@@ -624,7 +625,7 @@ function initializeQuiz() {
 function showAllQuestions() {
     let html = "";
     let globalIndex = 0;
-
+quizContainer.innerHTML = html;
     quizData.forEach((subject, sIdx) => {
         html += `<div class="subject-title">${subject.subject}</div>`;
 
@@ -672,6 +673,8 @@ function showAllQuestions() {
     });
 
     quizContainer.innerHTML = html;
+
+    if (quizModo === 'scroll') iniciarScrollObserver();
 }
 
 // ─── Resultado por aula ───────────────────────────────────────────────────────
@@ -985,3 +988,427 @@ window.addEventListener('beforeunload', () => { if (storageInitialized) saveCurr
 setTimeout(initializeStorage, 500);
 
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODO STEP — Bloco corrigido (substitui o bloco MODO STEP existente no qu.js)
+//
+// Correções aplicadas:
+//   1. renderShellStep: wrapper envolve APENAS .question-container,
+//      não subject-title nem subject-result (evita quebra de layout interno)
+//   2. deslizarParaQuestao: translateX(-${index * 100}%) simples e correto
+//   3. ativarModoScroll: desmonta wrapper na ordem certa antes de showAllQuestions
+//   4. Nenhuma propriedade de display/flex é tocada nas question-container
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ─── Estado ───────────────────────────────────────────────────────────────────
+let quizModo       = "scroll"; // "scroll" | "step"
+let currentQuestion = 0;
+let stepWrapper     = null;    // referência ao .step-quiz-wrapper
+
+// ── Rastrear questão visível no modo scroll ──────────────────────────────────
+let scrollObserver = null;
+
+function iniciarScrollObserver() {
+    if (scrollObserver) scrollObserver.disconnect();
+
+    const opcoes = {
+        root: null,           // viewport
+        rootMargin: '-30% 0px -50% 0px',  // gatilho quando questão ocupa ~centro
+        threshold: 0
+    };
+
+    scrollObserver = new IntersectionObserver((entries) => {
+        if (quizModo !== 'scroll') return;
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id; // "q-0", "q-7" etc.
+                const gi = parseInt(id.replace('q-', ''), 10);
+                if (!isNaN(gi)) currentQuestion = gi;
+            }
+        });
+    }, opcoes);
+
+    // Observar todas as questões renderizadas
+    document.querySelectorAll('.question-container').forEach(el => {
+        scrollObserver.observe(el);
+    });
+}
+
+function pararScrollObserver() {
+    if (scrollObserver) {
+        scrollObserver.disconnect();
+        scrollObserver = null;
+    }
+}
+
+function getTotalQuestions() {
+    return questionMap.length;
+}
+
+// ─── Navegar para questão por índice ──────────────────────────────────────────
+function irParaQuestao(index) {
+    const total = getTotalQuestions();
+    if (index < 0 || index >= total) return;
+    currentQuestion = index;
+    deslizarParaQuestao(index);
+    atualizarControlesStep();
+    sincronizarAlturaStep();
+}
+
+function proximaQuestao()  { irParaQuestao(currentQuestion + 1); }
+function questaoAnterior() { irParaQuestao(currentQuestion - 1); }
+
+// ─── Slide horizontal via translateX ──────────────────────────────────────────
+function deslizarParaQuestao(index) {
+    if (!stepWrapper) return;
+    stepWrapper.style.transform = `translateX(-${index * 100}%)`;
+}
+
+// ─── Ativar modo Step ─────────────────────────────────────────────────────────
+function ativarModoStep() {
+    quizModo = "step";
+smoothScrollToTop()
+    // Garantir questões renderizadas
+    const qc = document.getElementById('quiz-container');
+    if (!qc.querySelector('.question-container')) showAllQuestions();
+
+    // Ocultar cromo do modo scroll
+    document.querySelector('.quiz-header')?.classList.add('step-hidden');
+    document.querySelector('.submit-container')?.classList.add('step-hidden');
+    document.querySelector('#results')?.classList.add('step-hidden');
+    document.querySelector('.page-footer')?.classList.add('step-hidden');
+    document.querySelector('.nav-float')?.classList.add('step-hidden');
+
+    // Montar estrutura step
+    renderShellStep();
+
+    // Primeira questão sem resposta (ou começa do zero)
+pararScrollObserver();
+const jaTemQuestaoVisivel = currentQuestion > 0 ||
+    (currentQuestion === 0 && userAnswers[0] !== null);
+
+if (!jaTemQuestaoVisivel) {
+    const primeiraUnanswered = userAnswers.findIndex(a => a === null);
+    currentQuestion = primeiraUnanswered === -1 ? 0 : primeiraUnanswered;
+}
+    // Posicionar sem animação na abertura
+    if (stepWrapper) {
+        stepWrapper.style.transition = 'none';
+        deslizarParaQuestao(currentQuestion);
+        // Reativar transição após dois frames
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                if (stepWrapper) {
+                    stepWrapper.style.transition =
+                        'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1)';
+                }
+            });
+        });
+    }
+
+    atualizarControlesStep();
+    atualizarBotaoModo();
+    setTimeout(sincronizarAlturaStep, 50); // ← adicionar aqui
+    smoothScrollToTop();
+    document.querySelector('.page-wrapper').classList.add('modo-step-wrapper');
+}
+
+// ─── Ativar modo Scroll ───────────────────────────────────────────────────────
+function ativarModoScroll() {
+    quizModo = "scroll";
+
+    const qc = document.getElementById('quiz-container');
+
+    // 1. Resetar transform antes de desmontar
+    if (stepWrapper) {
+        stepWrapper.style.transition = 'none';
+        stepWrapper.style.transform  = 'translateX(0)';
+    }
+
+    // 2. Remover wrapper flex — mover .question-container de volta para qc
+    if (stepWrapper && stepWrapper.parentNode === qc) {
+        // Coletar filhos em array (NodeList muda durante remoção)
+        const filhos = Array.from(stepWrapper.children);
+        filhos.forEach(filho => qc.appendChild(filho));
+        stepWrapper.remove();
+    }
+    stepWrapper = null;
+
+    // 3. Remover classe modo-step
+    qc.classList.remove('modo-step');
+    qc.style.height = '';           // ← adicionar aqui
+    if (stepWrapper) stepWrapper.style.height = ''; // ← e aqui
+    // 4. Restaurar separadores estruturais ocultos
+    qc.querySelectorAll('.step-structural-hidden').forEach(el => {
+        el.classList.remove('step-structural-hidden');
+    });
+
+    // 5. Remover shell (header/footer step)
+    document.getElementById('step-shell-header')?.remove();
+document.getElementById('step-shell-footer')?.remove();
+
+    // 6. Restaurar cromo do scroll
+    document.querySelector('.quiz-header')?.classList.remove('step-hidden');
+    document.querySelector('.submit-container')?.classList.remove('step-hidden');
+    document.querySelector('#results')?.classList.remove('step-hidden');
+    document.querySelector('.page-footer')?.classList.remove('step-hidden');
+    document.querySelector('.nav-float')?.classList.remove('step-hidden');
+
+    // 7. Re-renderizar quiz no modo scroll com estado preservado
+    showAllQuestions();
+    updateGlobalResults();
+    atualizarBotaoModo();
+
+        iniciarScrollObserver();
+
+    // Rolar até a questão que estava ativa no modo step
+    requestAnimationFrame(() => {
+        const alvo = document.getElementById(`q-${currentQuestion}`);
+        if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+}
+
+// ─── Toggle ───────────────────────────────────────────────────────────────────
+function toggleModo() {
+    quizModo === "scroll" ? ativarModoStep() : ativarModoScroll();
+}
+
+// ─── Construir shell step ─────────────────────────────────────────────────────
+//
+// Estrutura DOM resultante:
+//
+//   #step-shell          ← header + footer (FORA do quiz-container)
+//   #quiz-container.modo-step   ← overflow:hidden
+//     .step-quiz-wrapper        ← display:flex + transition (SÓ AQUI)
+//       .question-container     ← min-width:100%, layout interno intacto
+//       .question-container
+//       ...
+//     .subject-title            ← oculto via .step-structural-hidden
+//     .subject-result           ← oculto via .step-structural-hidden
+//
+// IMPORTANTE: subject-title e subject-result NÃO entram no wrapper.
+// O wrapper contém APENAS as .question-container.
+//
+function renderShellStep() {
+    const qc = document.getElementById('quiz-container');
+    if (!qc) return;
+
+    // Evitar dupla montagem
+    if (qc.querySelector('.step-quiz-wrapper')) {
+        stepWrapper = qc.querySelector('.step-quiz-wrapper');
+        qc.classList.add('modo-step');
+        _montarShellHTML(qc);
+        return;
+    }
+
+    // --- Criar wrapper e mover APENAS as .question-container ---
+    const wrapper = document.createElement('div');
+    wrapper.className = 'step-quiz-wrapper';
+
+    // Selecionar SOMENTE question-container (não titles nem results)
+    const questoes = Array.from(qc.querySelectorAll('.question-container'));
+    questoes.forEach(q => wrapper.appendChild(q));
+
+    // Ocultar separadores que ficam fora do wrapper
+    qc.querySelectorAll('.subject-title, .subject-result').forEach(el => {
+        el.classList.add('step-structural-hidden');
+    });
+
+    // Inserir wrapper como primeiro filho do qc
+    qc.insertBefore(wrapper, qc.firstChild);
+    stepWrapper = wrapper;
+
+    // Ativar overflow:hidden no container
+    qc.classList.add('modo-step');
+
+    // Montar o shell (header + footer) fora do qc
+    _montarShellHTML(qc);
+}
+
+function _montarShellHTML(qc) {
+    document.getElementById('step-shell-header')?.remove();
+    document.getElementById('step-shell-footer')?.remove();
+
+    // ── Header (acima da questão) ──
+    const header = document.createElement('div');
+    header.id = 'step-shell-header';
+    header.innerHTML = `
+        <div class="step-header">
+            <div class="step-subject-label" id="step-subject-label"></div>
+            <div class="step-progress-wrapper">
+                <div class="step-counter" id="step-counter"></div>
+                <div class="step-progress-bar">
+                    <div class="step-progress-fill" id="step-progress-fill"></div>
+                </div>
+                <div class="step-score-badges" id="step-score-badges"></div>
+            </div>
+        </div>
+    `;
+    qc.parentNode.insertBefore(header, qc);
+
+    // ── Footer (abaixo da questão) ──
+    const footer = document.createElement('div');
+    footer.id = 'step-shell-footer';
+    footer.innerHTML = `
+        <div class="step-footer">
+            <button class="step-btn step-btn-secondary" id="step-prev"
+                    onclick="questaoAnterior()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+            <div class="step-dots" id="step-dots"></div>
+            <button class="step-btn step-btn-primary" id="step-next"
+                    onclick="proximaQuestao()">
+                Avançar <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    `;
+    qc.parentNode.insertBefore(footer, qc.nextSibling);
+}
+
+// ─── Atualizar todos os controles do step ─────────────────────────────────────
+function atualizarControlesStep() {
+    const total = getTotalQuestions();
+    const gi    = currentQuestion;
+
+    // Counter
+    const counter = document.getElementById('step-counter');
+    if (counter) counter.textContent = `${gi + 1} / ${total}`;
+
+    // Barra de progresso
+    const fill = document.getElementById('step-progress-fill');
+    if (fill) fill.style.width = `${((gi + 1) / total) * 100}%`;
+
+    // Nome da aula
+    const subjectLabel = document.getElementById('step-subject-label');
+    if (subjectLabel) {
+        const { sIdx } = questionMap[gi];
+        subjectLabel.textContent = quizData[sIdx].subject;
+    }
+
+    // Badges acertos/erros
+    const badges = document.getElementById('step-score-badges');
+    if (badges) {
+        let acertos = 0, erros = 0;
+        userAnswers.forEach((ans, idx) => {
+            if (ans === null) return;
+            const { sIdx, qIdx } = questionMap[idx];
+            ans === quizData[sIdx].questions[qIdx].answer ? acertos++ : erros++;
+        });
+        badges.innerHTML = `
+            <span class="step-badge step-badge-correct">
+                <i class="fas fa-check"></i> ${acertos}
+            </span>
+            <span class="step-badge step-badge-incorrect">
+                <i class="fas fa-times"></i> ${erros}
+            </span>
+        `;
+    }
+
+    // Dots de navegação
+    const dots = document.getElementById('step-dots');
+    if (dots) {
+        const range = getDotsRange(gi, total, 9);
+        dots.innerHTML = range.map(idx => {
+            let cls = 'step-dot';
+            if (idx === gi) {
+                cls += ' step-dot-active';
+            } else if (userAnswers[idx] !== null) {
+                const { sIdx, qIdx } = questionMap[idx];
+                cls += userAnswers[idx] === quizData[sIdx].questions[qIdx].answer
+                    ? ' step-dot-correct'
+                    : ' step-dot-wrong';
+            }
+            return `<button class="${cls}" onclick="irParaQuestao(${idx})"
+                            title="Questão ${idx + 1}"></button>`;
+        }).join('');
+    }
+
+    // Botão Voltar
+    const prevBtn = document.getElementById('step-prev');
+    if (prevBtn) prevBtn.disabled = gi === 0;
+
+    // Botão Avançar / Finalizar
+    const nextBtn = document.getElementById('step-next');
+    if (nextBtn) {
+        const isLast = gi === total - 1;
+        if (isLast) {
+            nextBtn.innerHTML = '<i class="fas fa-flag-checkered"></i> Finalizar';
+            nextBtn.onclick = () => {
+                ativarModoScroll();
+                setTimeout(() => smoothScrollTo(document.body.scrollHeight, 800), 150);
+            };
+        } else {
+            nextBtn.innerHTML = 'Avançar <i class="fas fa-arrow-right"></i>';
+            nextBtn.onclick = proximaQuestao;
+        }
+        nextBtn.disabled = false;
+    }
+}
+
+// ─── Helper: range de dots visíveis ───────────────────────────────────────────
+function getDotsRange(current, total, maxVisible) {
+    if (total <= maxVisible) return Array.from({ length: total }, (_, i) => i);
+    const half  = Math.floor(maxVisible / 2);
+    let   start = Math.max(0, current - half);
+    let   end   = start + maxVisible;
+    if (end > total) { end = total; start = end - maxVisible; }
+    return Array.from({ length: end - start }, (_, i) => start + i);
+}
+
+// ─── Patch: atualizar badges/dots ao responder no modo step ───────────────────
+const _selectOptionOriginal = window.selectOption;
+window.selectOption = function(gi, oi) {
+    _selectOptionOriginal(gi, oi);
+    if (quizModo === 'step') {
+        atualizarControlesStep();
+        // Aguardar o DOM renderizar o feedback antes de medir
+        setTimeout(sincronizarAlturaStep, 50); // ← adicionar aqui
+    }
+};
+
+// ─── Visual do botão de toggle ────────────────────────────────────────────────
+function atualizarBotaoModo() {
+    const btn = document.getElementById('btn-toggle-modo');
+    if (!btn) return;
+    if (quizModo === 'step') {
+        btn.innerHTML = '<i class="fas fa-list"></i>';
+        btn.title = 'Modo Scroll';
+        btn.classList.add('modo-step-active');
+    } else {
+        btn.innerHTML = '<i class="fas fa-layer-group"></i>';
+        btn.title = 'Modo Step (uma questão por vez)';
+        btn.classList.remove('modo-step-active');
+    }
+}
+
+// ─── Criar botão flutuante de toggle ──────────────────────────────────────────
+function criarBotaoToggleModo() {
+    if (document.getElementById('btn-toggle-modo')) return;
+    const btn = document.createElement('button');
+    btn.id        = 'btn-toggle-modo';
+    btn.className = 'btn-toggle-modo';
+    btn.title     = 'Modo Step (uma questão por vez)';
+    btn.innerHTML = '<i class="fas fa-layer-group"></i>';
+    btn.addEventListener('click', toggleModo);
+    document.body.appendChild(btn);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', criarBotaoToggleModo);
+} else {
+    criarBotaoToggleModo();
+}
+
+// ─── Sincronizar altura do container com a questão atual ──────────────────────
+function sincronizarAlturaStep() {
+    if (quizModo !== 'step' || !stepWrapper) return;
+
+    const questoes = stepWrapper.querySelectorAll('.question-container');
+    const atual = questoes[currentQuestion];
+    if (!atual) return;
+
+    // Aplicar altura exata da questão atual ao wrapper e ao container
+    const altura = atual.scrollHeight;
+    stepWrapper.style.height = altura + 'px';
+    document.getElementById('quiz-container').style.height = altura + 'px';
+}
