@@ -328,13 +328,13 @@ async function abrirIADisciplina() {
 //  8. Comunicação com o Worker
 // ============================================================
 
-async function perguntarIA(pergunta, contexto = "", historico = [], disciplina = null, ehQuestao = false) {
+async function perguntarIA(pergunta, contexto = "", historico = [], disciplina = null, ehQuestao = false, modoSimulado = false) {
   let res;
   try {
     res = await fetch(IA_WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pergunta, contexto, historico, disciplina, ehQuestao }),
+      body: JSON.stringify({ pergunta, contexto, historico, disciplina, ehQuestao, modoSimulado }),
     });
   } catch {
     throw new Error("⚠️ O sistema está temporariamente ocupado. Tente novamente.");
@@ -433,6 +433,7 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
           ${labelDisc ? `<span id="ia-disciplina-badge">${labelDisc}</span>` : ""}
         </div>
         <div id="ia-header-acoes">
+          <button id="ia-treino" title="Ativar modo treino (a IA não dá a resposta direto)" aria-label="Modo treino">🎯</button>
           <button id="ia-limpar" title="Limpar conversa" aria-label="Limpar conversa">↺</button>
           <button id="ia-fechar" aria-label="Fechar">✕</button>
         </div>
@@ -459,10 +460,51 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
   const overlay   = modal.querySelector("#ia-overlay");
   const btnFechar = modal.querySelector("#ia-fechar");
   const btnLimpar = modal.querySelector("#ia-limpar");
+  const btnTreino = modal.querySelector("#ia-treino");
   const btnEnviar = modal.querySelector("#ia-enviar");
   const input     = modal.querySelector("#ia-input");
   const contador  = modal.querySelector("#ia-contador");
   const chat      = modal.querySelector("#ia-chat");
+
+  // Estado do modo treino (não persiste entre sessões)
+  let modoSimulado = false;
+
+  function _atualizarBotaoTreino() {
+    if (modoSimulado) {
+      btnTreino.title  = "Modo treino ativo — clique para desativar";
+      btnTreino.style.opacity = "1";
+      btnTreino.style.filter  = "drop-shadow(0 0 4px #f5a623)";
+    } else {
+      btnTreino.title  = "Ativar modo treino (a IA não dá a resposta direto)";
+      btnTreino.style.opacity = "0.5";
+      btnTreino.style.filter  = "none";
+    }
+  }
+  _atualizarBotaoTreino();
+
+  btnTreino.addEventListener("click", () => {
+    modoSimulado = !modoSimulado;
+    _atualizarBotaoTreino();
+    if (modoSimulado) {
+      // Injeta aviso no histórico para a IA saber que entrou no modo treino
+      historico.push({
+        role: "assistant",
+        content: "[SISTEMA: Modo treino ativado. A partir de agora, não revele respostas diretas — faça perguntas socráticas.]"
+      });
+      adicionarMensagem("assistant",
+        "🎯 **Modo treino ativado!** Vou te fazer pensar em vez de entregar a resposta direto. " +
+        "Se quiser a resposta direta a qualquer momento, é só dizer **'resposta direta'**. Bora! 💪"
+      );
+    } else {
+      // Injeta aviso no histórico para a IA saber que o modo normal voltou
+      historico.push({
+        role: "assistant",
+        content: "[SISTEMA: Modo treino desativado. Responda normalmente a partir de agora — dê respostas diretas e completas como antes.]"
+      });
+      adicionarMensagem("assistant", "✅ Modo treino desativado. Voltando ao modo normal!");
+    }
+    salvarHistorico(disciplina, historico);
+  });
 
   setTimeout(() => input.focus(), 50);
 
@@ -615,24 +657,36 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
       // (economiza tokens mas mantém memória recente)
       const histTruncado = historico.slice(-IA_MAX_HISTORICO_ENVIO);
 
-      const resposta = await perguntarIA(
+      const resultado = await perguntarIA(
         pergunta,
         contextoEnviado,
         histTruncado,
         disciplina,
-        ehQuestao
+        ehQuestao,
+        modoSimulado
       );
+
+      // O worker retorna { resposta, saiuDoSimulado } — trata os dois casos
+      const textoResposta = (typeof resultado === "object" && resultado.resposta)
+        ? resultado.resposta
+        : resultado;
+
+      // Se a IA sinalizou saída do modo treino, desativa localmente
+      if (resultado.saiuDoSimulado) {
+        modoSimulado = false;
+        _atualizarBotaoTreino();
+      }
 
       // Atualiza histórico em memória
       historico.push({ role: "user",      content: pergunta });
-      historico.push({ role: "assistant", content: resposta });
+      historico.push({ role: "assistant", content: textoResposta });
 
       // Persiste no localStorage (mantém até IA_MAX_HISTORICO turnos)
       salvarHistorico(disciplina, historico);
 
       loadingEl.classList.remove("ia-pensando");
       loadingEl.innerHTML = "";
-      loadingEl.innerHTML = formatarMarkdown(resposta);
+      loadingEl.innerHTML = formatarMarkdown(textoResposta);
       requestAnimationFrame(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }));
 
     } catch (err) {
