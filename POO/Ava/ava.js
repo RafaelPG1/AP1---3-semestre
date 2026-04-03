@@ -1,4 +1,4 @@
-//ava.js
+//ava.js - modelo
 const originalQuizData = [
   {
     subject: "Programação Orientada a Objetos",
@@ -6,7 +6,6 @@ const originalQuizData = [
 
       // ── Questão 1 ──────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → assertions → question
         texto: "Uma equipe de desenvolvimento está criando um sistema de simulação de tráfego urbano para uma metrópole. Eles precisam modelar computacionalmente elementos reais como semáforos, veículos e pedestres, garantindo que dezenas de carros possam existir simultaneamente na simulação com características e velocidades próprias. A Programação Orientada a Objetos (POO) baseia-se na criação de modelos que representam elementos do mundo real ou do domínio do problema computacional. Para que esse mapeamento ocorra de forma eficiente, a POO apoia-se fortemente nos conceitos de classes e objetos, que constituem a base estrutural e comportamental da maioria das aplicações modernas.\n\nConsiderando a arquitetura de sistemas orientados a objetos e a construção do referido simulador, avalie as asserções a seguir e a relação proposta entre elas:",
         assertions: [
           "Em um sistema orientado a objetos, uma classe atua como um molde abstrato, enquanto um objeto é uma instância concreta operando de forma ativa na memória.",
@@ -25,7 +24,6 @@ const originalQuizData = [
 
       // ── Questão 2 ──────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → assertions → question
         texto: "O desenvolvimento de sistemas de software pode ser orientado por diferentes formas de pensar e estruturar soluções, conhecidas como paradigmas de programação. A Programação Orientada a Objetos (POO) consolidou-se como um dos principais paradigmas modernos na área de tecnologia e engenharia de software. Em vez de focar primariamente na lógica algorítmica estrita e na decomposição de funções, a POO propõe que o software seja projetado como uma coleção de entidades que interagem entre si, buscando uma modelagem mais próxima da forma como compreendemos e organizamos o mundo real.\n\nAvalie as afirmações a seguir.",
         assertions: [
           "O paradigma orientado a objetos estrutura o sistema aproximando-o do mundo real, utilizando abstrações que agrupam características (estados/atributos) e comportamentos (ações/métodos) em unidades fundamentais chamadas de objetos.",
@@ -46,7 +44,6 @@ const originalQuizData = [
 
       // ── Questão 3 ──────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → question
         texto: "Um engenheiro de software de um banco digital precisa garantir que o atributo \"saldo\" da classe ContaCorrente não possa ser alterado de forma irrestrita por outras classes do sistema, prevenindo fraudes ou falhas lógicas que deixem o saldo negativo sem validação prévia. O pilar do encapsulamento defende o isolamento estrito de dados sensíveis. Modificadores de acesso como private, protected e public controlam a visibilidade de membros da classe. O acesso seguro e validado ocorre primordialmente por meio de métodos padronizados de leitura e escrita.",
         question: "Analise a necessidade arquitetural de segurança da conta bancária descrita e assinale a alternativa que apresenta a solução técnica correta em linguagem Java.",
         options: [
@@ -61,7 +58,6 @@ const originalQuizData = [
 
       // ── Questão 4 ──────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → miniEnunciado → code → assertions → question
         texto: "O reuso de software é um dos maiores benefícios práticos apontados na adoção da Programação Orientada a Objetos (POO). Na linguagem Java, essa característica é promovida de forma estrutural por meio de mecanismos relacionais entre classes, destacando-se a herança. Ao permitir que novas classes sejam construídas estendendo os atributos e métodos de classes previamente testadas e implementadas, a herança minimiza a duplicação de código, reduz a probabilidade de introdução de erros e simplifica significativamente a manutenção e a expansão arquitetural do sistema.",
         miniEnunciado: "Considere o trecho de código Java a seguir, que ilustra um modelo simplificado de folha de pagamento para funcionários de uma empresa:",
         code:
@@ -104,7 +100,6 @@ public class Gerente extends Funcionario {
 
       // ── Questão 5 ──────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → miniEnunciado → code → assertions → question
         texto: "Uma montadora de veículos precisa criar um catálogo digital de sua frota. O analista de sistemas responsável decidiu modelar os diferentes tipos de transporte utilizando uma taxonomia baseada em herança, garantindo o reuso de propriedades gerais para automóveis, caminhões e motocicletas. A reutilização de código é uma das vantagens centrais da Programação Orientada a Objetos. Em linguagens como Java, esse recurso pode ser implementado por meio da herança.",
         miniEnunciado: "Considere o seguinte código base criado pelo analista:",
         code:
@@ -134,7 +129,6 @@ public class Carro extends Veiculo {
 
       // ── Questão 6 ──────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → assertions (PORQUE) → question
         texto: "A Programação Orientada a Objetos (POO) baseia-se na criação de modelos que representam elementos do mundo real ou do domínio do problema computacional. Para que esse mapeamento ocorra de forma eficiente, a POO apoia-se fortemente nos conceitos de classes e objetos, que constituem a base estrutural e comportamental da maioria das aplicações modernas desenvolvidas sob esse paradigma.\n\nConsiderando as informações apresentadas, avalie as asserções a seguir e a relação proposta entre elas.",
         assertions: [
           "Em um sistema orientado a objetos, uma classe atua como um molde ou especificação abstrata, enquanto um objeto é uma instância concreta gerada a partir dessa especificação, operando de forma ativa na memória do computador durante a execução do programa.",
@@ -153,7 +147,6 @@ public class Carro extends Veiculo {
 
       // ── Questão 7 ──────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → miniEnunciado → code → assertions → question
         texto: "Um desenvolvedor sênior foi encarregado de refatorar o sistema de folha de pagamento de uma empresa, visando reduzir redundâncias. Ele optou por aplicar conceitos avançados de Orientação a Objetos para otimizar o código legado e facilitar futuras integrações. O reuso de software é um dos maiores benefícios práticos na adoção da POO. Na linguagem Java, essa característica é promovida de forma estrutural por meio de mecanismos relacionais entre classes, destacando-se a herança, que minimiza a duplicação de código.",
         miniEnunciado: "Analise o trecho a seguir:",
         code:
@@ -196,7 +189,6 @@ public class Gerente extends Funcionario {
 
       // ── Questão 8 ──────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → assertions → question
         texto: "O encapsulamento é um dos pilares da Programação Orientada a Objetos, permitindo que os detalhes internos de implementação de um objeto sejam ocultados do mundo externo. Na linguagem Java, esse controle de visibilidade é implementado por meio dos modificadores de acesso, palavras-chave que definem o nível de acessibilidade de classes, atributos, métodos e construtores. A escolha correta desses modificadores é fundamental para garantir a segurança, a coesão e o acoplamento adequado na arquitetura do software.\n\nA partir das informações apresentadas e dos conceitos de modificadores de acesso na linguagem Java, avalie as afirmações a seguir.",
         assertions: [
           "O modificador public representa o nível mais permissivo de visibilidade, permitindo que a classe ou o membro seja acessado a partir de qualquer outra classe, independentemente do pacote em que se encontre.",
@@ -217,7 +209,6 @@ public class Gerente extends Funcionario {
 
       // ── Questão 9 ──────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → question
         texto: "No desenvolvimento de um gateway de pagamentos que suportará múltiplas operadoras de cartão de crédito, a equipe de arquitetura exige que haja um alto nível de desacoplamento. Cada operadora terá sua própria implementação técnica, mas o núcleo do sistema deve se comunicar com elas de forma padronizada. No desenvolvimento de sistemas orientados a objetos, abstrações são amplamente utilizadas para definir contratos de comportamento estritos entre diferentes componentes de software, sem expor os detalhes lógicos de como as operações são realizadas internamente na memória.",
         question: "Considerando a necessidade de padronização arquitetural descrita para o gateway de pagamentos, assinale a alternativa que define corretamente o papel estrutural de uma Interface na linguagem Java.",
         options: [
@@ -232,7 +223,6 @@ public class Gerente extends Funcionario {
 
       // ── Questão 10 ─────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → miniEnunciado → code → assertions (PORQUE) → question
         texto: "A essência da Programação Orientada a Objetos reside na distinção fundamental e na relação intrínseca entre classes e objetos. Uma classe pode ser compreendida como uma planta arquitetônica ou um gabarito estrutural que define os dados e as operações pertinentes a uma entidade. Quando um programa entra em execução, essa planta é utilizada para construir objetos na memória, sendo que cada objeto atua como uma entidade independente, armazenando seu próprio conjunto de dados (estado) que pode ser manipulado pelos métodos definidos na classe.",
         miniEnunciado: "Considere o seguinte código Java, que simula as operações de uma conta bancária:",
         code:
@@ -270,7 +260,6 @@ public class Gerente extends Funcionario {
 
       // ── Questão 11 ─────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → assertions → question
         texto: "Em um sistema de gestão escolar orientado a objetos, a equipe de desenvolvimento precisa modelar diferentes tipos de usuários — professores, alunos e coordenadores — que compartilham comportamentos comuns, mas também possuem responsabilidades específicas. Para isso, o arquiteto de software propõe o uso de herança como mecanismo principal de estruturação das classes. Herança é um mecanismo fundamental da POO que permite que uma classe (subclasse) adquira atributos e métodos de outra classe (superclasse), promovendo reuso e possibilitando polimorfismo no sistema.\n\nNo que se refere à herança na Programação Orientada a Objetos, avalie as afirmativas a seguir:",
         assertions: [
           "Herança pode ser utilizada como base para a implementação de polimorfismo.",
@@ -290,7 +279,6 @@ public class Gerente extends Funcionario {
 
       // ── Questão 12 ─────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → miniEnunciado → code → question
         texto: "No desenvolvimento de um sistema de cadastro de clientes para uma clínica veterinária, a equipe de TI precisou modelar a entidade Animal de forma que seus dados internos não pudessem ser acessados ou alterados diretamente por outras partes do sistema. Para isso, o desenvolvedor adotou uma abordagem que oculta o estado interno do objeto e fornece métodos específicos para leitura e escrita controlada dos dados.",
         miniEnunciado: "Considere o seguinte código em Java:",
         code:
@@ -312,7 +300,6 @@ public class Gerente extends Funcionario {
 
       // ── Questão 13 ─────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → miniEnunciado → code → assertions → question
         texto: "Uma empresa de locação de veículos está desenvolvendo um sistema orientado a objetos para gerenciar sua frota. O analista de sistemas criou uma hierarquia de classes para representar os diferentes tipos de veículos disponíveis para aluguel, utilizando herança para reaproveitar características comuns.",
         miniEnunciado: "Considere o seguinte código:",
         code:
@@ -342,7 +329,6 @@ public class Carro extends Veiculo {
 
       // ── Questão 14 ─────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → miniEnunciado → code → question
         texto: "Uma plataforma de streaming de áudio deseja implementar um módulo de reprodução que suporte diferentes fontes de som — como cachorros, gatos e pássaros — em uma seção de sons da natureza. O desenvolvedor percebeu que, embora todos os animais emitam sons, cada espécie possui sua própria forma de fazê-lo. Para tratar esses animais de maneira uniforme no código, ele utilizou uma referência do tipo base Animal.",
         miniEnunciado: "Considere o seguinte trecho de código:",
         code:
@@ -364,7 +350,6 @@ a.emitirSom();`,
 
       // ── Questão 15 ─────────────────────────────────────────────────────────
       {
-        // ESTRUTURA: texto → question
         texto: "Uma empresa de tecnologia financeira está desenvolvendo um sistema de processamento de pagamentos que precisa integrar múltiplos métodos — cartão de crédito, PIX, boleto e carteiras digitais. O arquiteto de software propôs o uso de um mecanismo da Programação Orientada a Objetos que permita definir um contrato comum para todos os métodos de pagamento, garantindo que cada implementação forneça os comportamentos esperados pelo sistema, sem que o núcleo do processamento precise conhecer os detalhes de cada meio de pagamento. Em Java, o conceito de interface é fundamental para o design de sistemas desacoplados e extensíveis. Uma interface define um contrato que as classes concretas devem cumprir, sem especificar como as operações serão realizadas internamente.",
         question: "Em Java, uma interface é utilizada para:",
         options: [
@@ -380,6 +365,7 @@ a.emitirSom();`,
     ]
   }
 ];
+
 // ─── Função para separar texto e enunciado ─────────────────────────────────────
 function splitQuestionParts(questionText) {
     const text = questionText.trim();
@@ -541,38 +527,25 @@ function renderAssertions(assertions) {
 }
 
 // ─── Monta o corpo de cada questão ────────────────────────────────────────────
-//
-//  Campos possíveis no objeto question:
-//    texto         — contexto/enunciado principal (sempre presente)
-//    miniEnunciado — frase de transição antes do código (opcional)
-//    code          — bloco de código Java (opcional)
-//    assertions    — array de afirmativas romanas I, II, III... (opcional)
-//    question      — pergunta final (sempre presente)
-//
 function buildQuestionBody(question) {
     let html = '';
 
-    // 1. Texto principal (contexto)
     if (question.texto) {
         html += `<div class="question-texto">${question.texto.replace(/\n/g, '<br>')}</div>`;
     }
 
-    // 2. Mini-enunciado (frase de transição, ex: "Considere o código a seguir:")
     if (question.miniEnunciado) {
         html += `<div class="question-mini-enunciado">${question.miniEnunciado}</div>`;
     }
 
-    // 3. Bloco de código
     if (question.code) {
         html += renderCodeBlock(question.code);
     }
 
-    // 4. Afirmativas romanas (I, II, III...)
     if (question.assertions && question.assertions.length > 0) {
         html += renderAssertions(question.assertions);
     }
 
-    // 5. Pergunta final
     html += `<div class="question-enunciado">${question.question}</div>`;
 
     return html;
@@ -627,6 +600,8 @@ function showAllQuestions() {
     });
 
     quizContainer.innerHTML = html;
+
+    if (quizModo === 'scroll') iniciarScrollObserver();
 }
 
 // ─── Resultado por aula ───────────────────────────────────────────────────────
@@ -691,9 +666,7 @@ function updateGlobalResults() {
         <p>${pct >= 70 ? "Parabéns! Excelente desempenho." : "Revise os conceitos para melhorar seu desempenho."}</p>`;
     resultsContainer.style.display = "block";
 
-    const clearBtn  = document.getElementById('clear');
     const revealBtn = document.getElementById('reveal');
-    if (clearBtn)  clearBtn.disabled  = true;
     if (revealBtn) revealBtn.disabled = true;
 }
 
@@ -734,6 +707,11 @@ window.selectOption = function(gi, oi) {
     if (typeof storageInitialized !== 'undefined' && storageInitialized) {
         setTimeout(saveCurrentProgress, 100);
     }
+
+    if (quizModo === 'step') {
+        atualizarControlesStep();
+        setTimeout(sincronizarAlturaStep, 50);
+    }
 };
 
 // ─── Revelar todas as respostas ───────────────────────────────────────────────
@@ -743,26 +721,37 @@ function revealAnswers() {
             userAnswers[gi] = quizData[m.sIdx].questions[m.qIdx].answer;
         }
     });
+
+    const eraModoStep = quizModo === 'step';
+
+    if (eraModoStep) {
+        quizModo = 'scroll';
+        stepWrapper = null;
+        const qc = document.getElementById('quiz-container');
+        qc.classList.remove('modo-step');
+        qc.style.height = '';
+        document.getElementById('step-shell-header')?.remove();
+        document.getElementById('step-shell-footer')?.remove();
+        document.querySelector('.quiz-header')?.classList.remove('step-hidden');
+        document.querySelector('.submit-container')?.classList.remove('step-hidden');
+        document.querySelector('#results')?.classList.remove('step-hidden');
+        document.querySelector('.page-footer')?.classList.remove('step-hidden');
+    }
+
     showAllQuestions();
     updateGlobalResults();
-    smoothScrollToTop();
-}
 
-// ─── Limpar respostas ─────────────────────────────────────────────────────────
-function clearAnswers() {
-    const clearBtn = document.getElementById('clear');
-    if (clearBtn?.disabled) return;
-
-    userAnswers.fill(null);
-    showAllQuestions();
-
-    resultsContainer.style.display = "none";
-
-    const revealBtn = document.getElementById('reveal');
-    if (clearBtn)  clearBtn.disabled  = false;
-    if (revealBtn) revealBtn.disabled = false;
-
-    smoothScrollToTop();
+    if (eraModoStep) {
+        setTimeout(() => {
+            ativarModoStep();
+            setTimeout(() => {
+                atualizarControlesStep();
+                sincronizarAlturaStep();
+            }, 80);
+        }, 50);
+    } else {
+        smoothScrollToTop();
+    }
 }
 
 // ─── Reiniciar com shuffle ────────────────────────────────────────────────────
@@ -775,25 +764,51 @@ function restartQuiz() {
     });
 
     userAnswers = new Array(questionMap.length).fill(null);
+    currentQuestion = 0;
+
+    const eraModoStep = quizModo === 'step';
+
+    if (eraModoStep) {
+        quizModo = 'scroll';
+        stepWrapper = null;
+        const qc = document.getElementById('quiz-container');
+        qc.classList.remove('modo-step');
+        qc.style.height = '';
+        document.getElementById('step-shell-header')?.remove();
+        document.getElementById('step-shell-footer')?.remove();
+        document.querySelector('.quiz-header')?.classList.remove('step-hidden');
+        document.querySelector('.submit-container')?.classList.remove('step-hidden');
+        document.querySelector('#results')?.classList.remove('step-hidden');
+        document.querySelector('.page-footer')?.classList.remove('step-hidden');
+    }
 
     showAllQuestions();
-
     resultsContainer.style.display = "none";
 
-    const clearBtn  = document.getElementById('clear');
     const revealBtn = document.getElementById('reveal');
-    if (clearBtn)  clearBtn.disabled  = false;
     if (revealBtn) revealBtn.disabled = false;
 
-    smoothScrollToTop();
+    if (eraModoStep) {
+        setTimeout(() => {
+            ativarModoStep();
+        }, 50);
+    } else {
+        smoothScrollToTop();
+    }
 }
 
 // ─── Scroll ───────────────────────────────────────────────────────────────────
+let _scrollCancelled = false;
+
+function cancelScroll() { _scrollCancelled = true; }
+
 function smoothScrollTo(targetPosition, duration = 800) {
-    const start     = window.scrollY;
-    const change    = targetPosition - start;
+    _scrollCancelled = false;
+    const start = window.scrollY;
+    const change = targetPosition - start;
     const startTime = performance.now();
     function animateScroll(currentTime) {
+        if (_scrollCancelled) return;
         const elapsed  = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         window.scrollTo(0, start + change * progress);
@@ -802,6 +817,10 @@ function smoothScrollTo(targetPosition, duration = 800) {
     requestAnimationFrame(animateScroll);
 }
 function smoothScrollToTop() { smoothScrollTo(0, 800); }
+
+window.addEventListener('wheel',     cancelScroll, { passive: true });
+window.addEventListener('touchmove', cancelScroll, { passive: true });
+window.addEventListener('keydown',   cancelScroll, { passive: true });
 
 // ─── Alerta ───────────────────────────────────────────────────────────────────
 function showAlertNotification(message) {
@@ -824,7 +843,6 @@ function showAlertNotification(message) {
 }
 
 // ─── Event Listeners ─────────────────────────────────────────────────────────
-document.getElementById('clear').addEventListener('click', clearAnswers);
 document.getElementById('reveal').addEventListener('click', revealAnswers);
 document.getElementById('restart').addEventListener('click', restartQuiz);
 
@@ -832,7 +850,6 @@ document.getElementById('btn-up').addEventListener('click',   () => smoothScroll
 document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../poo.html'; });
 document.getElementById('btn-down').addEventListener('click', () => smoothScrollTo(document.body.scrollHeight, 1000));
 
-document.getElementById('clearButton').addEventListener('click', clearAnswers);
 document.getElementById('restartButton').addEventListener('click', restartQuiz);
 document.getElementById('revealButton').addEventListener('click', revealAnswers);
 
@@ -950,3 +967,345 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('beforeunload', () => { if (storageInitialized) saveCurrentProgress(); });
 
 setTimeout(initializeStorage, 500);
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODO STEP
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let quizModo        = "scroll";
+let currentQuestion = 0;
+let stepWrapper     = null;
+let scrollObserver  = null;
+
+function iniciarScrollObserver() {
+    if (scrollObserver) scrollObserver.disconnect();
+
+    const opcoes = {
+        root: null,
+        rootMargin: '-30% 0px -50% 0px',
+        threshold: 0
+    };
+
+    scrollObserver = new IntersectionObserver((entries) => {
+        if (quizModo !== 'scroll') return;
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                const gi = parseInt(id.replace('q-', ''), 10);
+                if (!isNaN(gi)) currentQuestion = gi;
+            }
+        });
+    }, opcoes);
+
+    document.querySelectorAll('.question-container').forEach(el => {
+        scrollObserver.observe(el);
+    });
+}
+
+function pararScrollObserver() {
+    if (scrollObserver) {
+        scrollObserver.disconnect();
+        scrollObserver = null;
+    }
+}
+
+function getTotalQuestions() { return questionMap.length; }
+
+function irParaQuestao(index) {
+    const total = getTotalQuestions();
+    if (index < 0 || index >= total) return;
+    currentQuestion = index;
+    deslizarParaQuestao(index);
+    atualizarControlesStep();
+    sincronizarAlturaStep();
+}
+
+function proximaQuestao()  { irParaQuestao(currentQuestion + 1); }
+function questaoAnterior() { irParaQuestao(currentQuestion - 1); }
+
+function deslizarParaQuestao(index) {
+    if (!stepWrapper) return;
+    stepWrapper.style.transform = `translateX(-${index * 100}%)`;
+}
+
+function ativarModoStep() {
+    quizModo = "step";
+    smoothScrollToTop();
+
+    const qc = document.getElementById('quiz-container');
+    if (!qc.querySelector('.question-container')) showAllQuestions();
+
+    document.querySelector('.quiz-header')?.classList.add('step-hidden');
+    document.querySelector('.submit-container')?.classList.add('step-hidden');
+    document.querySelector('#results')?.classList.add('step-hidden');
+    document.querySelector('.page-footer')?.classList.add('step-hidden');
+
+    renderShellStep();
+    pararScrollObserver();
+
+    const jaTemQuestaoVisivel = currentQuestion > 0 ||
+        (currentQuestion === 0 && userAnswers[0] !== null);
+
+    if (!jaTemQuestaoVisivel) {
+        const primeiraUnanswered = userAnswers.findIndex(a => a === null);
+        currentQuestion = primeiraUnanswered === -1 ? 0 : primeiraUnanswered;
+    }
+
+    if (stepWrapper) {
+        stepWrapper.style.transition = 'none';
+        deslizarParaQuestao(currentQuestion);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                if (stepWrapper) {
+                    stepWrapper.style.transition =
+                        'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1)';
+                }
+            });
+        });
+    }
+
+    atualizarControlesStep();
+    atualizarBotaoModo();
+    setTimeout(sincronizarAlturaStep, 50);
+    smoothScrollToTop();
+    document.querySelector('.page-wrapper').classList.add('modo-step-wrapper');
+}
+
+function ativarModoScroll() {
+    quizModo = "scroll";
+
+    const qc = document.getElementById('quiz-container');
+
+    if (stepWrapper) {
+        stepWrapper.style.transition = 'none';
+        stepWrapper.style.transform  = 'translateX(0)';
+    }
+
+    if (stepWrapper && stepWrapper.parentNode === qc) {
+        const filhos = Array.from(stepWrapper.children);
+        filhos.forEach(filho => qc.appendChild(filho));
+        stepWrapper.remove();
+    }
+    stepWrapper = null;
+
+    qc.classList.remove('modo-step');
+    qc.style.height = '';
+
+    qc.querySelectorAll('.step-structural-hidden').forEach(el => {
+        el.classList.remove('step-structural-hidden');
+    });
+
+    document.getElementById('step-shell-header')?.remove();
+    document.getElementById('step-shell-footer')?.remove();
+
+    document.querySelector('.quiz-header')?.classList.remove('step-hidden');
+    document.querySelector('.submit-container')?.classList.remove('step-hidden');
+    document.querySelector('#results')?.classList.remove('step-hidden');
+    document.querySelector('.page-footer')?.classList.remove('step-hidden');
+
+    showAllQuestions();
+    updateGlobalResults();
+    atualizarBotaoModo();
+    iniciarScrollObserver();
+
+    requestAnimationFrame(() => {
+        const alvo = document.getElementById(`q-${currentQuestion}`);
+        if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+}
+
+function toggleModo() {
+    quizModo === "scroll" ? ativarModoStep() : ativarModoScroll();
+}
+
+function renderShellStep() {
+    const qc = document.getElementById('quiz-container');
+    if (!qc) return;
+
+    if (qc.querySelector('.step-quiz-wrapper')) {
+        stepWrapper = qc.querySelector('.step-quiz-wrapper');
+        qc.classList.add('modo-step');
+        _montarShellHTML(qc);
+        return;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'step-quiz-wrapper';
+
+    const questoes = Array.from(qc.querySelectorAll('.question-container'));
+    questoes.forEach(q => wrapper.appendChild(q));
+
+    qc.querySelectorAll('.subject-title, .subject-result').forEach(el => {
+        el.classList.add('step-structural-hidden');
+    });
+
+    qc.insertBefore(wrapper, qc.firstChild);
+    stepWrapper = wrapper;
+
+    qc.classList.add('modo-step');
+
+    _montarShellHTML(qc);
+}
+
+function _montarShellHTML(qc) {
+    document.getElementById('step-shell-header')?.remove();
+    document.getElementById('step-shell-footer')?.remove();
+
+    const header = document.createElement('div');
+    header.id = 'step-shell-header';
+    header.innerHTML = `
+        <div class="step-header">
+            <div class="step-subject-label" id="step-subject-label"></div>
+            <div class="step-progress-wrapper">
+                <div class="step-counter" id="step-counter"></div>
+                <div class="step-progress-bar">
+                    <div class="step-progress-fill" id="step-progress-fill"></div>
+                </div>
+                <div class="step-score-badges" id="step-score-badges"></div>
+            </div>
+        </div>
+    `;
+    qc.parentNode.insertBefore(header, qc);
+
+    const footer = document.createElement('div');
+    footer.id = 'step-shell-footer';
+    footer.innerHTML = `
+        <div class="step-footer">
+            <button class="step-btn step-btn-secondary" id="step-prev"
+                    onclick="questaoAnterior()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+            <div class="step-dots" id="step-dots"></div>
+            <button class="step-btn step-btn-primary" id="step-next"
+                    onclick="proximaQuestao()">
+                Avançar <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    `;
+    qc.parentNode.insertBefore(footer, qc.nextSibling);
+}
+
+function atualizarControlesStep() {
+    const total = getTotalQuestions();
+    const gi    = currentQuestion;
+
+    const counter = document.getElementById('step-counter');
+    if (counter) counter.textContent = `${gi + 1} / ${total}`;
+
+    const fill = document.getElementById('step-progress-fill');
+    if (fill) fill.style.width = `${((gi + 1) / total) * 100}%`;
+
+    const subjectLabel = document.getElementById('step-subject-label');
+    if (subjectLabel && questionMap[gi]) {
+        const { sIdx } = questionMap[gi];
+        subjectLabel.textContent = quizData[sIdx].subject;
+    }
+
+    const badges = document.getElementById('step-score-badges');
+    if (badges) {
+        let acertos = 0, erros = 0;
+        userAnswers.forEach((ans, idx) => {
+            if (ans === null) return;
+            const { sIdx, qIdx } = questionMap[idx];
+            ans === quizData[sIdx].questions[qIdx].answer ? acertos++ : erros++;
+        });
+        badges.innerHTML = `
+            <span class="step-badge step-badge-correct">
+                <i class="fas fa-check"></i> ${acertos}
+            </span>
+            <span class="step-badge step-badge-incorrect">
+                <i class="fas fa-times"></i> ${erros}
+            </span>
+        `;
+    }
+
+    const dots = document.getElementById('step-dots');
+    if (dots) {
+        const range = getDotsRange(gi, total, 9);
+        dots.innerHTML = range.map(idx => {
+            let cls = 'step-dot';
+            if (idx === gi) {
+                cls += ' step-dot-active';
+            } else if (userAnswers[idx] !== null) {
+                const { sIdx, qIdx } = questionMap[idx];
+                cls += userAnswers[idx] === quizData[sIdx].questions[qIdx].answer
+                    ? ' step-dot-correct'
+                    : ' step-dot-wrong';
+            }
+            return `<button class="${cls}" onclick="irParaQuestao(${idx})"
+                            title="Questão ${idx + 1}"></button>`;
+        }).join('');
+    }
+
+    const prevBtn = document.getElementById('step-prev');
+    if (prevBtn) prevBtn.disabled = gi === 0;
+
+    const nextBtn = document.getElementById('step-next');
+    if (nextBtn) {
+        const isLast = gi === total - 1;
+        if (isLast) {
+            nextBtn.innerHTML = '<i class="fas fa-flag-checkered"></i> Finalizar';
+            nextBtn.onclick = () => {
+                ativarModoScroll();
+                setTimeout(() => smoothScrollTo(document.body.scrollHeight, 800), 150);
+            };
+        } else {
+            nextBtn.innerHTML = 'Avançar <i class="fas fa-arrow-right"></i>';
+            nextBtn.onclick = proximaQuestao;
+        }
+        nextBtn.disabled = false;
+    }
+}
+
+function getDotsRange(current, total, maxVisible) {
+    if (total <= maxVisible) return Array.from({ length: total }, (_, i) => i);
+    const half  = Math.floor(maxVisible / 2);
+    let   start = Math.max(0, current - half);
+    let   end   = start + maxVisible;
+    if (end > total) { end = total; start = end - maxVisible; }
+    return Array.from({ length: end - start }, (_, i) => start + i);
+}
+
+function atualizarBotaoModo() {
+    const btn = document.getElementById('btn-toggle-modo');
+    if (!btn) return;
+    if (quizModo === 'step') {
+        btn.innerHTML = '<i class="fas fa-list"></i>';
+        btn.title = 'Modo Scroll';
+        btn.classList.add('modo-step-active');
+    } else {
+        btn.innerHTML = '<i class="fas fa-layer-group"></i>';
+        btn.title = 'Modo Step (uma questão por vez)';
+        btn.classList.remove('modo-step-active');
+    }
+}
+
+function criarBotaoToggleModo() {
+    if (document.getElementById('btn-toggle-modo')) return;
+    const btn = document.createElement('button');
+    btn.id        = 'btn-toggle-modo';
+    btn.className = 'btn-toggle-modo';
+    btn.title     = 'Modo Step (uma questão por vez)';
+    btn.innerHTML = '<i class="fas fa-layer-group"></i>';
+    btn.addEventListener('click', toggleModo);
+    document.body.appendChild(btn);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', criarBotaoToggleModo);
+} else {
+    criarBotaoToggleModo();
+}
+
+function sincronizarAlturaStep() {
+    if (quizModo !== 'step' || !stepWrapper) return;
+
+    const questoes = stepWrapper.querySelectorAll('.question-container');
+    const atual    = questoes[currentQuestion];
+    if (!atual) return;
+
+    const altura = atual.scrollHeight;
+    stepWrapper.style.height                               = altura + 'px';
+    document.getElementById('quiz-container').style.height = altura + 'px';
+}

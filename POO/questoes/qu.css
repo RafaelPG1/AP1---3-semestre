@@ -656,6 +656,7 @@ h1 {
 
 .step-btn:disabled { opacity: 0.2; cursor: not-allowed; pointer-events: none; }
 
+/* Botão toggle flutuante — laranja ─────────────── */
 .btn-toggle-modo {
     position: fixed;
     bottom: 24px;
@@ -663,22 +664,37 @@ h1 {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: rgba(239, 159, 39, 0.1);
-    border: 1px solid rgba(239, 159, 39, 0.28);
-    color: #f5b84c;
+    background: rgba(249, 115, 22, 0.1);
+    border: 1px solid rgba(249, 115, 22, 0.28);
+    color: #f97316;
     font-size: 0.95rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2000;
-    transition: all 0.28s ease;
-    box-shadow: 0 4px 18px rgba(239, 159, 39, 0.08);
+    transition: background 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+    box-shadow: 0 4px 18px rgba(249, 115, 22, 0.08);
+    transform: none; /* ícone nunca se move */
 }
 
-.btn-toggle-modo:hover { background: rgba(239,159,39,0.22); border-color: rgba(239,159,39,0.5); color: white; transform: scale(1.1); }
+.btn-toggle-modo:hover {
+    background: rgba(249, 115, 22, 0.22);
+    border-color: rgba(249, 115, 22, 0.5);
+    color: rgba(255, 255, 255, 0.8); /* ← mantém laranja, NÃO vai para branco */
+    box-shadow: 0 6px 24px rgba(249, 115, 22, 0.18);
+}
 
-.btn-toggle-modo.modo-step-active { background: rgba(239,159,39,0.2); border-color: rgba(239,159,39,0.52); color: white; box-shadow: 0 0 0 3px rgba(239,159,39,0.12); }
+
+.btn-toggle-modo.modo-step-active {
+    background: rgba(249, 115, 22, 0.2);
+    border-color: rgba(249, 115, 22, 0.52);
+    color: #ff6a00;
+
+}
+.btn-toggle-modo.modo-step-active:hover {
+        color: rgba(255, 255, 255, 0.8); /* ← mantém laranja, NÃO vai para branco */
+}
 
 @media (max-width: 600px) {
     .step-footer { gap: 0.5rem; }

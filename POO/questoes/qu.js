@@ -954,9 +954,39 @@ function revealAnswers() {
             userAnswers[gi] = quizData[m.sIdx].questions[m.qIdx].answer;
         }
     });
+
+    const eraModoStep = quizModo === 'step';
+
+    if (eraModoStep) {
+        // Desmonta o step para reconstruir o DOM com respostas reveladas
+        quizModo = 'scroll';
+        stepWrapper = null;
+        const qc = document.getElementById('quiz-container');
+        qc.classList.remove('modo-step');
+        qc.style.height = '';
+        document.getElementById('step-shell-header')?.remove();
+        document.getElementById('step-shell-footer')?.remove();
+        document.querySelector('.quiz-header')?.classList.remove('step-hidden');
+        document.querySelector('.submit-container')?.classList.remove('step-hidden');
+        document.querySelector('#results')?.classList.remove('step-hidden');
+        document.querySelector('.page-footer')?.classList.remove('step-hidden');
+    }
+
     showAllQuestions();
     updateGlobalResults();
-    smoothScrollToTop();
+
+    if (eraModoStep) {
+        setTimeout(() => {
+            ativarModoStep();
+            // Garante que badges e dots reflitam as respostas reveladas
+            setTimeout(() => {
+                atualizarControlesStep();
+                sincronizarAlturaStep();
+            }, 80);
+        }, 50);
+    } else {
+        smoothScrollToTop();
+    }
 }
 
 // ─── Reiniciar com shuffle ────────────────────────────────────────────────────
@@ -969,23 +999,53 @@ function restartQuiz() {
     });
 
     userAnswers = new Array(questionMap.length).fill(null);
+    currentQuestion = 0;  // ← RESET da questão atual
+
+    const eraModoStep = quizModo === 'step';
+
+    if (eraModoStep) {
+        // Desmonta o step temporariamente para reconstruir o DOM limpo
+        quizModo = 'scroll';
+        stepWrapper = null;
+        const qc = document.getElementById('quiz-container');
+        qc.classList.remove('modo-step');
+        qc.style.height = '';
+        document.getElementById('step-shell-header')?.remove();
+        document.getElementById('step-shell-footer')?.remove();
+        document.querySelector('.quiz-header')?.classList.remove('step-hidden');
+        document.querySelector('.submit-container')?.classList.remove('step-hidden');
+        document.querySelector('#results')?.classList.remove('step-hidden');
+        document.querySelector('.page-footer')?.classList.remove('step-hidden');
+    }
 
     showAllQuestions();
-
     resultsContainer.style.display = "none";
 
     const revealBtn = document.getElementById('reveal');
     if (revealBtn) revealBtn.disabled = false;
 
-    smoothScrollToTop();
+    if (eraModoStep) {
+        // Reativa o modo step com DOM limpo
+        setTimeout(() => {
+            ativarModoStep();
+        }, 50);
+    } else {
+        smoothScrollToTop();
+    }
 }
 
 // ─── Scroll ───────────────────────────────────────────────────────────────────
+let _scrollCancelled = false;
+
+function cancelScroll() { _scrollCancelled = true; }
+
 function smoothScrollTo(targetPosition, duration = 800) {
+    _scrollCancelled = false;
     const start = window.scrollY;
     const change = targetPosition - start;
     const startTime = performance.now();
     function animateScroll(currentTime) {
+        if (_scrollCancelled) return;
         const elapsed  = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         window.scrollTo(0, start + change * progress);
@@ -993,6 +1053,12 @@ function smoothScrollTo(targetPosition, duration = 800) {
     }
     requestAnimationFrame(animateScroll);
 }
+function smoothScrollToTop() { smoothScrollTo(0, 800); }
+
+// Qualquer interação do usuário cancela o scroll animado
+window.addEventListener('wheel',     cancelScroll, { passive: true });
+window.addEventListener('touchmove', cancelScroll, { passive: true });
+window.addEventListener('keydown',   cancelScroll, { passive: true });
 function smoothScrollToTop() { smoothScrollTo(0, 800); }
 
 // ─── Alerta ───────────────────────────────────────────────────────────────────
@@ -1299,7 +1365,10 @@ function ativarModoScroll() {
 function toggleModo() {
     quizModo === "scroll" ? ativarModoStep() : ativarModoScroll();
 }
-
+// Reseta o stepWrapper se o DOM foi reconstruído
+if (stepWrapper && !document.body.contains(stepWrapper)) {
+    stepWrapper = null;
+}
 function renderShellStep() {
     const qc = document.getElementById('quiz-container');
     if (!qc) return;
