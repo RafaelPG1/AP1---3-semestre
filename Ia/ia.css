@@ -1,0 +1,496 @@
+/* ============================================================
+   ia.css — Estilos do modal de IA  v2.0
+   ============================================================ */
+
+/* ── Overlay ───────────────────────────────────────────────── */
+#ia-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .48);
+  backdrop-filter: blur(3px);
+  z-index: 9998;
+  animation: ia-fade .2s ease;
+}
+
+/* ── Caixa principal ────────────────────────────────────────── */
+#ia-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  width: min(580px, 95vw);
+  max-height: 82vh;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 28px 72px rgba(0, 0, 0, .22);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: ia-slide .22s ease;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+#ia-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  background: #1a1a2e;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+#ia-header-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#ia-titulo {
+  font-size: .9rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+#ia-disciplina-badge {
+  font-size: .72rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, .15);
+  color: #d4d4ff;
+  padding: 2px 9px;
+  border-radius: 20px;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+#ia-header-acoes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#ia-limpar,
+#ia-fechar {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 5px;
+  transition: color .15s, background .15s;
+}
+
+#ia-limpar:hover,
+#ia-fechar:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, .1);
+}
+
+/* ── Área de chat (bolhas) ───────────────────────────────────── */
+#ia-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
+}
+
+/* Bolha genérica */
+.ia-msg-bloco {
+  max-width: 88%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: .875rem;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+/* Usuário — direita, fundo escuro */
+.ia-msg-user {
+  align-self: flex-end;
+  background: #1a1a2e;
+  color: #f0f0ff;
+  border-bottom-right-radius: 4px;
+}
+
+/* Assistente — esquerda, fundo claro */
+.ia-msg-assistant {
+  align-self: flex-start;
+  background: #f2f2f8;
+  color: #1a1a2e;
+  border-bottom-left-radius: 4px;
+}
+
+/* Estado "pensando" (loader dentro de bolha) */
+.ia-pensando {
+  padding: 12px 16px;
+}
+
+/* ── Markdown na resposta ────────────────────────────────────── */
+.ia-msg-assistant p    { margin: 0 0 .6em; }
+.ia-msg-assistant p:last-child { margin-bottom: 0; }
+
+.ia-msg-assistant h2,
+.ia-msg-assistant h3 {
+  margin: .8em 0 .3em;
+  font-size: .875rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.ia-msg-assistant ul {
+  margin: .4em 0;
+  padding-left: 1.2em;
+}
+
+.ia-msg-assistant li { margin-bottom: .25em; }
+
+.ia-msg-assistant code {
+  background: #e8e8f0;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: 'Menlo', 'Consolas', monospace;
+  font-size: .82em;
+  color: #2d2d6e;
+}
+
+.ia-msg-assistant pre {
+  background: #1e1e32;
+  color: #d4d4ff;
+  padding: 12px 14px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: .8rem;
+  margin: .5em 0;
+}
+
+.ia-msg-assistant pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+.ia-msg-assistant strong { font-weight: 700; }
+.ia-msg-assistant em     { font-style: italic; }
+
+/* ── Mensagens de aviso / erro ───────────────────────────────── */
+.ia-aviso {
+  background: #fff8e1;
+  color: #7a5800;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: .82rem;
+}
+
+.ia-erro {
+  background: #fdecea;
+  color: #b71c1c;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: .82rem;
+}
+
+/* ── Loader (três pontos) ────────────────────────────────────── */
+.ia-loading {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.ia-loading span {
+  width: 8px;
+  height: 8px;
+  background: #1a1a2e;
+  border-radius: 50%;
+  animation: ia-bounce .9s infinite ease-in-out;
+}
+
+.ia-loading span:nth-child(2) { animation-delay: .15s; }
+.ia-loading span:nth-child(3) { animation-delay: .30s; }
+
+/* ── Área de input ───────────────────────────────────────────── */
+#ia-input-area {
+  border-top: 1px solid #e8e8ee;
+  padding: 12px 14px;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+#ia-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: .875rem;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  transition: border-color .15s;
+  background: #fff;
+  line-height: 1.5;
+}
+
+#ia-input:focus { border-color: #1a1a2e; }
+
+#ia-rodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+#ia-contador {
+  font-size: .72rem;
+  color: #aaa;
+}
+
+#ia-enviar {
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .15s;
+  min-width: 106px;
+}
+
+#ia-enviar:disabled    { opacity: .45; cursor: default; }
+#ia-enviar:not(:disabled):hover { opacity: .82; }
+
+/* ── Botão flutuante (FAB) ───────────────────────────────────── */
+#ia-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9990;
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 20px;
+  font-size: .875rem;
+  font-weight: 600;
+  font-family: system-ui, sans-serif;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .25);
+  transition: opacity .2s, transform .2s;
+  letter-spacing: .03em;
+}
+
+#ia-fab:hover {
+  opacity: .88;
+  transform: translateY(-2px);
+}
+
+/* ── Animações ───────────────────────────────────────────────── */
+@keyframes ia-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ia-slide {
+  from { opacity: 0; transform: translate(-50%, -48%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+@keyframes ia-bounce {
+  0%, 80%, 100% { transform: scale(0); opacity: .4; }
+  40%           { transform: scale(1); opacity:  1; }
+}
+
+/* ── Responsivo ──────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  #ia-box {
+    width: 100vw;
+    max-height: 90vh;
+    border-radius: 16px 16px 0 0;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    transform: none;
+    animation: ia-slide-up .22s ease;
+  }
+
+  #ia-fab {
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+@keyframes ia-slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   ia-btn.css — Botão flutuante da IA  v2.0
+   Coloque em /ia/ia-btn.css e importe nas páginas
+   ============================================================ */
+
+/* Remove o botão padrão do ia.js se existir */
+#ia-fab { display: none !important; }
+
+/* ── Botão customizado ──────────────────────────────────────── */
+.ia-fab-custom {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9990;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  background: #0f0f1a;
+  color: #e8e8ff;
+  border: 1px solid rgba(120, 100, 255, 0.35);
+  border-radius: 50px;
+  padding: 13px 22px 13px 18px;
+
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+
+  box-shadow:
+    0 0 0 1px rgba(100, 80, 255, 0.12),
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 0 40px rgba(90, 60, 255, 0.12);
+
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+
+  /* Brilho animado no fundo */
+  overflow: hidden;
+}
+
+/* Linha de gradiente no topo (detalhe refinado) */
+.ia-fab-custom::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(120, 90, 255, 0.18) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  opacity: 0;
+}
+
+/* Efeito de varredura de luz no hover */
+.ia-fab-custom::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: left 0.45s ease;
+  pointer-events: none;
+}
+
+.ia-fab-custom:hover {
+  transform: translateY(-3px) scale(1.03);
+  border-color: rgba(130, 100, 255, 0.6);
+  box-shadow:
+    0 0 0 1px rgba(120, 90, 255, 0.25),
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(100, 70, 255, 0.25);
+}
+
+.ia-fab-custom:hover::before {
+  opacity: 1;
+}
+
+.ia-fab-custom:hover::after {
+  left: 120%;
+}
+
+.ia-fab-custom:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* ── Ícone ✦ ────────────────────────────────────────────────── */
+.ia-fab-icon {
+  font-size: 1rem;
+  line-height: 1;
+  color: #a78bff;
+  animation: ia-twinkle 3s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+}
+
+@keyframes ia-twinkle {
+  0%, 100% { opacity: 1;   transform: scale(1)    rotate(0deg);   }
+  30%       { opacity: 0.7; transform: scale(0.85) rotate(-15deg); }
+  60%       { opacity: 1;   transform: scale(1.15) rotate(10deg);  }
+}
+
+/* ── Label ──────────────────────────────────────────────────── */
+.ia-fab-label {
+  white-space: nowrap;
+  background: linear-gradient(90deg, #d4c8ff, #a78bff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Pulse externo (anel de atenção) ────────────────────────── */
+.ia-fab-custom {
+  animation: ia-pulse-ring 4s ease-in-out infinite;
+}
+
+@keyframes ia-pulse-ring {
+  0%, 90%, 100% {
+    box-shadow:
+      0 0 0 1px rgba(100, 80, 255, 0.12),
+      0 8px 32px rgba(0, 0, 0, 0.45),
+      0 0 40px rgba(90, 60, 255, 0.12);
+  }
+  45% {
+    box-shadow:
+      0 0 0 6px rgba(100, 80, 255, 0.08),
+      0 8px 32px rgba(0, 0, 0, 0.45),
+      0 0 60px rgba(90, 60, 255, 0.2);
+  }
+}
+
+/* Pausa na animação de pulse quando em hover */
+.ia-fab-custom:hover {
+  animation: none;
+}
+
+/* ── Responsivo ─────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .ia-fab-custom {
+    bottom: 18px;
+    right: 18px;
+    padding: 11px 18px 11px 15px;
+    font-size: 0.8rem;
+  }
+}

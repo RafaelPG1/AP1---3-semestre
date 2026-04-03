@@ -1,31 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- META -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- TITLE -->
     <title>Portal de Disciplinas</title>
+
+    <!-- CSS GLOBAL -->
     <link rel="stylesheet" href="index.css">
+
+    <!-- ICONS / FONTS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- IA (ISOLADO) -->
+    <link rel="stylesheet" href="/IA/ia.css">
 </head>
+
 <body>
+
+    <!-- BACKGROUND -->
     <div class="background-glow glow-1"></div>
     <div class="background-glow glow-2"></div>
 
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="container">
-        <div class="header">
+
+        <!-- HEADER -->
+        <header class="header">
             <div class="icon-wrapper">
                 <i class="fas fa-graduation-cap"></i>
             </div>
+
             <h1>DISCIPLINAS</h1>
             <p class="subtitle">Portal de Estudos e Atividades</p>
-            <a href="./Pessoal/pessoal.html" class="btn-pessoal">
-  <i class="fas fa-user-circle"></i>
-  Área Pessoal
-</a>
-        </div>
 
-        <div class="cards-container">
+            <a href="./Pessoal/pessoal.html" class="btn-pessoal">
+                <i class="fas fa-user-circle"></i>
+                Área Pessoal
+            </a>
+        </header>
+
+        <!-- CARDS -->
+        <section class="cards-container">
+
+            <!-- CARD 1 -->
             <a href="./Banco_dados/banco.html" class="card">
                 <div class="card-top">
                     <div class="card-icon icon-db">
@@ -33,13 +54,16 @@
                     </div>
                     <h3>Fundamentos de Banco de Dados</h3>
                 </div>
+
                 <p>Explore exercícios, atividades e questões personalizadas de Fundamentos de Banco de Dados</p>
+
                 <div class="card-footer">
                     <span class="card-tag">Quiz</span>
                     <i class="fas fa-arrow-right card-arrow"></i>
                 </div>
             </a>
 
+            <!-- CARD 2 -->
             <a href="./Desing/desing.html" class="card">
                 <div class="card-top">
                     <div class="card-icon icon-dsg">
@@ -47,13 +71,16 @@
                     </div>
                     <h3>Design de Sistemas de Informação</h3>
                 </div>
+
                 <p>Explore exercícios, atividades e questões personalizadas de Design de Sistemas de Informação</p>
+
                 <div class="card-footer">
                     <span class="card-tag">Quiz</span>
                     <i class="fas fa-arrow-right card-arrow"></i>
                 </div>
             </a>
 
+            <!-- CARD 3 -->
             <a href="./Redes/redes.html" class="card">
                 <div class="card-top">
                     <div class="card-icon icon-net">
@@ -61,13 +88,16 @@
                     </div>
                     <h3>Redes de Computadores I</h3>
                 </div>
+
                 <p>Explore exercícios, atividades e questões personalizadas de Redes de Computadores I</p>
+
                 <div class="card-footer">
                     <span class="card-tag">Quiz</span>
                     <i class="fas fa-arrow-right card-arrow"></i>
                 </div>
             </a>
 
+            <!-- CARD 4 -->
             <a href="./POO/poo.html" class="card">
                 <div class="card-top">
                     <div class="card-icon icon-poo">
@@ -75,17 +105,50 @@
                     </div>
                     <h3>Programação Orientada a Objetos</h3>
                 </div>
+
                 <p>Explore exercícios, atividades e questões personalizadas de Programação Orientada a Objetos</p>
+
                 <div class="card-footer">
                     <span class="card-tag">Quiz</span>
                     <i class="fas fa-arrow-right card-arrow"></i>
                 </div>
             </a>
-        </div>
 
+        </section>
+
+        <!-- FOOTER -->
         <footer class="footer">
             <p>© 2025 Portal de Disciplinas — Desenvolvido para facilitar seus estudos</p>
         </footer>
+
     </main>
+
+  <!-- BOTÃO IA (coloque antes do </body>) -->
+  <button class="ia-fab-custom" onclick="IA.abrirIADisciplina()">
+    <span class="ia-fab-icon">✦</span>
+    <span class="ia-fab-label">Assistente IA</span>
+  </button>
+
+  <link rel="stylesheet" href="/ia/ia.css">
+  <link rel="stylesheet" href="/ia/ia-btn.css">  <!-- botão novo -->
+  <script src="/ia/ia.js" defer></script>
+</body>
+    <!-- SCRIPT LOCAL -->
+    <script>
+        function abrirIAComContextoGeral() {
+            const disciplinas = Array.from(document.querySelectorAll('.card h3'))
+                .map(el => el.innerText)
+                .join(', ');
+
+            const contextoPortal = `O usuário está no Portal de Disciplinas. As matérias disponíveis são: ${disciplinas}.`;
+
+            if (typeof IA !== 'undefined') {
+                IA.abrirIA(contextoPortal);
+            } else {
+                console.error("Erro: ia.js não carregado.");
+            }
+        }
+    </script>
+
 </body>
 </html>

@@ -628,6 +628,7 @@ if (usuario != null && usuario.isAtivo()) { salvar(); }   // Linha 2`,
   }
 ];
 
+//qu.js (os outros são parecidos)
 // ─── Estado do quiz ───────────────────────────────────────────────────────────
 let quizData = [];
 let userAnswers = [];

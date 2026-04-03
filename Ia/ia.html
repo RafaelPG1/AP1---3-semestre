@@ -1,0 +1,119 @@
+<!--
+  ============================================================
+  ia.html — Template de referência + guia de integração  v2.0
+
+  Este arquivo NÃO é importado diretamente nas páginas.
+  O modal é montado pelo ia.js via JavaScript.
+
+  Como integrar em qualquer página do projeto:
+  ============================================================
+
+  1. Adicione no <head>:
+     <link rel="stylesheet" href="/ia/ia.css">
+
+  2. Adicione antes do </body>:
+     <script src="/ia/ia.js" defer></script>
+
+  3. Para um botão que abre a IA:
+     <button onclick="IA.abrirIADisciplina()">Abrir IA</button>
+
+  4. (Opcional) Para criar o botão flutuante automático:
+     <script>
+       document.addEventListener("DOMContentLoaded", () => {
+         IA.criarBotaoFlutuante();
+       });
+     </script>
+
+  5. O ia.js detecta automaticamente a disciplina pela URL:
+       banco.html  → contexto de Banco de Dados
+       desing.html → contexto de Design
+       redes.html  → contexto de Redes
+       poo.html    → contexto de POO
+       outras      → sem contexto de disciplina
+
+  ============================================================
+  Exemplo de uso em poo.html:
+  ============================================================
+
+  <!DOCTYPE html>
+  <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <title>POO</title>
+    <link rel="stylesheet" href="/ia/ia.css">
+    <!-- restante dos seus estilos -->
+  </head>
+  <body>
+
+    <!-- conteúdo da página -->
+
+    <button class="btn-ia" onclick="IA.abrirIADisciplina()">
+      ✦ Assistente IA
+    </button>
+
+    <script src="/ia/ia.js" defer></script>
+  </body>
+  </html>
+
+  ============================================================
+  Estrutura HTML do modal (gerada pelo ia.js):
+  ============================================================
+-->
+
+<div id="ia-modal" role="dialog" aria-modal="true" aria-label="Assistente IA">
+
+  <div id="ia-overlay"></div>
+
+  <div id="ia-box">
+
+    <!-- Cabeçalho -->
+    <div id="ia-header">
+      <div id="ia-header-info">
+        <span id="ia-titulo">✦ Assistente IA</span>
+        <!-- Badge da disciplina (adicionado dinamicamente) -->
+        <span id="ia-disciplina-badge">POO</span>
+      </div>
+      <div id="ia-header-acoes">
+        <button id="ia-limpar" title="Limpar conversa" aria-label="Limpar conversa">↺</button>
+        <button id="ia-fechar" aria-label="Fechar">✕</button>
+      </div>
+    </div>
+
+    <!-- Chat: mensagens aparecem aqui como bolhas -->
+    <div id="ia-chat">
+      <!-- Exemplo de bolha do usuário -->
+      <div class="ia-msg-bloco ia-msg-user">
+        O que é herança em POO?
+      </div>
+      <!-- Exemplo de bolha da IA -->
+      <div class="ia-msg-bloco ia-msg-assistant">
+        <p><strong>Herança</strong> é um mecanismo que permite que uma classe
+        (filha) herde atributos e métodos de outra classe (pai).</p>
+        <ul>
+          <li>Reutiliza código já existente</li>
+          <li>Permite especialização de comportamento</li>
+          <li>Em Java: <code>class Cachorro extends Animal</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Área de digitação -->
+    <div id="ia-input-area">
+      <textarea
+        id="ia-input"
+        placeholder="Digite sua dúvida..."
+        rows="2"
+        maxlength="500"
+        autocomplete="off"
+      ></textarea>
+      <div id="ia-rodape">
+        <span id="ia-contador">0 / 500</span>
+        <button id="ia-enviar">Perguntar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Botão flutuante (opcional, criado via IA.criarBotaoFlutuante()) -->
+<button id="ia-fab" aria-label="Abrir assistente IA">✦ IA</button>
