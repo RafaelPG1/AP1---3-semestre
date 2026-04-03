@@ -1065,7 +1065,7 @@ const originalQuizData = [
   }
 ];
 
-
+//qu.js redes
 // ─── Função para separar texto e enunciado ─────────────────────────────────────
 function splitQuestionParts(questionText) {
     const text = questionText.trim();
@@ -1178,10 +1178,11 @@ function showAllQuestions() {
         subject.questions.forEach((question, qIdx) => {
             const gi = globalIndex;
             const answered = userAnswers[gi] !== null;
-let questionBodyHTML = question.texto
-    ? `<div class="question-texto">${question.texto}</div>
-       <div class="question-enunciado">${question.question}</div>`
-    : `<div class="question-text">${question.question}</div>`;
+
+            let questionBodyHTML = question.texto
+                ? `<div class="question-texto">${question.texto}</div>
+                   <div class="question-enunciado">${question.question}</div>`
+                : `<div class="question-text">${question.question}</div>`;
 
             const optionsHTML = question.options.map((option, oi) => {
                 let cls = "option";
@@ -1218,6 +1219,8 @@ let questionBodyHTML = question.texto
     });
 
     quizContainer.innerHTML = html;
+
+    if (quizModo === 'scroll') iniciarScrollObserver();
 }
 
 // ─── Resultado por aula ───────────────────────────────────────────────────────
@@ -1325,6 +1328,12 @@ window.selectOption = function(gi, oi) {
     if (typeof storageInitialized !== 'undefined' && storageInitialized) {
         setTimeout(saveCurrentProgress, 100);
     }
+
+    // ── Integração com modo step ─────────────────────────────────────────────
+    if (quizModo === 'step') {
+        atualizarControlesStep();
+        setTimeout(sincronizarAlturaStep, 50);
+    }
 };
 
 // ─── Revelar todas as respostas ───────────────────────────────────────────────
@@ -1334,9 +1343,37 @@ function revealAnswers() {
             userAnswers[gi] = quizData[m.sIdx].questions[m.qIdx].answer;
         }
     });
+
+    const eraModoStep = quizModo === 'step';
+
+    if (eraModoStep) {
+        quizModo = 'scroll';
+        stepWrapper = null;
+        const qc = document.getElementById('quiz-container');
+        qc.classList.remove('modo-step');
+        qc.style.height = '';
+        document.getElementById('step-shell-header')?.remove();
+        document.getElementById('step-shell-footer')?.remove();
+        document.querySelector('.quiz-header')?.classList.remove('step-hidden');
+        document.querySelector('.submit-container')?.classList.remove('step-hidden');
+        document.querySelector('#results')?.classList.remove('step-hidden');
+        document.querySelector('.page-footer')?.classList.remove('step-hidden');
+    }
+
     showAllQuestions();
     updateGlobalResults();
-    smoothScrollToTop();
+
+    if (eraModoStep) {
+        setTimeout(() => {
+            ativarModoStep();
+            setTimeout(() => {
+                atualizarControlesStep();
+                sincronizarAlturaStep();
+            }, 80);
+        }, 50);
+    } else {
+        smoothScrollToTop();
+    }
 }
 
 // ─── Limpar respostas ─────────────────────────────────────────────────────────
@@ -1345,15 +1382,36 @@ function clearAnswers() {
     if (clearBtn?.disabled) return;
 
     userAnswers.fill(null);
-    showAllQuestions();
+    currentQuestion = 0;
 
+    const eraModoStep = quizModo === 'step';
+
+    if (eraModoStep) {
+        quizModo = 'scroll';
+        stepWrapper = null;
+        const qc = document.getElementById('quiz-container');
+        qc.classList.remove('modo-step');
+        qc.style.height = '';
+        document.getElementById('step-shell-header')?.remove();
+        document.getElementById('step-shell-footer')?.remove();
+        document.querySelector('.quiz-header')?.classList.remove('step-hidden');
+        document.querySelector('.submit-container')?.classList.remove('step-hidden');
+        document.querySelector('#results')?.classList.remove('step-hidden');
+        document.querySelector('.page-footer')?.classList.remove('step-hidden');
+    }
+
+    showAllQuestions();
     resultsContainer.style.display = "none";
 
     const revealBtn = document.getElementById('reveal');
     if (clearBtn)  clearBtn.disabled  = false;
     if (revealBtn) revealBtn.disabled = false;
 
-    smoothScrollToTop();
+    if (eraModoStep) {
+        setTimeout(() => ativarModoStep(), 50);
+    } else {
+        smoothScrollToTop();
+    }
 }
 
 // ─── Reiniciar com shuffle ────────────────────────────────────────────────────
@@ -1366,9 +1424,25 @@ function restartQuiz() {
     });
 
     userAnswers = new Array(questionMap.length).fill(null);
+    currentQuestion = 0;
+
+    const eraModoStep = quizModo === 'step';
+
+    if (eraModoStep) {
+        quizModo = 'scroll';
+        stepWrapper = null;
+        const qc = document.getElementById('quiz-container');
+        qc.classList.remove('modo-step');
+        qc.style.height = '';
+        document.getElementById('step-shell-header')?.remove();
+        document.getElementById('step-shell-footer')?.remove();
+        document.querySelector('.quiz-header')?.classList.remove('step-hidden');
+        document.querySelector('.submit-container')?.classList.remove('step-hidden');
+        document.querySelector('#results')?.classList.remove('step-hidden');
+        document.querySelector('.page-footer')?.classList.remove('step-hidden');
+    }
 
     showAllQuestions();
-
     resultsContainer.style.display = "none";
 
     const clearBtn  = document.getElementById('clear');
@@ -1376,15 +1450,25 @@ function restartQuiz() {
     if (clearBtn)  clearBtn.disabled  = false;
     if (revealBtn) revealBtn.disabled = false;
 
-    smoothScrollToTop();
+    if (eraModoStep) {
+        setTimeout(() => ativarModoStep(), 50);
+    } else {
+        smoothScrollToTop();
+    }
 }
 
-// ─── Scroll ───────────────────────────────────────────────────────────────────
+// ─── Scroll personalizado (com cancelamento) ──────────────────────────────────
+let _scrollCancelled = false;
+
+function cancelScroll() { _scrollCancelled = true; }
+
 function smoothScrollTo(targetPosition, duration = 800) {
+    _scrollCancelled = false;
     const start = window.scrollY;
     const change = targetPosition - start;
     const startTime = performance.now();
     function animateScroll(currentTime) {
+        if (_scrollCancelled) return;
         const elapsed  = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         window.scrollTo(0, start + change * progress);
@@ -1393,6 +1477,11 @@ function smoothScrollTo(targetPosition, duration = 800) {
     requestAnimationFrame(animateScroll);
 }
 function smoothScrollToTop() { smoothScrollTo(0, 800); }
+
+// Qualquer interação do usuário cancela o scroll animado
+window.addEventListener('wheel',     cancelScroll, { passive: true });
+window.addEventListener('touchmove', cancelScroll, { passive: true });
+window.addEventListener('keydown',   cancelScroll, { passive: true });
 
 // ─── Alerta ───────────────────────────────────────────────────────────────────
 function showAlertNotification(message) {
@@ -1415,7 +1504,7 @@ function showAlertNotification(message) {
 }
 
 // ─── Event Listeners ─────────────────────────────────────────────────────────
-document.getElementById('clear').addEventListener('click', clearAnswers);
+
 document.getElementById('reveal').addEventListener('click', revealAnswers);
 document.getElementById('restart').addEventListener('click', restartQuiz);
 
@@ -1423,7 +1512,7 @@ document.getElementById('btn-up').addEventListener('click',   () => smoothScroll
 document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../redes.html'; });
 document.getElementById('btn-down').addEventListener('click', () => smoothScrollTo(document.body.scrollHeight, 1000));
 
-document.getElementById('clearButton').addEventListener('click', clearAnswers);
+
 document.getElementById('restartButton').addEventListener('click', restartQuiz);
 document.getElementById('revealButton').addEventListener('click', revealAnswers);
 
@@ -1483,9 +1572,7 @@ function stopAutoSave() {
     if (autoSaveInterval) { clearInterval(autoSaveInterval); autoSaveInterval = null; }
 }
 
-
 function showProgressNotification(message) {
-    // 1. Criar ou obter o container para empilhar notificações
     let container = document.getElementById('notification-container');
     if (!container) {
         container = document.createElement('div');
@@ -1498,7 +1585,6 @@ function showProgressNotification(message) {
         document.body.appendChild(container);
     }
 
-    // 2. Criar o elemento da notificação
     const el = document.createElement('div');
     el.style.cssText = `
         background: rgba(168, 85, 247, 0.15);
@@ -1518,25 +1604,20 @@ function showProgressNotification(message) {
         transform: translateX(50px);
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     `;
-    
+
     el.innerText = message;
     container.appendChild(el);
 
-    // 3. Trigger da animação de entrada
     requestAnimationFrame(() => {
-        el.style.opacity = '1';
-        el.style.transform = 'translateX(0)';
+        el.style.opacity    = '1';
+        el.style.transform  = 'translateX(0)';
     });
 
-    // 4. Remover após o tempo determinado
     setTimeout(() => {
-        el.style.opacity = '0';
+        el.style.opacity   = '0';
         el.style.transform = 'translateX(20px)';
-        
-        // Remove do DOM após o término da transição
         el.addEventListener('transitionend', () => {
             el.remove();
-            // Remove o container se estiver vazio
             if (container.childNodes.length === 0) container.remove();
         });
     }, 4000);
@@ -1549,3 +1630,345 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('beforeunload', () => { if (storageInitialized) saveCurrentProgress(); });
 
 setTimeout(initializeStorage, 500);
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODO STEP
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let quizModo        = "scroll";
+let currentQuestion = 0;
+let stepWrapper     = null;
+let scrollObserver  = null;
+
+function iniciarScrollObserver() {
+    if (scrollObserver) scrollObserver.disconnect();
+
+    const opcoes = {
+        root: null,
+        rootMargin: '-30% 0px -50% 0px',
+        threshold: 0
+    };
+
+    scrollObserver = new IntersectionObserver((entries) => {
+        if (quizModo !== 'scroll') return;
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                const gi = parseInt(id.replace('q-', ''), 10);
+                if (!isNaN(gi)) currentQuestion = gi;
+            }
+        });
+    }, opcoes);
+
+    document.querySelectorAll('.question-container').forEach(el => {
+        scrollObserver.observe(el);
+    });
+}
+
+function pararScrollObserver() {
+    if (scrollObserver) {
+        scrollObserver.disconnect();
+        scrollObserver = null;
+    }
+}
+
+function getTotalQuestions() { return questionMap.length; }
+
+function irParaQuestao(index) {
+    const total = getTotalQuestions();
+    if (index < 0 || index >= total) return;
+    currentQuestion = index;
+    deslizarParaQuestao(index);
+    atualizarControlesStep();
+    sincronizarAlturaStep();
+}
+
+function proximaQuestao()  { irParaQuestao(currentQuestion + 1); }
+function questaoAnterior() { irParaQuestao(currentQuestion - 1); }
+
+function deslizarParaQuestao(index) {
+    if (!stepWrapper) return;
+    stepWrapper.style.transform = `translateX(-${index * 100}%)`;
+}
+
+function ativarModoStep() {
+    quizModo = "step";
+    smoothScrollToTop();
+
+    const qc = document.getElementById('quiz-container');
+    if (!qc.querySelector('.question-container')) showAllQuestions();
+
+    document.querySelector('.quiz-header')?.classList.add('step-hidden');
+    document.querySelector('.submit-container')?.classList.add('step-hidden');
+    document.querySelector('#results')?.classList.add('step-hidden');
+    document.querySelector('.page-footer')?.classList.add('step-hidden');
+
+    renderShellStep();
+    pararScrollObserver();
+
+    const jaTemQuestaoVisivel = currentQuestion > 0 ||
+        (currentQuestion === 0 && userAnswers[0] !== null);
+
+    if (!jaTemQuestaoVisivel) {
+        const primeiraUnanswered = userAnswers.findIndex(a => a === null);
+        currentQuestion = primeiraUnanswered === -1 ? 0 : primeiraUnanswered;
+    }
+
+    if (stepWrapper) {
+        stepWrapper.style.transition = 'none';
+        deslizarParaQuestao(currentQuestion);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                if (stepWrapper) {
+                    stepWrapper.style.transition =
+                        'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1)';
+                }
+            });
+        });
+    }
+
+    atualizarControlesStep();
+    atualizarBotaoModo();
+    setTimeout(sincronizarAlturaStep, 50);
+    smoothScrollToTop();
+    document.querySelector('.page-wrapper').classList.add('modo-step-wrapper');
+}
+
+function ativarModoScroll() {
+    quizModo = "scroll";
+
+    const qc = document.getElementById('quiz-container');
+
+    if (stepWrapper) {
+        stepWrapper.style.transition = 'none';
+        stepWrapper.style.transform  = 'translateX(0)';
+    }
+
+    if (stepWrapper && stepWrapper.parentNode === qc) {
+        const filhos = Array.from(stepWrapper.children);
+        filhos.forEach(filho => qc.appendChild(filho));
+        stepWrapper.remove();
+    }
+    stepWrapper = null;
+
+    qc.classList.remove('modo-step');
+    qc.style.height = '';
+
+    qc.querySelectorAll('.step-structural-hidden').forEach(el => {
+        el.classList.remove('step-structural-hidden');
+    });
+
+    document.getElementById('step-shell-header')?.remove();
+    document.getElementById('step-shell-footer')?.remove();
+
+    document.querySelector('.quiz-header')?.classList.remove('step-hidden');
+    document.querySelector('.submit-container')?.classList.remove('step-hidden');
+    document.querySelector('#results')?.classList.remove('step-hidden');
+    document.querySelector('.page-footer')?.classList.remove('step-hidden');
+
+    showAllQuestions();
+    updateGlobalResults();
+    atualizarBotaoModo();
+    iniciarScrollObserver();
+
+    requestAnimationFrame(() => {
+        const alvo = document.getElementById(`q-${currentQuestion}`);
+        if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+}
+
+function toggleModo() {
+    quizModo === "scroll" ? ativarModoStep() : ativarModoScroll();
+}
+
+function renderShellStep() {
+    const qc = document.getElementById('quiz-container');
+    if (!qc) return;
+
+    if (qc.querySelector('.step-quiz-wrapper')) {
+        stepWrapper = qc.querySelector('.step-quiz-wrapper');
+        qc.classList.add('modo-step');
+        _montarShellHTML(qc);
+        return;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'step-quiz-wrapper';
+
+    const questoes = Array.from(qc.querySelectorAll('.question-container'));
+    questoes.forEach(q => wrapper.appendChild(q));
+
+    qc.querySelectorAll('.subject-title, .subject-result').forEach(el => {
+        el.classList.add('step-structural-hidden');
+    });
+
+    qc.insertBefore(wrapper, qc.firstChild);
+    stepWrapper = wrapper;
+
+    qc.classList.add('modo-step');
+
+    _montarShellHTML(qc);
+}
+
+function _montarShellHTML(qc) {
+    document.getElementById('step-shell-header')?.remove();
+    document.getElementById('step-shell-footer')?.remove();
+
+    const header = document.createElement('div');
+    header.id = 'step-shell-header';
+    header.innerHTML = `
+        <div class="step-header">
+            <div class="step-subject-label" id="step-subject-label"></div>
+            <div class="step-progress-wrapper">
+                <div class="step-counter" id="step-counter"></div>
+                <div class="step-progress-bar">
+                    <div class="step-progress-fill" id="step-progress-fill"></div>
+                </div>
+                <div class="step-score-badges" id="step-score-badges"></div>
+            </div>
+        </div>
+    `;
+    qc.parentNode.insertBefore(header, qc);
+
+    const footer = document.createElement('div');
+    footer.id = 'step-shell-footer';
+    footer.innerHTML = `
+        <div class="step-footer">
+            <button class="step-btn step-btn-secondary" id="step-prev"
+                    onclick="questaoAnterior()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+            <div class="step-dots" id="step-dots"></div>
+            <button class="step-btn step-btn-primary" id="step-next"
+                    onclick="proximaQuestao()">
+                Avançar <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    `;
+    qc.parentNode.insertBefore(footer, qc.nextSibling);
+}
+
+function atualizarControlesStep() {
+    const total = getTotalQuestions();
+    const gi    = currentQuestion;
+
+    const counter = document.getElementById('step-counter');
+    if (counter) counter.textContent = `${gi + 1} / ${total}`;
+
+    const fill = document.getElementById('step-progress-fill');
+    if (fill) fill.style.width = `${((gi + 1) / total) * 100}%`;
+
+    const subjectLabel = document.getElementById('step-subject-label');
+    if (subjectLabel && questionMap[gi]) {
+        const { sIdx } = questionMap[gi];
+        subjectLabel.textContent = quizData[sIdx].subject;
+    }
+
+    const badges = document.getElementById('step-score-badges');
+    if (badges) {
+        let acertos = 0, erros = 0;
+        userAnswers.forEach((ans, idx) => {
+            if (ans === null) return;
+            const { sIdx, qIdx } = questionMap[idx];
+            ans === quizData[sIdx].questions[qIdx].answer ? acertos++ : erros++;
+        });
+        badges.innerHTML = `
+            <span class="step-badge step-badge-correct">
+                <i class="fas fa-check"></i> ${acertos}
+            </span>
+            <span class="step-badge step-badge-incorrect">
+                <i class="fas fa-times"></i> ${erros}
+            </span>
+        `;
+    }
+
+    const dots = document.getElementById('step-dots');
+    if (dots) {
+        const range = getDotsRange(gi, total, 9);
+        dots.innerHTML = range.map(idx => {
+            let cls = 'step-dot';
+            if (idx === gi) {
+                cls += ' step-dot-active';
+            } else if (userAnswers[idx] !== null) {
+                const { sIdx, qIdx } = questionMap[idx];
+                cls += userAnswers[idx] === quizData[sIdx].questions[qIdx].answer
+                    ? ' step-dot-correct'
+                    : ' step-dot-wrong';
+            }
+            return `<button class="${cls}" onclick="irParaQuestao(${idx})"
+                            title="Questão ${idx + 1}"></button>`;
+        }).join('');
+    }
+
+    const prevBtn = document.getElementById('step-prev');
+    if (prevBtn) prevBtn.disabled = gi === 0;
+
+    const nextBtn = document.getElementById('step-next');
+    if (nextBtn) {
+        const isLast = gi === total - 1;
+        if (isLast) {
+            nextBtn.innerHTML = '<i class="fas fa-flag-checkered"></i> Finalizar';
+            nextBtn.onclick = () => {
+                ativarModoScroll();
+                setTimeout(() => smoothScrollTo(document.body.scrollHeight, 800), 150);
+            };
+        } else {
+            nextBtn.innerHTML = 'Avançar <i class="fas fa-arrow-right"></i>';
+            nextBtn.onclick = proximaQuestao;
+        }
+        nextBtn.disabled = false;
+    }
+}
+
+function getDotsRange(current, total, maxVisible) {
+    if (total <= maxVisible) return Array.from({ length: total }, (_, i) => i);
+    const half  = Math.floor(maxVisible / 2);
+    let   start = Math.max(0, current - half);
+    let   end   = start + maxVisible;
+    if (end > total) { end = total; start = end - maxVisible; }
+    return Array.from({ length: end - start }, (_, i) => start + i);
+}
+
+function atualizarBotaoModo() {
+    const btn = document.getElementById('btn-toggle-modo');
+    if (!btn) return;
+    if (quizModo === 'step') {
+        btn.innerHTML = '<i class="fas fa-list"></i>';
+        btn.title = 'Modo Scroll';
+        btn.classList.add('modo-step-active');
+    } else {
+        btn.innerHTML = '<i class="fas fa-layer-group"></i>';
+        btn.title = 'Modo Step (uma questão por vez)';
+        btn.classList.remove('modo-step-active');
+    }
+}
+
+function criarBotaoToggleModo() {
+    if (document.getElementById('btn-toggle-modo')) return;
+    const btn = document.createElement('button');
+    btn.id        = 'btn-toggle-modo';
+    btn.className = 'btn-toggle-modo';
+    btn.title     = 'Modo Step (uma questão por vez)';
+    btn.innerHTML = '<i class="fas fa-layer-group"></i>';
+    btn.addEventListener('click', toggleModo);
+    document.body.appendChild(btn);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', criarBotaoToggleModo);
+} else {
+    criarBotaoToggleModo();
+}
+
+function sincronizarAlturaStep() {
+    if (quizModo !== 'step' || !stepWrapper) return;
+
+    const questoes = stepWrapper.querySelectorAll('.question-container');
+    const atual    = questoes[currentQuestion];
+    if (!atual) return;
+
+    const altura = atual.scrollHeight;
+    stepWrapper.style.height                               = altura + 'px';
+    document.getElementById('quiz-container').style.height = altura + 'px';
+}
