@@ -645,3 +645,238 @@ h1 {
     cursor: not-allowed;
     pointer-events: none;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MODO STEP — tom azul (banco.css)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.step-hidden            { display: none !important; }
+.step-structural-hidden { display: none !important; }
+
+#quiz-container { display: block; }
+#quiz-container.modo-step { overflow: hidden; display: block; }
+
+.step-quiz-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    will-change: transform;
+    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-quiz-wrapper > .question-container {
+    min-width: 100%;
+    max-width: 100%;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    margin-bottom: 0;
+}
+
+#step-shell-header,
+#step-shell-footer {
+    width: 100%;
+    max-width: 860px;
+}
+
+.step-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding-bottom: 0.6rem;
+}
+
+.step-subject-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #60aef5;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    opacity: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.step-progress-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.step-counter {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.32);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    min-width: 42px;
+}
+
+.step-progress-bar {
+    flex: 1;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.step-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(55, 138, 221, 0.6), #60aef5);
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-score-badges {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.step-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.18rem 0.5rem;
+    border-radius: 20px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.step-badge-correct {
+    background: rgba(29, 158, 117, 0.14);
+    border: 1px solid rgba(29, 158, 117, 0.28);
+    color: #3ecfa0;
+}
+
+.step-badge-incorrect {
+    background: rgba(231, 76, 60, 0.11);
+    border: 1px solid rgba(231, 76, 60, 0.25);
+    color: #e07a73;
+}
+
+.step-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 0.75rem;
+    margin-top: 0.4rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.step-dots {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+    justify-content: center;
+}
+
+.step-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.11);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.22s ease;
+    flex-shrink: 0;
+}
+
+.step-dot:hover    { background: rgba(255, 255, 255, 0.28); transform: scale(1.35); }
+.step-dot-active   { width: 20px; border-radius: 4px; background: #60aef5; }
+.step-dot-correct  { background: rgba(29, 158, 117, 0.55); }
+.step-dot-wrong    { background: rgba(231, 76, 60, 0.48); }
+
+.step-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    padding: 0.58rem 1.25rem;
+    border-radius: 20px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    white-space: nowrap;
+}
+
+.step-btn-secondary {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.step-btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: white;
+}
+
+.step-btn-primary {
+    background: rgba(55, 138, 221, 0.16);
+    border: 1px solid rgba(55, 138, 221, 0.38);
+    color: #60aef5;
+}
+
+.step-btn-primary:hover:not(:disabled) {
+    background: rgba(55, 138, 221, 0.26);
+    border-color: rgba(55, 138, 221, 0.58);
+    color: white;
+}
+
+.step-btn:disabled { opacity: 0.2; cursor: not-allowed; pointer-events: none; }
+
+.btn-toggle-modo {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(55, 138, 221, 0.1);
+    border: 1px solid rgba(55, 138, 221, 0.28);
+    color: #60aef5;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: background 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+    box-shadow: 0 4px 18px rgba(55, 138, 221, 0.08);
+}
+
+.btn-toggle-modo:hover {
+    background: rgba(55, 138, 221, 0.22);
+    border-color: rgba(55, 138, 221, 0.5);
+    color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 6px 24px rgba(55, 138, 221, 0.18);
+}
+
+.btn-toggle-modo.modo-step-active {
+    background: rgba(55, 138, 221, 0.2);
+    border-color: rgba(55, 138, 221, 0.52);
+    color: #60aef5;
+}
+
+.btn-toggle-modo.modo-step-active:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.modo-step-wrapper #quiz-container.modo-step {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 600px) {
+    .step-footer   { gap: 0.5rem; }
+    .step-btn      { padding: 0.5rem 0.85rem; font-size: 0.78rem; }
+    .btn-toggle-modo { bottom: 14px; right: 14px; width: 40px; height: 40px; }
+}
