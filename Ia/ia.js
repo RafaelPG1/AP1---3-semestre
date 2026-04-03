@@ -241,7 +241,55 @@ function capturarQuestaoVisivel() {
   if (statement)      partes.push(statement);
   if (options)        partes.push(options);
 
-  return partes.filter(Boolean).join("\n\n").slice(0, 1200);
+  // Busca gabarito oficial no qu.js (variáveis globais)
+  const gabarito = _buscarGabaritoDaQuestao(melhor.id);
+  if (gabarito) partes.push(gabarito);
+
+  return partes.filter(Boolean).join("\n\n").slice(0, 1800);
+}
+
+/**
+ * Busca resposta correta + feedback no qu.js via variáveis globais
+ * (questionMap + quizData / originalQuizData).
+ * Funciona com opções embaralhadas pois usa o índice já atualizado do quizData.
+ */
+function _buscarGabaritoDaQuestao(elementId) {
+  try {
+    const gi = parseInt((elementId ?? "").replace("q-", ""), 10);
+    if (isNaN(gi)) return null;
+
+    const mapa  = window.questionMap;
+    const dados = window.quizData ?? window.originalQuizData;
+    if (!mapa || !dados) return null;
+
+    const entrada = mapa[gi];
+    if (!entrada) return null;
+
+    const { sIdx, qIdx } = entrada;
+    const questao = dados[sIdx]?.questions?.[qIdx];
+    if (!questao) return null;
+
+    const letras  = ["A", "B", "C", "D", "E"];
+    const idxCorr = questao.answer;
+    const letra   = letras[idxCorr] ?? String(idxCorr);
+    const texto   = questao.options?.[idxCorr] ?? "";
+
+    // Remove tags HTML do feedback
+    const feedbackLimpo = (questao.feedback ?? "")
+      .replace(/<[^>]+>/g, "")
+      .trim();
+
+    return [
+      "--- GABARITO OFICIAL ---",
+      `Alternativa correta: ${letra}) ${texto}`,
+      feedbackLimpo ? `Explicação oficial: ${feedbackLimpo}` : "",
+      "--- FIM DO GABARITO ---",
+    ].filter(Boolean).join("\n");
+
+  } catch (err) {
+    console.warn("[IA] Não foi possível buscar gabarito:", err);
+    return null;
+  }
 }
 
 // ============================================================
