@@ -1,12 +1,17 @@
 // ============================================================
-//  ia.js — Módulo global de IA  v4.0
+//  ia.js — Módulo global de IA  v5.0
+//  NOVO: histórico persistente por disciplina (localStorage)
+//        expiração automática em 30h
+//        restauração do chat ao reabrir
 // ============================================================
 
 const IA_WORKER_URL    = "https://restless-flower-1924.rafaelpeixoto475.workers.dev/";
-const IA_CONTEXTO_MAX  = 2500;   // reserva ~1200 chars para a questão capturada
-const IA_MAX_HISTORICO = 6;
+const IA_CONTEXTO_MAX  = 2500;
+const IA_MAX_HISTORICO = 20;   // guarda até 20 turnos na memória (10 trocas)
+const IA_MAX_HISTORICO_ENVIO = 10; // envia só os últimos 10 ao worker (economia de tokens)
 const IA_MAX_SECOES    = 5;
 const IA_MAX_SECAO_LEN = 800;
+const IA_HISTORICO_TTL = 30 * 60 * 60 * 1000; // 30 horas em ms
 
 const IA_DISCIPLINA_MAP = {
   "banco.html":  "banco",
@@ -214,12 +219,12 @@ function capturarQuestaoVisivel() {
 
   if (!melhor) return null;
 
-  const numero       = melhor.querySelector(".question-number")?.innerText ?? "";
-  const statement    = melhor.querySelector(".question-statement")?.innerText ?? "";
-  const context      = melhor.querySelector(".question-context")?.innerText ?? "";
+  const numero        = melhor.querySelector(".question-number")?.innerText ?? "";
+  const statement     = melhor.querySelector(".question-statement")?.innerText ?? "";
+  const context       = melhor.querySelector(".question-context")?.innerText ?? "";
   const miniEnunciado = melhor.querySelector(".question-mini-enunciado")?.innerText ?? "";
-  const codeBlock    = melhor.querySelector(".code-block")?.innerText ?? "";
-  const assertions   = melhor.querySelector(".assertions")?.innerText ?? "";
+  const codeBlock     = melhor.querySelector(".code-block")?.innerText ?? "";
+  const assertions    = melhor.querySelector(".assertions")?.innerText ?? "";
 
   const options = [...melhor.querySelectorAll(".option")]
     .map(el => el.innerText.trim())
@@ -236,12 +241,79 @@ function capturarQuestaoVisivel() {
   if (statement)      partes.push(statement);
   if (options)        partes.push(options);
 
-  // Limita a 1200 chars para não estourar o contexto total
   return partes.filter(Boolean).join("\n\n").slice(0, 1200);
 }
 
 // ============================================================
-//  6. Abre a IA com contexto da disciplina
+//  6. Persistência do histórico por disciplina (localStorage)
+// ============================================================
+
+function _chaveStorage(disciplina) {
+  // Chave única por disciplina: "ia_chat_banco", "ia_chat_redes", etc.
+  return `ia_chat_${disciplina || "geral"}`;
+}
+
+/**
+ * Carrega o histórico salvo de uma disciplina.
+ * Retorna [] se não existir ou se tiver expirado (>30h).
+ */
+function carregarHistorico(disciplina) {
+  try {
+    const chave = _chaveStorage(disciplina);
+    const raw = localStorage.getItem(chave);
+    if (!raw) return [];
+
+    const dados = JSON.parse(raw);
+
+    // Verifica expiração (30 horas)
+    if (Date.now() - (dados.timestamp || 0) > IA_HISTORICO_TTL) {
+      console.info(`[IA] Histórico de "${disciplina}" expirado (>30h). Limpando.`);
+      localStorage.removeItem(chave);
+      return [];
+    }
+
+    console.info(`[IA] Histórico de "${disciplina}" restaurado: ${(dados.mensagens || []).length} mensagens.`);
+    return dados.mensagens || [];
+  } catch (err) {
+    console.warn("[IA] Erro ao carregar histórico:", err);
+    return [];
+  }
+}
+
+/**
+ * Salva o histórico atual de uma disciplina no localStorage.
+ * Mantém no máximo IA_MAX_HISTORICO turnos (mais recentes).
+ */
+function salvarHistorico(disciplina, historico) {
+  try {
+    const chave = _chaveStorage(disciplina);
+    // Guarda apenas os últimos IA_MAX_HISTORICO para não engordar demais
+    const mensagensParaSalvar = historico.slice(-IA_MAX_HISTORICO);
+    const dados = {
+      timestamp: Date.now(),
+      mensagens: mensagensParaSalvar,
+    };
+    localStorage.setItem(chave, JSON.stringify(dados));
+  } catch (err) {
+    console.warn("[IA] Erro ao salvar histórico:", err);
+  }
+}
+
+/**
+ * Apaga o histórico salvo de uma disciplina.
+ */
+function limparHistorico(disciplina) {
+  try {
+    const chave = _chaveStorage(disciplina);
+    localStorage.removeItem(chave);
+    console.info(`[IA] Histórico de "${disciplina}" apagado.`);
+  } catch (err) {
+    console.warn("[IA] Erro ao limpar histórico:", err);
+  }
+}
+
+// ============================================================
+//  7. Abre a IA com contexto da disciplina
 // ============================================================
 
 async function abrirIADisciplina() {
@@ -253,7 +325,7 @@ async function abrirIADisciplina() {
 }
 
 // ============================================================
-//  7. Comunicação com o Worker
+//  8. Comunicação com o Worker
 // ============================================================
 
 async function perguntarIA(pergunta, contexto = "", historico = [], disciplina = null, ehQuestao = false) {
@@ -281,7 +353,7 @@ async function perguntarIA(pergunta, contexto = "", historico = [], disciplina =
 }
 
 // ============================================================
-//  8. Contexto genérico (fallback)
+//  9. Contexto genérico (fallback)
 // ============================================================
 
 function pegarContexto() {
@@ -294,7 +366,7 @@ function limitarContexto(texto) {
 }
 
 // ============================================================
-//  9. Formatação Markdown → HTML
+//  10. Formatação Markdown → HTML
 // ============================================================
 
 function formatarMarkdown(texto) {
@@ -333,7 +405,7 @@ function formatarMarkdown(texto) {
 }
 
 // ============================================================
-//  10. Interface — Modal principal
+//  11. Interface — Modal principal
 // ============================================================
 
 function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null) {
@@ -343,7 +415,8 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
   const labelDisc = disciplina ? (IA_DISCIPLINA_LABEL[disciplina] ?? disciplina) : null;
   const temResumo = !!contextoCompleto;
 
-  let historico = [];
+  // ── Restaura histórico salvo desta disciplina ──────────────
+  let historico = carregarHistorico(disciplina);
 
   const modal = document.createElement("div");
   modal.id = "ia-modal";
@@ -404,8 +477,10 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     if (e.key === "Escape") { fechar(); document.removeEventListener("keydown", esc); }
   });
 
+  // ── Limpar: apaga histórico da disciplina ─────────────────
   btnLimpar.addEventListener("click", () => {
     historico = [];
+    limparHistorico(disciplina);
     chat.innerHTML = "";
     // Reexibe o aviso de questão capturada se houver
     if (modal._questaoCapturada) {
@@ -441,6 +516,7 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     _mostrarAvisoQuestao(chat);
   }
 
+  // ── Renderiza mensagem no chat ────────────────────────────
   function adicionarMensagem(role, conteudo) {
     const div = document.createElement("div");
     div.classList.add("ia-msg-bloco", `ia-msg-${role}`);
@@ -454,6 +530,29 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     chat.appendChild(div);
     requestAnimationFrame(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }));
     return div;
+  }
+
+  // ── Restaura mensagens antigas na tela ───────────────────
+  if (historico.length > 0) {
+    // Adiciona separador visual se houver histórico anterior
+    const separador = document.createElement("div");
+    separador.style.cssText = `
+      font-size: 11px;
+      color: var(--color-text-secondary, #888);
+      text-align: center;
+      padding: 6px 0 10px;
+      opacity: 0.7;
+    `;
+    separador.textContent = "— conversa anterior restaurada —";
+    chat.appendChild(separador);
+
+    // Renderiza cada mensagem do histórico
+    historico.forEach(({ role, content }) => {
+      adicionarMensagem(role, content);
+    });
+
+    // Rola para o final após restaurar
+    requestAnimationFrame(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }));
   }
 
   function mostrarCarregando() {
@@ -479,10 +578,11 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     }
 
     // ── Monta contexto: questão capturada + resumo filtrado ──
-    // A questão vai NO CONTEXTO, não na pergunta — evita estouro de 500 chars
+    // CORREÇÃO: questão é enviada SEMPRE no contexto (não só na 1ª pergunta)
+    // para que a IA mantenha o raciocínio ao longo de toda a conversa.
     let questaoCtx = "";
-    if (modal._questaoCapturada && historico.length === 0) {
-      questaoCtx = `--- QUESTÃO VISÍVEL NA TELA ---\n${modal._questaoCapturada}\n--- FIM DA QUESTÃO ---`;
+    if (modal._questaoCapturada) {
+      questaoCtx = `--- QUESTÃO VISÍVEL NA TELA ---\n${modal._questaoCapturada.slice(0, 600)}\n--- FIM DA QUESTÃO ---`;
     }
 
     // Detecta ehQuestao pelo texto da questão (não só pela pergunta curta do aluno)
@@ -511,17 +611,24 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     const loadingEl = mostrarCarregando();
 
     try {
-      const histTruncado = historico.slice(-IA_MAX_HISTORICO);
+      // Envia só os últimos IA_MAX_HISTORICO_ENVIO turnos ao worker
+      // (economiza tokens mas mantém memória recente)
+      const histTruncado = historico.slice(-IA_MAX_HISTORICO_ENVIO);
+
       const resposta = await perguntarIA(
-        pergunta,         // ← só a pergunta curta do aluno (máx 500 chars)
-        contextoEnviado,  // ← questão capturada + resumo filtrado
+        pergunta,
+        contextoEnviado,
         histTruncado,
         disciplina,
         ehQuestao
       );
 
+      // Atualiza histórico em memória
       historico.push({ role: "user",      content: pergunta });
       historico.push({ role: "assistant", content: resposta });
+
+      // Persiste no localStorage (mantém até IA_MAX_HISTORICO turnos)
+      salvarHistorico(disciplina, historico);
 
       loadingEl.classList.remove("ia-pensando");
       loadingEl.innerHTML = "";
@@ -547,7 +654,7 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
 }
 
 // ============================================================
-//  11. Botão flutuante opcional
+//  12. Botão flutuante opcional
 // ============================================================
 
 function criarBotaoFlutuante(label = "✦ IA") {
@@ -561,7 +668,7 @@ function criarBotaoFlutuante(label = "✦ IA") {
 }
 
 // ============================================================
-//  12. Exports globais
+//  13. Exports globais
 // ============================================================
 
 window.IA = {
