@@ -1,14 +1,12 @@
 // ============================================================
-//  ia.js — Módulo global de IA  v5.0
-//  NOVO: histórico persistente por disciplina (localStorage)
-//        expiração automática em 30h
-//        restauração do chat ao reabrir
+//  ia.js — Módulo global de IA  v6.1
+//  Carrega questões via window.quizData* (sem import())
 // ============================================================
 
 const IA_WORKER_URL    = "https://restless-flower-1924.rafaelpeixoto475.workers.dev/";
 const IA_CONTEXTO_MAX  = 2500;
-const IA_MAX_HISTORICO = 20;   // guarda até 20 turnos na memória (10 trocas)
-const IA_MAX_HISTORICO_ENVIO = 10; // envia só os últimos 10 ao worker (economia de tokens)
+const IA_MAX_HISTORICO = 20;
+const IA_MAX_HISTORICO_ENVIO = 10;
 const IA_MAX_SECOES    = 5;
 const IA_MAX_SECAO_LEN = 800;
 const IA_HISTORICO_TTL = 30 * 60 * 60 * 1000; // 30 horas em ms
@@ -27,7 +25,16 @@ const IA_DISCIPLINA_LABEL = {
   poo:    "POO",
 };
 
-const IA_CACHE_RESUMO = {};
+// Mapa disciplina → nome da variável global exposta pelo qu.js
+const IA_QUESTOES_GLOBAL = {
+  poo:    "quizDataPoo",
+  banco:  "quizDataBanco",
+  design: "quizDataDesign",
+  redes:  "quizDataRedes",
+};
+
+const IA_CACHE_RESUMO   = {};
+const IA_CACHE_QUESTOES = {};
 
 // ============================================================
 //  1. Detecção de disciplina
@@ -55,7 +62,7 @@ async function carregarResumo(disciplina) {
     if (!resumoData || !resumoData[disciplina]) return null;
     const texto = extrairTexto(resumoData[disciplina]);
     IA_CACHE_RESUMO[disciplina] = texto;
-    console.info(`[IA] Resumo de "${disciplina}" carregado e cacheado (${texto.length} chars).`);
+    console.info(`[IA] Resumo de "${disciplina}" carregado (${texto.length} chars).`);
     return texto;
   } catch (err) {
     console.warn("[IA] Não foi possível carregar resumo.js:", err);
@@ -64,7 +71,82 @@ async function carregarResumo(disciplina) {
 }
 
 // ============================================================
-//  3. Extração de texto
+//  3. Carregamento das questões via window (sem import)
+// ============================================================
+
+async function carregarQuestoes(disciplina) {
+  if (IA_CACHE_QUESTOES[disciplina]) {
+    console.info(`[IA] Cache hit: questões de "${disciplina}" já carregadas.`);
+    return IA_CACHE_QUESTOES[disciplina];
+  }
+
+  const nomeVar = IA_QUESTOES_GLOBAL[disciplina];
+  if (!nomeVar) return null;
+
+  const dados = window[nomeVar];
+  if (!dados || !Array.isArray(dados)) {
+    console.warn(`[IA] Variável global "${nomeVar}" não encontrada. Certifique-se de que o qu.js expõe window.${nomeVar}`);
+    return null;
+  }
+
+  const texto = formatarQuestoesParaContexto(dados);
+  IA_CACHE_QUESTOES[disciplina] = texto;
+  console.info(`[IA] Questões de "${disciplina}" carregadas via window (${texto.length} chars).`);
+  return texto;
+}
+
+// ============================================================
+//  4. Formata as questões como texto para o contexto da IA
+// ============================================================
+
+function formatarQuestoesParaContexto(quizData) {
+  const letras = ["A", "B", "C", "D", "E"];
+  const linhas = [];
+  let numeroGlobal = 1;
+
+  for (const subject of quizData) {
+    linhas.push(`## ${subject.subject}`);
+
+    for (const q of subject.questions) {
+      linhas.push(`\nQuestão ${numeroGlobal}:`);
+
+      if (q.texto)         linhas.push(q.texto.replace(/<[^>]+>/g, "").trim());
+      if (q.miniEnunciado) linhas.push(q.miniEnunciado);
+      if (q.code)          linhas.push(`[Código]: ${q.code.trim()}`);
+
+      if (q.assertions?.length) {
+        const romanos = ["I", "II", "III", "IV", "V", "VI"];
+        q.assertions.forEach((a, i) => {
+          const limpo = a.replace("[PORQUE]", "PORQUE:").trim();
+          linhas.push(`${romanos[i]}. ${limpo}`);
+        });
+      }
+
+      linhas.push(q.question.replace(/<[^>]+>/g, ""));
+
+      q.options.forEach((op, i) => {
+        const marcador = i === q.answer ? "✓" : " ";
+        linhas.push(`  ${marcador} ${letras[i]}) ${op.replace(/<[^>]+>/g, "")}`);
+      });
+
+      const letraCorreta = letras[q.answer];
+      const textoCorreta = q.options[q.answer].replace(/<[^>]+>/g, "");
+      linhas.push(`Gabarito: ${letraCorreta}) ${textoCorreta}`);
+
+      if (q.feedback) {
+        const feedbackLimpo = q.feedback.replace(/<[^>]+>/g, "").trim();
+        if (feedbackLimpo) linhas.push(`Explicação: ${feedbackLimpo}`);
+      }
+
+      numeroGlobal++;
+    }
+  }
+
+  return linhas.join("\n");
+}
+
+// ============================================================
+//  5. Extração de texto (resumo)
 // ============================================================
 
 function extrairTexto(dados, profundidade = 0) {
@@ -87,7 +169,7 @@ function extrairTexto(dados, profundidade = 0) {
 }
 
 // ============================================================
-//  4. Filtragem de contexto inteligente
+//  6. Filtragem de contexto inteligente
 // ============================================================
 
 function normalizar(str) {
@@ -113,7 +195,7 @@ function extrairPalavrasChave(pergunta) {
     "meu","minha","nosso","nossa","voce","ele","ela","eles","elas","eu",
     "tu","pode","poderia","deveria","devo","preciso","quero","gostaria",
     "explica","explique","diga","fale","conta","conte","questao","aluno",
-    "resposta","correta","certa","alternativa","item","letra",
+    "resposta","correta","certa","alternativa","item","letra","me","explica",
   ]);
   return normalizar(pergunta)
     .split(" ")
@@ -171,7 +253,7 @@ function filtrarContexto(contextoCompleto, pergunta, maxSecoes = IA_MAX_SECOES, 
     bigrams.push(`${palavrasChave[i]} ${palavrasChave[i + 1]}`);
   }
 
-  const secoes   = dividirEmSecoes(contextoCompleto);
+  const secoes    = dividirEmSecoes(contextoCompleto);
   const pontuadas = secoes
     .map(secao => ({ secao, score: pontuarSecao(secao, palavrasChave, bigrams) }))
     .sort((a, b) => b.score - a.score);
@@ -180,7 +262,7 @@ function filtrarContexto(contextoCompleto, pergunta, maxSecoes = IA_MAX_SECOES, 
   const temRelevancia = topSecoes.some(s => s.score > 0);
 
   if (!temRelevancia) {
-    console.info("[IA] Nenhuma seção relevante encontrada — usando fallback.");
+    console.info("[IA] Nenhuma seção relevante — usando fallback.");
     return contextoCompleto.slice(0, maxChars);
   }
 
@@ -199,147 +281,70 @@ function filtrarContexto(contextoCompleto, pergunta, maxSecoes = IA_MAX_SECOES, 
 }
 
 // ============================================================
-//  5. Captura a questão visível na tela (modo quiz)
+//  7. Detecta se a pergunta é sobre uma questão específica
 // ============================================================
 
-function capturarQuestaoVisivel() {
-  const containers = document.querySelectorAll(".question-container");
-  if (!containers.length) return null;
-
-  const viewportMid = window.innerHeight / 2;
-  let melhor = null;
-  let menorDist = Infinity;
-
-  containers.forEach(el => {
-    const rect = el.getBoundingClientRect();
-    if (rect.bottom < -300 || rect.top > window.innerHeight + 300) return;
-    const dist = Math.abs(rect.top + rect.height / 2 - viewportMid);
-    if (dist < menorDist) { menorDist = dist; melhor = el; }
-  });
-
-  if (!melhor) return null;
-
-  const numero        = melhor.querySelector(".question-number")?.innerText ?? "";
-  const statement     = melhor.querySelector(".question-statement")?.innerText ?? "";
-  const context       = melhor.querySelector(".question-context")?.innerText ?? "";
-  const miniEnunciado = melhor.querySelector(".question-mini-enunciado")?.innerText ?? "";
-  const codeBlock     = melhor.querySelector(".code-block")?.innerText ?? "";
-  const assertions    = melhor.querySelector(".assertions")?.innerText ?? "";
-
-  const options = [...melhor.querySelectorAll(".option")]
-    .map(el => el.innerText.trim())
-    .filter(Boolean)
-    .join("\n");
-
-  if (!statement && !options) return null;
-
-  const partes = [numero];
-  if (context)        partes.push(context);
-  if (miniEnunciado)  partes.push(miniEnunciado);
-  if (codeBlock)      partes.push(codeBlock);
-  if (assertions)     partes.push(assertions);
-  if (statement)      partes.push(statement);
-  if (options)        partes.push(options);
-
-  // Busca gabarito oficial no qu.js (variáveis globais)
-  const gabarito = _buscarGabaritoDaQuestao(melhor.id);
-  if (gabarito) partes.push(gabarito);
-
-  return partes.filter(Boolean).join("\n\n").slice(0, 1800);
+function extrairNumeroQuestao(pergunta) {
+  const match =
+    pergunta.match(/(?:quest[aã]o|explica(?:\s+a)?|numero|n[uú]mero|q\.?)\s*(\d+)/i) ??
+    pergunta.match(/\ba\s+(\d+)\b/i) ??
+    pergunta.match(/\b(\d+)\b/);
+  return match ? parseInt(match[1], 10) : null;
 }
 
-/**
- * Busca resposta correta + feedback no qu.js via variáveis globais
- * (questionMap + quizData / originalQuizData).
- * Funciona com opções embaralhadas pois usa o índice já atualizado do quizData.
- */
-function _buscarGabaritoDaQuestao(elementId) {
-  try {
-    const gi = parseInt((elementId ?? "").replace("q-", ""), 10);
-    if (isNaN(gi)) return null;
+function extrairQuestaoDoTexto(textoQuestoes, numeroQuestao) {
+  if (!textoQuestoes || !numeroQuestao) return null;
 
-    const mapa  = window.questionMap;
-    const dados = window.quizData ?? window.originalQuizData;
-    if (!mapa || !dados) return null;
+  const regex = new RegExp(
+    `(Questão ${numeroQuestao}:[\\s\\S]*?)(?=\\nQuestão \\d+:|$)`,
+    "i"
+  );
+  const match = textoQuestoes.match(regex);
+  if (!match) return null;
 
-    const entrada = mapa[gi];
-    if (!entrada) return null;
-
-    const { sIdx, qIdx } = entrada;
-    const questao = dados[sIdx]?.questions?.[qIdx];
-    if (!questao) return null;
-
-    const letras  = ["A", "B", "C", "D", "E"];
-    const idxCorr = questao.answer;
-    const letra   = letras[idxCorr] ?? String(idxCorr);
-    const texto   = questao.options?.[idxCorr] ?? "";
-
-    // Remove tags HTML do feedback
-    const feedbackLimpo = (questao.feedback ?? "")
-      .replace(/<[^>]+>/g, "")
-      .trim();
-
-    return [
-      "--- GABARITO OFICIAL ---",
-      `Alternativa correta: ${letra}) ${texto}`,
-      feedbackLimpo ? `Explicação oficial: ${feedbackLimpo}` : "",
-      "--- FIM DO GABARITO ---",
-    ].filter(Boolean).join("\n");
-
-  } catch (err) {
-    console.warn("[IA] Não foi possível buscar gabarito:", err);
-    return null;
-  }
+  return match[1].trim().slice(0, 1800);
 }
 
 // ============================================================
-//  6. Persistência do histórico por disciplina (localStorage)
+//  8. Persistência do histórico por disciplina (localStorage)
 // ============================================================
 
 function _chaveStorage(disciplina) {
-  // Chave única por disciplina: "ia_chat_banco", "ia_chat_redes", etc.
   return `ia_chat_${disciplina || "geral"}`;
 }
 
-/**
- * Carrega o histórico salvo de uma disciplina.
- * Retorna [] se não existir ou se tiver expirado (>30h).
- */
 function carregarHistorico(disciplina) {
   try {
     const chave = _chaveStorage(disciplina);
     const raw = localStorage.getItem(chave);
-    if (!raw) return [];
+    if (!raw) return { mensagens: [], modoExplicacao: false };
 
     const dados = JSON.parse(raw);
 
-    // Verifica expiração (30 horas)
     if (Date.now() - (dados.timestamp || 0) > IA_HISTORICO_TTL) {
-      console.info(`[IA] Histórico de "${disciplina}" expirado (>30h). Limpando.`);
+      console.info(`[IA] Histórico de "${disciplina}" expirado. Limpando.`);
       localStorage.removeItem(chave);
-      return [];
+      return { mensagens: [], modoExplicacao: false };
     }
 
     console.info(`[IA] Histórico de "${disciplina}" restaurado: ${(dados.mensagens || []).length} mensagens.`);
-    return dados.mensagens || [];
+    return {
+      mensagens:      dados.mensagens      || [],
+      modoExplicacao: dados.modoExplicacao ?? false,
+    };
   } catch (err) {
     console.warn("[IA] Erro ao carregar histórico:", err);
-    return [];
+    return { mensagens: [], modoExplicacao: false };
   }
 }
 
-/**
- * Salva o histórico atual de uma disciplina no localStorage.
- * Mantém no máximo IA_MAX_HISTORICO turnos (mais recentes).
- */
-function salvarHistorico(disciplina, historico) {
+function salvarHistorico(disciplina, historico, modoExplicacao = false) {
   try {
     const chave = _chaveStorage(disciplina);
-    // Guarda apenas os últimos IA_MAX_HISTORICO para não engordar demais
-    const mensagensParaSalvar = historico.slice(-IA_MAX_HISTORICO);
     const dados = {
       timestamp: Date.now(),
-      mensagens: mensagensParaSalvar,
+      mensagens: historico.slice(-IA_MAX_HISTORICO),
+      modoExplicacao,
     };
     localStorage.setItem(chave, JSON.stringify(dados));
   } catch (err) {
@@ -347,13 +352,9 @@ function salvarHistorico(disciplina, historico) {
   }
 }
 
-/**
- * Apaga o histórico salvo de uma disciplina.
- */
 function limparHistorico(disciplina) {
   try {
-    const chave = _chaveStorage(disciplina);
-    localStorage.removeItem(chave);
+    localStorage.removeItem(_chaveStorage(disciplina));
     console.info(`[IA] Histórico de "${disciplina}" apagado.`);
   } catch (err) {
     console.warn("[IA] Erro ao limpar histórico:", err);
@@ -361,28 +362,32 @@ function limparHistorico(disciplina) {
 }
 
 // ============================================================
-//  7. Abre a IA com contexto da disciplina
+//  9. Abre a IA com contexto da disciplina
 // ============================================================
 
 async function abrirIADisciplina() {
   const disciplina = detectarDisciplina();
-  if (!disciplina) { abrirIA("", null); return; }
-  const textoResumo    = await carregarResumo(disciplina);
-  const questaoVisivel = capturarQuestaoVisivel();
-  abrirIA(textoResumo || "", disciplina, questaoVisivel || null);
+  if (!disciplina) { abrirIA("", null, null, null); return; }
+
+  const [textoResumo, textoQuestoes] = await Promise.all([
+    carregarResumo(disciplina),
+    carregarQuestoes(disciplina),
+  ]);
+
+  abrirIA(textoResumo || "", disciplina, null, textoQuestoes || null);
 }
 
 // ============================================================
-//  8. Comunicação com o Worker
+//  10. Comunicação com o Worker
 // ============================================================
 
-async function perguntarIA(pergunta, contexto = "", historico = [], disciplina = null, ehQuestao = false, modoSimulado = false) {
+async function perguntarIA(pergunta, contexto = "", historico = [], disciplina = null, ehQuestao = false, modoExplicacao = false) {
   let res;
   try {
     res = await fetch(IA_WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pergunta, contexto, historico, disciplina, ehQuestao, modoSimulado }),
+      body: JSON.stringify({ pergunta, contexto, historico, disciplina, ehQuestao, modoExplicacao }),
     });
   } catch {
     throw new Error("⚠️ O sistema está temporariamente ocupado. Tente novamente.");
@@ -401,7 +406,7 @@ async function perguntarIA(pergunta, contexto = "", historico = [], disciplina =
 }
 
 // ============================================================
-//  9. Contexto genérico (fallback)
+//  11. Contexto genérico (fallback)
 // ============================================================
 
 function pegarContexto() {
@@ -414,7 +419,7 @@ function limitarContexto(texto) {
 }
 
 // ============================================================
-//  10. Formatação Markdown → HTML
+//  12. Formatação Markdown → HTML
 // ============================================================
 
 function formatarMarkdown(texto) {
@@ -453,18 +458,19 @@ function formatarMarkdown(texto) {
 }
 
 // ============================================================
-//  11. Interface — Modal principal
+//  13. Interface — Modal principal
 // ============================================================
 
-function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null) {
+function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null, textoQuestoes = null) {
   if (document.getElementById("ia-modal")) return;
 
   const textoBase = contextoCompleto || pegarContexto();
   const labelDisc = disciplina ? (IA_DISCIPLINA_LABEL[disciplina] ?? disciplina) : null;
   const temResumo = !!contextoCompleto;
 
-  // ── Restaura histórico salvo desta disciplina ──────────────
-  let historico = carregarHistorico(disciplina);
+  const _sessao      = carregarHistorico(disciplina);
+  let historico      = _sessao.mensagens;
+  let modoExplicacao = _sessao.modoExplicacao;
 
   const modal = document.createElement("div");
   modal.id = "ia-modal";
@@ -481,7 +487,7 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
           ${labelDisc ? `<span id="ia-disciplina-badge">${labelDisc}</span>` : ""}
         </div>
         <div id="ia-header-acoes">
-          <button id="ia-treino" title="Ativar modo treino (a IA não dá a resposta direto)" aria-label="Modo treino">🎯</button>
+          <button id="ia-explicacao" title="Ativar modo explicação" aria-label="Modo explicação">💡</button>
           <button id="ia-limpar" title="Limpar conversa" aria-label="Limpar conversa">↺</button>
           <button id="ia-fechar" aria-label="Fechar">✕</button>
         </div>
@@ -505,53 +511,37 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
 
   document.body.appendChild(modal);
 
-  const overlay   = modal.querySelector("#ia-overlay");
-  const btnFechar = modal.querySelector("#ia-fechar");
-  const btnLimpar = modal.querySelector("#ia-limpar");
-  const btnTreino = modal.querySelector("#ia-treino");
-  const btnEnviar = modal.querySelector("#ia-enviar");
-  const input     = modal.querySelector("#ia-input");
-  const contador  = modal.querySelector("#ia-contador");
-  const chat      = modal.querySelector("#ia-chat");
+  const overlay       = modal.querySelector("#ia-overlay");
+  const btnFechar     = modal.querySelector("#ia-fechar");
+  const btnLimpar     = modal.querySelector("#ia-limpar");
+  const btnExplicacao = modal.querySelector("#ia-explicacao");
+  const btnEnviar     = modal.querySelector("#ia-enviar");
+  const input         = modal.querySelector("#ia-input");
+  const contador      = modal.querySelector("#ia-contador");
+  const chat          = modal.querySelector("#ia-chat");
 
-  // Estado do modo treino (não persiste entre sessões)
-  let modoSimulado = false;
-
-  function _atualizarBotaoTreino() {
-    if (modoSimulado) {
-      btnTreino.title  = "Modo treino ativo — clique para desativar";
-      btnTreino.style.opacity = "1";
-      btnTreino.style.filter  = "drop-shadow(0 0 4px #f5a623)";
+  function _atualizarBotaoExplicacao() {
+    if (modoExplicacao) {
+      btnExplicacao.title = "Modo explicação ativo — clique para desativar";
+      btnExplicacao.classList.add("ativo");
     } else {
-      btnTreino.title  = "Ativar modo treino (a IA não dá a resposta direto)";
-      btnTreino.style.opacity = "0.5";
-      btnTreino.style.filter  = "none";
+      btnExplicacao.title = "Ativar modo explicação (a IA ensina passo a passo)";
+      btnExplicacao.classList.remove("ativo");
     }
   }
-  _atualizarBotaoTreino();
+  _atualizarBotaoExplicacao();
 
-  btnTreino.addEventListener("click", () => {
-    modoSimulado = !modoSimulado;
-    _atualizarBotaoTreino();
-    if (modoSimulado) {
-      // Injeta aviso no histórico para a IA saber que entrou no modo treino
-      historico.push({
-        role: "assistant",
-        content: "[SISTEMA: Modo treino ativado. A partir de agora, não revele respostas diretas — faça perguntas socráticas.]"
-      });
+  btnExplicacao.addEventListener("click", () => {
+    modoExplicacao = !modoExplicacao;
+    _atualizarBotaoExplicacao();
+    if (modoExplicacao) {
       adicionarMensagem("assistant",
-        "🎯 **Modo treino ativado!** Vou te fazer pensar em vez de entregar a resposta direto. " +
-        "Se quiser a resposta direta a qualquer momento, é só dizer **'resposta direta'**. Bora! 💪"
+        "💡 **Modo explicação ativado!** Vou te ensinar o conteúdo passo a passo, " +
+        "com exemplos práticos e de forma bem clara. Pode perguntar o que quiser!"
       );
     } else {
-      // Injeta aviso no histórico para a IA saber que o modo normal voltou
-      historico.push({
-        role: "assistant",
-        content: "[SISTEMA: Modo treino desativado. Responda normalmente a partir de agora — dê respostas diretas e completas como antes.]"
-      });
-      adicionarMensagem("assistant", "✅ Modo treino desativado. Voltando ao modo normal!");
+      adicionarMensagem("assistant", "✅ Modo explicação desativado. Voltando ao modo normal!");
     }
-    salvarHistorico(disciplina, historico);
   });
 
   setTimeout(() => input.focus(), 50);
@@ -567,46 +557,13 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     if (e.key === "Escape") { fechar(); document.removeEventListener("keydown", esc); }
   });
 
-  // ── Limpar: apaga histórico da disciplina ─────────────────
   btnLimpar.addEventListener("click", () => {
     historico = [];
     limparHistorico(disciplina);
     chat.innerHTML = "";
-    // Reexibe o aviso de questão capturada se houver
-    if (modal._questaoCapturada) {
-      const aviso = document.getElementById("ia-questao-capturada");
-      if (!aviso) _mostrarAvisoQuestao(chat);
-    }
     input.focus();
   });
 
-  // ── Aviso de questão capturada ────────────────────────────
-  function _mostrarAvisoQuestao(chatEl) {
-    const aviso = document.createElement("div");
-    aviso.id = "ia-questao-capturada";
-    aviso.innerHTML = `
-      <div style="
-        font-size:11px;
-        color:var(--color-text-secondary,#888);
-        padding:6px 12px;
-        border-bottom:1px solid rgba(128,128,128,0.15);
-        display:flex;
-        align-items:center;
-        gap:6px;
-      ">
-        <span style="font-size:14px">📌</span>
-        Questão da tela capturada — pergunte "qual a correta?" ou "explique a B"
-      </div>
-    `;
-    chatEl.parentNode.insertBefore(aviso, chatEl);
-  }
-
-  if (questaoInicial) {
-    modal._questaoCapturada = questaoInicial;
-    _mostrarAvisoQuestao(chat);
-  }
-
-  // ── Renderiza mensagem no chat ────────────────────────────
   function adicionarMensagem(role, conteudo) {
     const div = document.createElement("div");
     div.classList.add("ia-msg-bloco", `ia-msg-${role}`);
@@ -622,26 +579,24 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     return div;
   }
 
-  // ── Restaura mensagens antigas na tela ───────────────────
   if (historico.length > 0) {
-    // Adiciona separador visual se houver histórico anterior
     const separador = document.createElement("div");
     separador.style.cssText = `
-      font-size: 11px;
-      color: var(--color-text-secondary, #888);
-      text-align: center;
-      padding: 6px 0 10px;
-      opacity: 0.7;
+      font-size: 11px; color: #888; text-align: center;
+      padding: 6px 0 10px; opacity: 0.7;
     `;
     separador.textContent = "— conversa anterior restaurada —";
     chat.appendChild(separador);
 
-    // Renderiza cada mensagem do histórico
-    historico.forEach(({ role, content }) => {
-      adicionarMensagem(role, content);
-    });
+    historico.forEach(({ role, content: c }) => adicionarMensagem(role, c));
 
-    // Rola para o final após restaurar
+    if (modoExplicacao) {
+      _atualizarBotaoExplicacao();
+      adicionarMensagem("assistant",
+        "💡 **Modo explicação ainda ativo.** Pode continuar de onde paramos!"
+      );
+    }
+
     requestAnimationFrame(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }));
   }
 
@@ -667,30 +622,57 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
       return;
     }
 
-    // ── Monta contexto: questão capturada + resumo filtrado ──
-    // CORREÇÃO: questão é enviada SEMPRE no contexto (não só na 1ª pergunta)
-    // para que a IA mantenha o raciocínio ao longo de toda a conversa.
-    let questaoCtx = "";
-    if (modal._questaoCapturada) {
-      questaoCtx = `--- QUESTÃO VISÍVEL NA TELA ---\n${modal._questaoCapturada.slice(0, 600)}\n--- FIM DA QUESTÃO ---`;
+    // ── Monta contexto ────────────────────────────────────────
+    let contextoEnviado = "";
+
+    if (textoQuestoes) {
+      // Tenta extrair a questão específica que o aluno pediu
+      const numeroQuestao = extrairNumeroQuestao(pergunta);
+      const questaoEspecifica = numeroQuestao
+        ? extrairQuestaoDoTexto(textoQuestoes, numeroQuestao)
+        : null;
+
+      if (questaoEspecifica) {
+        // Tem questão específica → manda só ela (com gabarito completo)
+        const resumoFiltrado = temResumo
+          ? filtrarContexto(textoBase, pergunta, 2, 800)
+          : "";
+        contextoEnviado = (
+          "--- QUESTÃO SOLICITADA ---\n" +
+          questaoEspecifica +
+          "\n--- FIM DA QUESTÃO ---" +
+          (resumoFiltrado ? "\n\n--- RESUMO ---\n" + resumoFiltrado : "")
+        ).slice(0, 4400);
+
+        console.info(`[IA] Questão ${numeroQuestao} extraída e enviada no contexto.`);
+      } else {
+        // Sem número específico → filtra as questões pelo tema da pergunta
+        const questoesFiltradas = filtrarContexto(textoQuestoes, pergunta, IA_MAX_SECOES, 2000);
+        const resumoFiltrado    = temResumo
+          ? filtrarContexto(textoBase, pergunta, 2, 800)
+          : "";
+        contextoEnviado = (
+          "--- QUESTÕES ---\n" + questoesFiltradas +
+          (resumoFiltrado ? "\n\n--- RESUMO ---\n" + resumoFiltrado : "")
+        ).slice(0, 4400);
+      }
+    } else {
+      // Sem questões carregadas → usa só o resumo
+      contextoEnviado = temResumo
+        ? filtrarContexto(textoBase, pergunta)
+        : limitarContexto(textoBase);
     }
 
-    // Detecta ehQuestao pelo texto da questão (não só pela pergunta curta do aluno)
-    const textoParaDetectar = modal._questaoCapturada || pergunta;
-    const ehQuestao = /\b[A-Ea-e]\s*[\)\.]/.test(textoParaDetectar);
-
-    // Filtra o resumo usando a pergunta do aluno como referência
-    const contextoResumo = temResumo
-      ? filtrarContexto(textoBase, pergunta)
-      : limitarContexto(textoBase);
-
-    // Junta questão + resumo, respeitando limite de 4500 chars do worker
-    const contextoEnviado = questaoCtx
-      ? (questaoCtx + "\n\n" + contextoResumo).slice(0, 4400)
-      : contextoResumo;
+    const ehQuestao = (
+      /\b[A-Ea-e]\s*[\)\.]/.test(pergunta) ||
+      /qual\s+(a\s+)?(resposta|alternativa|correta|certa|gabarito)/i.test(pergunta) ||
+      /qual\s+(é\s+)?(a\s+)?(letra|opção)/i.test(pergunta) ||
+      /explica\s+(a\s+)?\d+/i.test(pergunta) ||
+      /quest[aã]o\s+\d+/i.test(pergunta) ||
+      /me\s+explica/i.test(pergunta)
+    );
 
     adicionarMensagem("user", pergunta);
-
     input.value           = "";
     contador.textContent  = "0 / 500";
     emAndamento           = true;
@@ -701,9 +683,9 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     const loadingEl = mostrarCarregando();
 
     try {
-      // Envia só os últimos IA_MAX_HISTORICO_ENVIO turnos ao worker
-      // (economiza tokens mas mantém memória recente)
-      const histTruncado = historico.slice(-IA_MAX_HISTORICO_ENVIO);
+      const histTruncado = historico
+        .filter(t => !t.content?.startsWith("[SISTEMA:"))
+        .slice(-IA_MAX_HISTORICO_ENVIO);
 
       const resultado = await perguntarIA(
         pergunta,
@@ -711,29 +693,18 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
         histTruncado,
         disciplina,
         ehQuestao,
-        modoSimulado
+        modoExplicacao
       );
 
-      // O worker retorna { resposta, saiuDoSimulado } — trata os dois casos
       const textoResposta = (typeof resultado === "object" && resultado.resposta)
         ? resultado.resposta
         : resultado;
 
-      // Se a IA sinalizou saída do modo treino, desativa localmente
-      if (resultado.saiuDoSimulado) {
-        modoSimulado = false;
-        _atualizarBotaoTreino();
-      }
-
-      // Atualiza histórico em memória
       historico.push({ role: "user",      content: pergunta });
       historico.push({ role: "assistant", content: textoResposta });
-
-      // Persiste no localStorage (mantém até IA_MAX_HISTORICO turnos)
-      salvarHistorico(disciplina, historico);
+      salvarHistorico(disciplina, historico, modoExplicacao);
 
       loadingEl.classList.remove("ia-pensando");
-      loadingEl.innerHTML = "";
       loadingEl.innerHTML = formatarMarkdown(textoResposta);
       requestAnimationFrame(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }));
 
@@ -756,7 +727,7 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
 }
 
 // ============================================================
-//  12. Botão flutuante opcional
+//  14. Botão flutuante opcional
 // ============================================================
 
 function criarBotaoFlutuante(label = "✦ IA") {
@@ -770,7 +741,7 @@ function criarBotaoFlutuante(label = "✦ IA") {
 }
 
 // ============================================================
-//  13. Exports globais
+//  15. Exports globais
 // ============================================================
 
 window.IA = {

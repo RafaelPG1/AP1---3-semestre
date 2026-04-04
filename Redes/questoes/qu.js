@@ -1,6 +1,6 @@
 // Quiz completo — 80 questões totais (20 por aula)
 // Novas questões geradas exclusivamente com base nos Resumos Oficiais fornecidos
-const originalQuizData = [
+const quizDataRedes = [
   {
     subject: "Aula 01/02 — Fundamentos e Classificação de Redes",
     questions: [
@@ -1112,7 +1112,7 @@ function shuffleArray(array) {
 }
 
 function createShuffledQuizData() {
-    return originalQuizData.map(subject => ({
+    return quizDataRedes.map(subject => ({
         ...subject,
         questions: subject.questions.map(question => {
             const optionIndices = question.options.map((_, index) => index);
@@ -1145,7 +1145,7 @@ function formatFeedback(feedback) {
 }
 
 function createOriginalQuizData() {
-    return originalQuizData.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
+    return quizDataRedes.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
 }
 
 // ─── Inicialização ────────────────────────────────────────────────────────────
@@ -1972,3 +1972,5 @@ function sincronizarAlturaStep() {
     stepWrapper.style.height                               = altura + 'px';
     document.getElementById('quiz-container').style.height = altura + 'px';
 }
+
+window.quizDataRedes = quizDataRedes;

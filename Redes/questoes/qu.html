@@ -10,11 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="qu.css">
+    <link rel="stylesheet" href="/ia/ia.css">
+    <link rel="stylesheet" href="/ia/ia-btn.css">
 </head>
 
-<body>
+<body data-disciplina="redes">
 
-    <!-- Header -->
     <div class="page-wrapper">
 
         <div class="quiz-header">
@@ -24,20 +25,15 @@
                 </div>
                 <div class="header-text">
                     <h1>QUESTÕES</h1>
-                    <p class="subtitle">Sistemas Operacionais · Revisão</p>
+                    <p class="subtitle">Redes de Computadores · Revisão</p>
                 </div>
             </div>
         </div>
 
-        <!-- Quiz Container -->
-        <div class="quiz-container" id="quiz-container">
-            <!-- Questões serão inseridas aqui pelo JavaScript -->
-        </div>
+        <div class="quiz-container" id="quiz-container"></div>
 
-        <!-- Botões principais -->
         <div class="submit-container">
             <div class="buttons-container">
-                
                 <a href="../redes.html" class="btn-back">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </a>
@@ -50,14 +46,12 @@
             </div>
         </div>
 
-        <!-- Resultados -->
         <div id="results" class="results"></div>
 
-        <div class="page-footer">Questões Personalizadas · SO</div>
+        <div class="page-footer">Questões Personalizadas · Redes</div>
 
     </div>
 
-    <!-- Navegação flutuante -->
     <div class="nav-float">
         <button id="btn-up" class="nav-btn" title="Ir ao topo"><i class="fas fa-arrow-up"></i></button>
         <button id="btn-left" class="nav-btn" title="Voltar"><i class="fas fa-rotate-left"></i></button>
@@ -67,25 +61,19 @@
         <button id="revealButton" class="nav-btn" title="Revelar respostas"><i class="fas fa-eye"></i></button>
     </div>
 
+    <button class="ia-fab-custom" onclick="IA.abrirIADisciplina()">
+        <span class="ia-fab-icon">✦</span>
+        <span class="ia-fab-label">Assistente IA</span>
+    </button>
+
     <script src="qu.js"></script>
+    <script src="/ia/ia.js" defer></script>
     <script>
-        // Carrega storage.js sem bloquear o quiz caso o arquivo não exista
         var s = document.createElement('script');
         s.src = '../../../storage.js';
         s.onerror = function() { console.warn('storage.js não encontrado — auto-save desativado.'); };
         document.body.appendChild(s);
     </script>
 
-        <!-- -IA- -->
-    <!-- POO/questoes/qu.html -->
-    <body data-disciplina="redes">
-    <button class="ia-fab-custom" onclick="IA.abrirIADisciplina()">
-        <span class="ia-fab-icon">✦</span>
-        <span class="ia-fab-label">Assistente IA</span>
-    </button>
-
-    <link rel="stylesheet" href="/ia/ia.css">
-    <link rel="stylesheet" href="/ia/ia-btn.css">
-    <script src="/ia/ia.js" defer></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 // Configuração do quiz
-const originalQuizData = [
+const quizDataDesign = [
   {
     subject: "Aula 1 — Design com Foco no Usuário",
     questions: [
@@ -1002,6 +1002,7 @@ const originalQuizData = [
   }
 ];
 
+
 // ─── Função para separar texto e enunciado ─────────────────────────────────────
 function splitQuestionParts(questionText) {
     const text = questionText.trim();
@@ -1049,7 +1050,7 @@ function shuffleArray(array) {
 
 // ─── Shuffle: apenas embaralha opções e atualiza índice correto ───────────────
 function createShuffledQuizData() {
-    return originalQuizData.map(subject => ({
+    return quizDataDesign.map(subject => ({
         ...subject,
         questions: subject.questions.map(question => {
             const optionIndices = question.options.map((_, index) => index);
@@ -1066,7 +1067,7 @@ function createShuffledQuizData() {
 }
 
 function createOriginalQuizData() {
-    return originalQuizData.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
+    return quizDataDesign.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
 }
 
 // ─── Monta o feedback dinamicamente (evita duplicação) ───────────────────────
@@ -1865,3 +1866,5 @@ function sincronizarAlturaStep() {
     stepWrapper.style.height                               = altura + 'px';
     document.getElementById('quiz-container').style.height = altura + 'px';
 }
+
+window.quizDataDesign = quizDataDesign;

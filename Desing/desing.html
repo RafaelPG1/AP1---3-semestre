@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="desing.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/ia/ia.css">
+    <link rel="stylesheet" href="/ia/ia-btn.css">
 </head>
-<body>
+<body data-disciplina="desing">
     <div class="background-glow glow-1"></div>
     <div class="background-glow glow-2"></div>
 
     <main class="container">
-
-
         <div class="header">
             <div class="icon-wrapper">
                 <i class="fas fa-pen-ruler"></i>
@@ -24,7 +24,6 @@
         </div>
 
         <div class="cards-container">
-
             <a href="./questoes/qu.html" class="card">
                 <div class="card-top">
                     <div class="card-icon icon-quiz">
@@ -39,25 +38,24 @@
                 </div>
             </a>
         </div>
+
         <div class="back-button">
             <a href="../index.html" class="btn-back">
                 <i class="fas fa-arrow-left"></i>
                 Voltar
             </a>
         </div>
+
         <footer class="footer">
             <p>© 2025 Portal de Disciplinas — Desenvolvido para facilitar seus estudos</p>
         </footer>
     </main>
-    
-  <!-- BOTÃO IA (coloque antes do </body>) -->
-  <button class="ia-fab-custom" onclick="IA.abrirIADisciplina()">
-    <span class="ia-fab-icon">✦</span>
-    <span class="ia-fab-label">Assistente IA</span>
-  </button>
 
-  <link rel="stylesheet" href="/ia/ia.css">
-  <link rel="stylesheet" href="/ia/ia-btn.css">  <!-- botão novo -->
-  <script src="/ia/ia.js" defer></script>
+    <button class="ia-fab-custom" onclick="IA.abrirIADisciplina()">
+        <span class="ia-fab-icon">✦</span>
+        <span class="ia-fab-label">Assistente IA</span>
+    </button>
+
+    <script src="/ia/ia.js" defer></script>
 </body>
 </html>

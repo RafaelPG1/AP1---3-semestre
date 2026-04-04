@@ -1,6 +1,6 @@
 //qu.js tudo ok esse é o modelo
 // Configuração do quiz
-const originalQuizData = [
+const quizDataPoo = [
   {
     subject: "Aula 1 — Introdução e Ferramentas",
     questions: [
@@ -653,7 +653,7 @@ function shuffleArray(array) {
 
 // ─── Shuffle: apenas embaralha opções e atualiza índice correto ───────────────
 function createShuffledQuizData() {
-    return originalQuizData.map(subject => ({
+    return quizDataPoo.map(subject => ({
         ...subject,
         questions: subject.questions.map(question => {
             const optionIndices = question.options.map((_, index) => index);
@@ -670,7 +670,7 @@ function createShuffledQuizData() {
 }
 
 function createOriginalQuizData() {
-    return originalQuizData.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
+    return quizDataPoo.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
 }
 
 // ─── Monta o feedback dinamicamente ──────────────────────────────────────────
@@ -1569,3 +1569,5 @@ function sincronizarAlturaStep() {
     stepWrapper.style.height = altura + 'px';
     document.getElementById('quiz-container').style.height = altura + 'px';
 }
+
+window.quizDataPoo = quizDataPoo;

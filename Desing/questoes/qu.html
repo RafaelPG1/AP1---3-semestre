@@ -10,9 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="qu.css">
+    <link rel="stylesheet" href="/ia/ia.css">
+    <link rel="stylesheet" href="/ia/ia-btn.css">
 </head>
 
-<body>
+<body data-disciplina="desing">
 
     <div class="page-wrapper">
 
@@ -23,7 +25,7 @@
                 </div>
                 <div class="header-text">
                     <h1>QUESTÕES</h1>
-                    <p class="subtitle">Sistemas Operacionais · Revisão</p>
+                    <p class="subtitle">Desing · Revisão</p>
                 </div>
             </div>
         </div>
@@ -46,7 +48,7 @@
 
         <div id="results" class="results"></div>
 
-        <div class="page-footer">Questões Personalizadas · SO</div>
+        <div class="page-footer">Questões Personalizadas · Desing</div>
 
     </div>
 
@@ -59,7 +61,13 @@
         <button id="revealButton" class="nav-btn" title="Revelar respostas"><i class="fas fa-eye"></i></button>
     </div>
 
+    <button class="ia-fab-custom" onclick="IA.abrirIADisciplina()">
+        <span class="ia-fab-icon">✦</span>
+        <span class="ia-fab-label">Assistente IA</span>
+    </button>
+
     <script src="qu.js"></script>
+    <script src="/ia/ia.js" defer></script>
     <script>
         var s = document.createElement('script');
         s.src = '../../../storage.js';
@@ -67,16 +75,5 @@
         document.body.appendChild(s);
     </script>
 
-        <!-- -IA- -->
-    <!-- POO/questoes/qu.html -->
-    <body data-disciplina="desing">
-    <button class="ia-fab-custom" onclick="IA.abrirIADisciplina()">
-        <span class="ia-fab-icon">✦</span>
-        <span class="ia-fab-label">Assistente IA</span>
-    </button>
-
-    <link rel="stylesheet" href="/ia/ia.css">
-    <link rel="stylesheet" href="/ia/ia-btn.css">
-    <script src="/ia/ia.js" defer></script>
 </body>
 </html>

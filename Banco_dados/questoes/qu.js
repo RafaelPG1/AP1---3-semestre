@@ -1,5 +1,5 @@
 // Configuração do quiz
-const originalQuizData = [
+const quizDataBanco = [
   {
     "subject": "Aula 1 — Introdução a Banco de Dados (Questões 1–10)",
     "questions": [
@@ -1002,8 +1002,6 @@ const originalQuizData = [
   }
 ];
 
-
-// ─── Função para separar texto e enunciado ─────────────────────────────────────
 function splitQuestionParts(questionText) {
     const text = questionText.trim();
     const sentencePattern = /^([\s\S]+?)\s{0,5}([A-ZÁÉÍÓÚÂÊÎÔÛÃÕÇ][^.!?]*[?:])$/;
@@ -1050,7 +1048,7 @@ function shuffleArray(array) {
 
 // ─── Shuffle: apenas embaralha opções e atualiza índice correto ───────────────
 function createShuffledQuizData() {
-    return originalQuizData.map(subject => ({
+    return quizDataBanco.map(subject => ({
         ...subject,
         questions: subject.questions.map(question => {
             const optionIndices = question.options.map((_, index) => index);
@@ -1067,7 +1065,7 @@ function createShuffledQuizData() {
 }
 
 function createOriginalQuizData() {
-    return originalQuizData.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
+    return quizDataBanco.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
 }
 
 // ─── Monta o feedback dinamicamente ──────────────────────────────────────────
@@ -1830,6 +1828,7 @@ function criarBotaoToggleModo() {
     btn.className = 'btn-toggle-modo';
     btn.title     = 'Modo Step (uma questão por vez)';
     btn.innerHTML = '<i class="fas fa-layer-group"></i>';
+    btn.style.bottom = '90px'; // ← adiciona essa linha
     btn.addEventListener('click', toggleModo);
     document.body.appendChild(btn);
 }
@@ -1851,3 +1850,5 @@ function sincronizarAlturaStep() {
     stepWrapper.style.height                               = altura + 'px';
     document.getElementById('quiz-container').style.height = altura + 'px';
 }
+
+window.quizDataBanco = quizDataBanco;

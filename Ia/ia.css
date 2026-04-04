@@ -1,5 +1,6 @@
 /* ============================================================
-   ia.css — Estilos do modal de IA  v2.0
+   ia.css — Estilos do modal de IA  v2.1
+   Alteração v2.1: modo treino → modo explicação (#ia-explicacao)
    ============================================================ */
 
 /* ── Overlay ───────────────────────────────────────────────── */
@@ -71,6 +72,7 @@
   gap: 4px;
 }
 
+/* ── Botões do header (limpar e fechar) ─────────────────────── */
 #ia-limpar,
 #ia-fechar {
   background: none;
@@ -88,6 +90,42 @@
 #ia-fechar:hover {
   color: #fff;
   background: rgba(255, 255, 255, .1);
+}
+
+/* ── Botão modo explicação ───────────────────────────────────── */
+#ia-explicacao {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 5px;
+
+  /* Inativo: discreto, igual aos outros botões do header */
+  opacity: .45;
+  filter: none;
+  color: #aaa;
+
+  transition:
+    opacity .2s ease,
+    filter .2s ease,
+    background .15s ease,
+    color .15s ease;
+}
+
+#ia-explicacao:hover {
+  opacity: .85;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+}
+
+/* Estado ativo: brilho azul ciano, opacidade plena */
+#ia-explicacao.ativo {
+  opacity: 1;
+  color: #4fc3f7;
+  filter: drop-shadow(0 0 5px rgba(79, 195, 247, .7));
+  background: rgba(79, 195, 247, .1);
 }
 
 /* ── Área de chat (bolhas) ───────────────────────────────────── */
@@ -336,7 +374,6 @@
 
 /* ============================================================
    ia-btn.css — Botão flutuante da IA  v2.0
-   Coloque em /ia/ia-btn.css e importe nas páginas
    ============================================================ */
 
 /* Remove o botão padrão do ia.js se existir */
@@ -375,11 +412,10 @@
     box-shadow 0.25s ease,
     border-color 0.25s ease;
 
-  /* Brilho animado no fundo */
   overflow: hidden;
 }
 
-/* Linha de gradiente no topo (detalhe refinado) */
+/* Linha de gradiente no topo */
 .ia-fab-custom::before {
   content: "";
   position: absolute;
@@ -423,13 +459,8 @@
     0 0 60px rgba(100, 70, 255, 0.25);
 }
 
-.ia-fab-custom:hover::before {
-  opacity: 1;
-}
-
-.ia-fab-custom:hover::after {
-  left: 120%;
-}
+.ia-fab-custom:hover::before { opacity: 1; }
+.ia-fab-custom:hover::after  { left: 120%; }
 
 .ia-fab-custom:active {
   transform: translateY(-1px) scale(0.99);
