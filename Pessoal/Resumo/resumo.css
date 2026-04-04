@@ -398,15 +398,17 @@ transition: transform .5s cubic-bezier(.4, 0, .2, 1),
 }
 
 /* Orelha sempre visível */
+/* Orelha sempre visível */
+/* Orelha sempre visível */
 .fab-ear {
     position: absolute;
     right: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 14px;
-    height: 70px;
-    background: rgba(14,14,14,.88);
-    border: 1px solid rgba(255,255,255,.08);
+    width: 18px;
+    height: 80px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
     border-right: none;
     border-radius: 8px 0 0 8px;
     display: flex;
@@ -414,13 +416,13 @@ transition: transform .5s cubic-bezier(.4, 0, .2, 1),
     justify-content: center;
     cursor: pointer;
     transition: width .22s ease, background .18s;
-    box-shadow: -3px 0 12px rgba(0,0,0,.35);
+    box-shadow: -3px 0 12px rgba(0,0,0,.4);
 }
 .fab-ear::before {
     content: '';
     width: 2px;
-    height: 18px;
-    background: rgba(255,255,255,.18);
+    height: 22px;
+    background: rgba(255,255,255,.45);
     border-radius: 2px;
     transition: background .18s;
 }
@@ -432,12 +434,13 @@ transition: transform .5s cubic-bezier(.4, 0, .2, 1),
     pointer-events: auto;
 }
 .fab-group:hover .fab-ear {
-    width: 10px;
-    background: rgba(20,20,20,.95);
+    width: 12px;
+    background: rgba(255,255,255,.12);
 }
 .fab-group:hover .fab-ear::before {
-    background: rgba(255,255,255,.35);
+    background: rgba(255,255,255,.7);
 }
+
 
 /* Botões individuais */
 .fab-btn {

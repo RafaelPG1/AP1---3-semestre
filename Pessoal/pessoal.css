@@ -623,3 +623,65 @@ body {
 
 
 
+
+/* ── Seções colapsáveis do checklist (Redes) ─────────────────────── */
+.ck-secao {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 10px;
+}
+
+.ck-secao-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .65rem 1rem;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .18s, border-color .18s;
+}
+.ck-secao-header:hover {
+    background: rgba(255,255,255,.07);
+    border-color: rgba(255,255,255,.13);
+}
+
+.ck-secao-label {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #b8b8b8;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+}
+.ck-secao-label i { font-size: .68rem; }
+
+.ck-secao-right {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+.ck-secao-count {
+    font-size: .72rem;
+    color: #b8b8b8;
+}
+
+.ck-secao-chevron {
+    font-size: .65rem;
+    color: rgba(255,255,255,.35);
+    transition: transform .25s ease;
+}
+
+.ck-secao-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: ckFadeUp .25s ease both;
+}

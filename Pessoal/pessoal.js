@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   pessoal.js — Área Pessoal  (v15 — blocos de tópico colapsáveis)
+   pessoal.js — Área Pessoal  (v18 — pill de redes corrigida em todos os modos)
 ════════════════════════════════════════════════════════════════════════ */
 
 import {
@@ -26,7 +26,6 @@ import {
     removerAnotacao
 } from './Anotacao/anotacao.js';
 
-
 import {
     salvarNoFirebase,
     carregarDoFirebase
@@ -39,9 +38,8 @@ const USUARIOS = [
     { nome: 'Everardo', senha: '334' },
     { nome: 'Alvaro',   senha: '093' },
     { nome: 'Isaac',    senha: '234' },
-    { nome: 'Cauê',    senha: '542' }
+    { nome: 'Cauê',     senha: '542' }
 ];
-
 
 // ── ESTADO ────────────────────────────────────────────────────────────
 let usuarioAtual      = null;
@@ -49,11 +47,10 @@ let discSelecionada   = null;
 let checklistCompleto = {};
 let videosCompletos   = {};
 
-let modoAtual  = 'checklist';
-let discAtual  = null;
-let _toastEl   = null;
+let modoAtual   = 'checklist';
+let discAtual   = null;
+let _toastEl    = null;
 let _toastTimer = null;
-
 
 // ── DOM ───────────────────────────────────────────────────────────────
 const loginScreen = document.getElementById('login-screen');
@@ -66,7 +63,6 @@ const loginError  = document.getElementById('login-error');
 const dashNome    = document.getElementById('dash-nome-usuario');
 const discTabsEl  = document.getElementById('disc-tabs');
 const discPanel   = document.getElementById('disc-panel');
-
 
 // ── TOGGLE SENHA ──────────────────────────────────────────────────────
 document.querySelector('.toggle-senha')?.addEventListener('click', function () {
@@ -81,7 +77,7 @@ document.querySelector('.toggle-senha')?.addEventListener('click', function () {
 // ═════════════════════════════════════════════════════════════════════
 
 function tentarLogin() {
-    const nome = inputNome.value.trim();
+    const nome  = inputNome.value.trim();
     const senha = inputSenha.value;
 
     const normalizar = str =>
@@ -116,12 +112,25 @@ async function entrarNoDashboard() {
     dashScreen.classList.add('active');
     dashNome.textContent = usuarioAtual;
 
-    await carregarDados();
-    await initAnotacoes(usuarioAtual);
+    // ── Renderiza a UI imediatamente sem esperar o Firebase ───────────
     construirTabs();
     _criarToast();
     _criarFABs();
     selecionarDisc(Object.keys(DISCIPLINAS_DATA)[0]);
+
+    // ── Carrega Firebase em paralelo no fundo ─────────────────────────
+    try {
+        const [dadosChecklist] = await Promise.all([
+            carregarDados(),
+            initAnotacoes(usuarioAtual)
+        ]);
+    } catch (err) {
+        console.warn('[Pessoal] Falha ao carregar dados.', err);
+    }
+
+    // ── Atualiza a UI com os dados carregados ─────────────────────────
+    atualizarTodasAsTabs(checklistCompleto);
+    selecionarDisc(discAtual ?? Object.keys(DISCIPLINAS_DATA)[0]);
 }
 
 btnSair.addEventListener('click', () => {
@@ -155,6 +164,7 @@ async function carregarDados() {
         console.warn('[Pessoal] Falha ao carregar do Firebase, iniciando vazio.', err);
     }
 }
+
 const salvarDados = criarSalvador(async () => {
     try {
         await salvarNoFirebase(usuarioAtual, checklistCompleto, videosCompletos);
@@ -163,13 +173,16 @@ const salvarDados = criarSalvador(async () => {
     }
 }, 800, 3000);
 
+
 // ═════════════════════════════════════════════════════════════════════
 //  TABS
 // ═════════════════════════════════════════════════════════════════════
 
 function construirTabs() {
     discTabsEl.innerHTML = '';
+    const OCULTAS = ['redes_professor'];
     Object.entries(DISCIPLINAS_DATA).forEach(([id, disc]) => {
+        if (OCULTAS.includes(id)) return;
         const tab = document.createElement('button');
         tab.className    = 'disc-tab';
         tab.dataset.disc = id;
@@ -193,6 +206,32 @@ function construirTabs() {
 
 
 // ═════════════════════════════════════════════════════════════════════
+//  PILL DE REDES — atualiza a partir do checklistCompleto em memória
+// ═════════════════════════════════════════════════════════════════════
+
+function _atualizarPillRedes(panelEl) {
+    const disc     = DISCIPLINAS_DATA['redes'];
+    const discProf = DISCIPLINAS_DATA['redes_professor'];
+
+    const totalN    = disc.modulos.reduce((a, m) => a + m.itens.length, 0);
+    const marcadosN = disc.modulos.reduce((a, m) =>
+        a + m.itens.filter(it => checklistCompleto['redes']?.[it.id]).length, 0);
+    const pctN = totalN > 0 ? Math.round((marcadosN / totalN) * 100) : 0;
+
+    const totalP    = discProf.modulos.reduce((a, m) => a + m.itens.length, 0);
+    const marcadosP = discProf.modulos.reduce((a, m) =>
+        a + m.itens.filter(it => checklistCompleto['redes_professor']?.[it.id]).length, 0);
+    const pctP = totalP > 0 ? Math.round((marcadosP / totalP) * 100) : 0;
+
+    const pill = panelEl.querySelector('#stat-pill-redes');
+    if (pill) pill.innerHTML = `Aulas ${pctN}% · Prof ${pctP}%`;
+
+    const sub = panelEl.querySelector('#panel-sub-redes');
+    if (sub) sub.textContent = `${marcadosN} de ${totalN} itens concluídos`;
+}
+
+
+// ═════════════════════════════════════════════════════════════════════
 //  SELEÇÃO DE DISCIPLINA
 // ═════════════════════════════════════════════════════════════════════
 
@@ -204,24 +243,26 @@ function selecionarDisc(discId) {
         t.classList.toggle('active', t.dataset.disc === discId)
     );
 
+    renderizarPainel(discId, discPanel);
+    discPanel.querySelector('.panel-videos')?.remove();
+    discPanel.querySelector('.panel-modules')?.remove();
+
+    // ── Corrigir pill de redes imediatamente, antes de qualquer modo ──
+    if (discId === 'redes') {
+        _atualizarPillRedes(discPanel);
+    }
+
+    _injetarModeToggle(discId, discPanel);
+
     if (modoAtual === 'resumos') {
-        renderizarPainel(discId, discPanel);
-        discPanel.querySelector('.panel-videos')?.remove();
-        discPanel.querySelector('.panel-modules')?.remove();
-        _injetarModeToggle(discId, discPanel);
         _exibirResumos(discId, discPanel);
         mostrarFABs(true);
     } else if (modoAtual === 'anotacao') {
-        renderizarPainel(discId, discPanel);
-        discPanel.querySelector('.panel-videos')?.remove();
-        discPanel.querySelector('.panel-modules')?.remove();
-        _injetarModeToggle(discId, discPanel);
         exibirAnotacao(discId, discPanel);
         mostrarFABs(false);
     } else {
         _renderizarChecklistCompleto(discId, discPanel);
         _injetarModeToggle(discId, discPanel);
-        mostrarFABs(false);
     }
 }
 
@@ -239,6 +280,199 @@ function _renderizarChecklistCompleto(discId, panelEl) {
     const { marcados, total } = atualizarProgressoPainel(discId, panelEl);
     atualizarProgressoTab(discId, marcados, total);
 
+    // ── Para Redes: dividir em dois blocos colapsáveis ────────────────
+    if (discId === 'redes') {
+        const modulesEl = panelEl.querySelector('.panel-modules');
+        if (modulesEl) {
+            const disc     = DISCIPLINAS_DATA['redes'];
+            const discProf = DISCIPLINAS_DATA['redes_professor'];
+
+            // ── Renderizar módulos do professor no DOM ────────────────
+            if (discProf?.modulos?.length) {
+                discProf.modulos.forEach(mod => {
+                    const modBlock = document.createElement('div');
+                    modBlock.className = 'mod-block mod-block-prof';
+                    modBlock.innerHTML = `
+                        <p class="mod-title">
+                            ${mod.titulo}
+                            <span class="mod-count">${mod.itens.length} itens</span>
+                        </p>
+                        <div class="checklist">
+                            ${mod.itens.map(item => `
+                                <label class="ck-item">
+                                    <input type="checkbox" id="chk-${item.id}"
+                                        data-disc="redes_professor"
+                                        data-item="${item.id}"
+                                        ${checklistCompleto['redes_professor']?.[item.id] ? 'checked' : ''}>
+                                    <span class="ck-box"><i class="fas fa-check"></i></span>
+                                    <span class="ck-text">${item.texto}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    `;
+                    modulesEl.appendChild(modBlock);
+                });
+            }
+
+            // ── Separar blocos normais dos do professor ───────────────
+            const modBlocks        = [...modulesEl.querySelectorAll('.mod-block')];
+            const numModulosNormal = disc.modulos.length;
+            const numModulosProf   = discProf?.modulos?.length ?? 0;
+
+            const blocosNormal = modBlocks.slice(0, numModulosNormal);
+            const blocosProf   = modBlocks.slice(numModulosNormal, numModulosNormal + numModulosProf);
+
+            modulesEl.innerHTML = '';
+
+            // ── Seção Normal (começa fechada) ─────────────────────────
+            const secNormal  = document.createElement('div');
+            secNormal.className = 'ck-secao';
+
+            const bodyNormal = document.createElement('div');
+            bodyNormal.className     = 'ck-secao-body';
+            bodyNormal.id            = 'ck-body-normal';
+            bodyNormal.style.display = 'none';
+            blocosNormal.forEach(b => bodyNormal.appendChild(b));
+
+            const headerNormal = document.createElement('div');
+            headerNormal.className      = 'ck-secao-header';
+            headerNormal.dataset.secao  = 'normal';
+            headerNormal.innerHTML = `
+                <span class="ck-secao-label">
+                    <i class="fas fa-list-check"></i> Checklist das Aulas
+                </span>
+                <div class="ck-secao-right">
+                    <span class="ck-secao-count" id="ck-count-normal"></span>
+                    <i class="fas fa-chevron-down ck-secao-chevron" style="transform:rotate(0deg);transition:transform .25s ease;"></i>
+                </div>
+            `;
+            secNormal.appendChild(headerNormal);
+            secNormal.appendChild(bodyNormal);
+            modulesEl.appendChild(secNormal);
+
+            // ── Seção Professor (começa fechada) ──────────────────────
+            if (blocosProf.length > 0) {
+                const secProf  = document.createElement('div');
+                secProf.className = 'ck-secao';
+
+                const bodyProf = document.createElement('div');
+                bodyProf.className     = 'ck-secao-body';
+                bodyProf.id            = 'ck-body-prof';
+                bodyProf.style.display = 'none';
+                blocosProf.forEach(b => bodyProf.appendChild(b));
+
+                const headerProf = document.createElement('div');
+                headerProf.className     = 'ck-secao-header';
+                headerProf.dataset.secao = 'prof';
+                headerProf.innerHTML = `
+                    <span class="ck-secao-label">
+                        <i class="fas fa-chalkboard-teacher"></i> Redes — Resumo Ronildo
+                    </span>
+                    <div class="ck-secao-right">
+                        <span class="ck-secao-count" id="ck-count-prof"></span>
+                        <i class="fas fa-chevron-down ck-secao-chevron" style="transform:rotate(0deg);transition:transform .25s ease;"></i>
+                    </div>
+                `;
+                secProf.appendChild(headerProf);
+                secProf.appendChild(bodyProf);
+                modulesEl.appendChild(secProf);
+            }
+
+            // ── Toggle das seções ─────────────────────────────────────
+            modulesEl.querySelectorAll('.ck-secao-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const body    = header.nextElementSibling;
+                    const chevron = header.querySelector('.ck-secao-chevron');
+                    const aberto  = body.style.display !== 'none';
+
+                    if (aberto) {
+                        body.style.overflow  = 'hidden';
+                        body.style.maxHeight = body.scrollHeight + 'px';
+                        requestAnimationFrame(() => {
+                            body.style.transition = 'max-height .35s cubic-bezier(.4,0,.2,1), opacity .3s ease';
+                            body.style.opacity    = '0';
+                            body.style.maxHeight  = '0';
+                        });
+                        body.addEventListener('transitionend', () => {
+                            body.style.display    = 'none';
+                            body.style.transition = '';
+                            body.style.opacity    = '';
+                            body.style.maxHeight  = '';
+                            body.style.overflow   = '';
+                        }, { once: true });
+                    } else {
+                        body.style.display   = 'block';
+                        body.style.overflow  = 'hidden';
+                        body.style.opacity   = '0';
+                        body.style.maxHeight = '0';
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                                body.style.transition = 'max-height .35s cubic-bezier(.4,0,.2,1), opacity .3s ease';
+                                body.style.maxHeight  = body.scrollHeight + 'px';
+                                body.style.opacity    = '1';
+                            });
+                        });
+                        body.addEventListener('transitionend', () => {
+                            body.style.overflow   = '';
+                            body.style.maxHeight  = '';
+                            body.style.transition = '';
+                        }, { once: true });
+                    }
+
+                    chevron.style.transform = aberto ? 'rotate(0deg)' : 'rotate(180deg)';
+                });
+            });
+
+            // ── Contadores + pill do topo ─────────────────────────────
+            function atualizarContadores() {
+                const totalN    = disc.modulos.reduce((a, m) => a + m.itens.length, 0);
+                const marcadosN = disc.modulos.reduce((a, m) =>
+                    a + m.itens.filter(it => panelEl.querySelector(`#chk-${it.id}`)?.checked).length, 0);
+                const pctN = totalN > 0 ? Math.round((marcadosN / totalN) * 100) : 0;
+                const elN  = panelEl.querySelector('#ck-count-normal');
+                if (elN) elN.textContent = `${marcadosN} de ${totalN} — ${pctN}%`;
+
+                let pctP = 0;
+                if (discProf?.modulos) {
+                    const totalP    = discProf.modulos.reduce((a, m) => a + m.itens.length, 0);
+                    const marcadosP = discProf.modulos.reduce((a, m) =>
+                        a + m.itens.filter(it => panelEl.querySelector(`#chk-${it.id}`)?.checked).length, 0);
+                    pctP = totalP > 0 ? Math.round((marcadosP / totalP) * 100) : 0;
+                    const elP = panelEl.querySelector('#ck-count-prof');
+                    if (elP) elP.textContent = `${marcadosP} de ${totalP} — ${pctP}%`;
+                }
+
+                const pill = panelEl.querySelector(`#stat-pill-redes`);
+                if (pill) pill.innerHTML = `Aulas ${pctN}% · Prof ${pctP}%`;
+            }
+
+            restaurarCheckboxes(checklistCompleto['redes_professor'], panelEl);
+            atualizarContadores();
+            panelEl.addEventListener('change', atualizarContadores, { passive: true });
+        }
+
+        // ── FABs ──────────────────────────────────────────────────────
+        mostrarFABs(true);
+
+        const fabCollapse = document.getElementById('fab-collapse');
+        if (fabCollapse) {
+            const novoBtn = fabCollapse.cloneNode(true);
+            fabCollapse.parentNode.replaceChild(novoBtn, fabCollapse);
+            novoBtn.addEventListener('click', () => {
+                panelEl.querySelectorAll('.ck-secao-header').forEach(header => {
+                    const body    = header.nextElementSibling;
+                    const chevron = header.querySelector('.ck-secao-chevron');
+                    if (body)    body.style.display      = 'none';
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                });
+            });
+        }
+
+    } else {
+        mostrarFABs(false);
+    }
+
+    // ── Listener de checkboxes ────────────────────────────────────────
     panelEl.addEventListener('change', e => {
         if (e.target.type !== 'checkbox') return;
         const disc = e.target.dataset.disc;
@@ -246,8 +480,17 @@ function _renderizarChecklistCompleto(discId, panelEl) {
         if (!checklistCompleto[disc]) checklistCompleto[disc] = {};
         checklistCompleto[disc] = coletarCheckboxes(disc, panelEl);
 
-        const { marcados: m, total: t } = atualizarProgressoPainel(disc, panelEl);
-        atualizarProgressoTab(disc, m, t);
+        if (disc !== 'redes' && disc !== 'redes_professor') {
+            const { marcados: m, total: t } = atualizarProgressoPainel(disc, panelEl);
+            atualizarProgressoTab(disc, m, t);
+        } else {
+            const discRedes = DISCIPLINAS_DATA['redes'];
+            const totalN    = discRedes.modulos.reduce((a, m) => a + m.itens.length, 0);
+            const marcadosN = discRedes.modulos.reduce((a, m) =>
+                a + m.itens.filter(it => panelEl.querySelector(`#chk-${it.id}`)?.checked).length, 0);
+            atualizarProgressoTab('redes', marcadosN, totalN);
+        }
+
         atualizarProgressoGeral();
         salvarDados();
     });
@@ -330,7 +573,6 @@ function _injetarModeToggle(discId, panelEl) {
             } else {
                 removerAnotacao(panelEl);
                 _exibirChecklist(discId, panelEl);
-                mostrarFABs(false);
             }
         });
     });
@@ -354,9 +596,7 @@ function _exibirAnotacaoWrapper(discId, panelEl) {
 }
 
 function _exibirResumos(discId, panelEl) {
-    const resumos = listarResumos(discId);
-
-    // ── resumos do professor (só para redes) ─────────────────────────
+    const resumos     = listarResumos(discId);
     const resumosProf = discId === 'redes' ? listarResumos('redes_professor') : [];
 
     panelEl.querySelector('.panel-videos')?.remove();
@@ -379,11 +619,10 @@ function _exibirResumos(discId, panelEl) {
     const wrapper = document.createElement('div');
     wrapper.className = 'panel-resumos';
 
-// ── bloco: resumos das aulas ─────────────────────────────────────
+    // ── Bloco: resumos das aulas ──────────────────────────────────────
     let htmlAulas = '';
     if (resumos.length > 0) {
         if (discId === 'redes') {
-            // com toggle colapsável
             htmlAulas = `
                 <div class="resumo-header-bar resumo-secao-toggle" data-secao="aulas" style="cursor:pointer;">
                     <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
@@ -397,7 +636,6 @@ function _exibirResumos(discId, panelEl) {
                 </div>
             `;
         } else {
-            // sem toggle — comportamento original
             htmlAulas = `
                 <div class="resumo-header-bar">
                     <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
@@ -408,7 +646,7 @@ function _exibirResumos(discId, panelEl) {
         }
     }
 
-    // ── bloco: resumo do professor (só existe em redes) ──────────────
+    // ── Bloco: resumo do professor (só redes) ─────────────────────────
     let htmlProf = '';
     if (discId === 'redes' && resumosProf.length > 0) {
         htmlProf = `
@@ -427,21 +665,56 @@ function _exibirResumos(discId, panelEl) {
 
     wrapper.innerHTML = htmlAulas + htmlProf;
     panelEl.appendChild(wrapper);
-// ── toggle das seções (Aulas / Professor) ────────────────────────
+
+    // ── Toggle das seções (Aulas / Professor) ─────────────────────────
     wrapper.querySelectorAll('.resumo-secao-toggle').forEach(header => {
-        header.style.cursor = 'pointer';
         header.addEventListener('click', () => {
             const secao   = header.dataset.secao;
             const body    = wrapper.querySelector(`.resumo-secao-body--${secao}`);
             const chevron = header.querySelector('.rh-chevron');
+            if (!body) return;
             const aberto  = body.style.display !== 'none';
 
-            body.style.display   = aberto ? 'none' : 'block';
-            chevron.style.transform = aberto ? 'rotate(0deg)' : 'rotate(180deg)';
+            if (aberto) {
+                body.style.overflow  = 'hidden';
+                body.style.maxHeight = body.scrollHeight + 'px';
+                requestAnimationFrame(() => {
+                    body.style.transition = 'max-height .35s cubic-bezier(.4,0,.2,1), opacity .3s ease';
+                    body.style.opacity    = '0';
+                    body.style.maxHeight  = '0';
+                });
+                body.addEventListener('transitionend', () => {
+                    body.style.display    = 'none';
+                    body.style.transition = '';
+                    body.style.opacity    = '';
+                    body.style.maxHeight  = '';
+                    body.style.overflow   = '';
+                }, { once: true });
+            } else {
+                body.style.display   = 'block';
+                body.style.overflow  = 'hidden';
+                body.style.opacity   = '0';
+                body.style.maxHeight = '0';
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        body.style.transition = 'max-height .35s cubic-bezier(.4,0,.2,1), opacity .3s ease';
+                        body.style.maxHeight  = body.scrollHeight + 'px';
+                        body.style.opacity    = '1';
+                    });
+                });
+                body.addEventListener('transitionend', () => {
+                    body.style.overflow   = '';
+                    body.style.maxHeight  = '';
+                    body.style.transition = '';
+                }, { once: true });
+            }
+
+            chevron.style.transform  = aberto ? 'rotate(0deg)' : 'rotate(180deg)';
             chevron.style.transition = 'transform .25s ease';
         });
     });
-    // ── eventos (cards de aulas + cards do professor) ────────────────
+
+    // ── Eventos dos cards ─────────────────────────────────────────────
     wrapper.querySelectorAll('.resumo-card').forEach(card => {
         const rid = card.dataset.resumoId;
 
@@ -457,7 +730,7 @@ function _exibirResumos(discId, panelEl) {
 
         card.querySelector('.btn-expandir-blocos')?.addEventListener('click', e => {
             e.stopPropagation();
-            const blocos = card.querySelectorAll('.resumo-bloco');
+            const blocos       = card.querySelectorAll('.resumo-bloco');
             const todosAbertos = [...blocos].every(b => b.classList.contains('bloco-aberto'));
             blocos.forEach(b => {
                 todosAbertos
@@ -489,13 +762,13 @@ function _exibirResumos(discId, panelEl) {
     });
 }
 
+
 // ═════════════════════════════════════════════════════════════════════
 //  RENDER DE CARDS DE RESUMO
 // ═════════════════════════════════════════════════════════════════════
 
 function _renderizarTexto(texto) {
     if (typeof texto === 'string') return `<p class="resumo-bloco-texto">${texto}</p>`;
-
     return texto.map(item => {
         if (Array.isArray(item)) {
             return `<ul class="resumo-lista">${item.map(li => `<li>${li}</li>`).join('')}</ul>`;
@@ -511,7 +784,6 @@ function _renderCard(resumo, discId) {
                    <img src="Resumo/${bloco.imagem.src}.png" alt="${bloco.imagem.alt}">
                </div>`
             : '';
-
         return `
             <div class="resumo-bloco">
                 <div class="resumo-bloco-header">
@@ -530,7 +802,6 @@ function _renderCard(resumo, discId) {
     }).join('');
 
     const numBlocos = resumo.conteudo.length;
-
     return `
         <div class="resumo-card disc-${discId}" data-resumo-id="${resumo.id}">
             <div class="resumo-card-header">
@@ -597,7 +868,7 @@ function _criarFABs() {
     document.getElementById('fab-group')?.remove();
 
     const group = document.createElement('div');
-    group.id = 'fab-group';
+    group.id        = 'fab-group';
     group.className = 'fab-group';
     group.style.display = 'none';
     group.innerHTML = `
@@ -618,35 +889,85 @@ function _criarFABs() {
     `;
     document.body.appendChild(group);
 
+    let _scrollAnim = null;
 
-    function scrollUp() {
-        if (discPanel.scrollTop > 0) {
-            discPanel.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    function scrollSuave(direcao) {
+        if (_scrollAnim) {
+            cancelAnimationFrame(_scrollAnim);
+            _scrollAnim = null;
         }
+
+        const el     = discPanel.scrollHeight > discPanel.clientHeight ? discPanel : document.documentElement;
+        const inicio = el.scrollTop;
+        const alvo   = direcao === 'up'
+            ? 0
+            : el.scrollHeight - el.clientHeight;
+
+        const duracao = 1000;
+        let cancelado = false;
+
+        function onWheel(e) {
+            const subindo  = e.deltaY < 0;
+            const descendo = e.deltaY > 0;
+            if ((direcao === 'down' && subindo) || (direcao === 'up' && descendo)) {
+                cancelado = true;
+                el.removeEventListener('wheel', onWheel);
+            }
+        }
+        el.addEventListener('wheel', onWheel, { passive: true });
+
+        const startTime = performance.now();
+
+        function step(now) {
+            if (cancelado) return;
+            const elapsed  = now - startTime;
+            const progress = Math.min(elapsed / duracao, 1);
+            const ease = progress < 0.5
+                ? 4 * progress * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            el.scrollTop = inicio + (alvo - inicio) * ease;
+            if (progress < 1) {
+                _scrollAnim = requestAnimationFrame(step);
+            } else {
+                el.removeEventListener('wheel', onWheel);
+                _scrollAnim = null;
+            }
+        }
+
+        _scrollAnim = requestAnimationFrame(step);
     }
 
-    function scrollDown() {
-        const panelScrollable = discPanel.scrollHeight > discPanel.clientHeight;
-        if (panelScrollable) {
-            discPanel.scrollTo({ top: discPanel.scrollHeight, behavior: 'smooth' });
-        } else {
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
-    }
-
-    document.getElementById('fab-up').addEventListener('click', scrollUp);
-    document.getElementById('fab-down').addEventListener('click', scrollDown);
+    document.getElementById('fab-up').addEventListener('click', () => scrollSuave('up'));
+    document.getElementById('fab-down').addEventListener('click', () => scrollSuave('down'));
 
     document.getElementById('fab-collapse').addEventListener('click', () => {
-        // Fecha todos os cards de aula
+        discPanel.querySelectorAll('.ck-secao-header').forEach(header => {
+            const body    = header.nextElementSibling;
+            const chevron = header.querySelector('.ck-secao-chevron');
+            if (body)    body.style.display      = 'none';
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+        });
+
+        discPanel.querySelectorAll('.resumo-secao-toggle').forEach(header => {
+            const secao   = header.dataset.secao;
+            const body    = discPanel.querySelector(`.resumo-secao-body--${secao}`);
+            const chevron = header.querySelector('.rh-chevron');
+            if (body) {
+                body.style.transition = '';
+                body.style.maxHeight  = '';
+                body.style.opacity    = '';
+                body.style.overflow   = '';
+                body.style.display    = 'none';
+            }
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+        });
+
         discPanel.querySelectorAll('.resumo-card.expanded')
             .forEach(c => c.classList.remove('expanded'));
-        // Fecha também todos os blocos de tópico abertos
+
         discPanel.querySelectorAll('.resumo-bloco.bloco-aberto')
             .forEach(b => b.classList.remove('bloco-aberto'));
-        // Reseta o texto dos botões de expandir tópicos
+
         discPanel.querySelectorAll('.btn-expandir-blocos')
             .forEach(btn => {
                 btn.innerHTML = '<i class="fas fa-expand-alt"></i> Expandir tópicos';

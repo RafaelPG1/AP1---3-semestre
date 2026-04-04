@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   checklist.js — Lógica isolada do checklist  (v10)
+   check.js — Lógica isolada do checklist  (v10)
    ✦ Renderiza módulos e vídeos de uma disciplina
    ✦ Restaura estado a partir de dados do Firebase
    ✦ Coleta o estado atual dos checkboxes do DOM
@@ -272,6 +272,92 @@ export const DISCIPLINAS_DATA = {
         ]
     },
 
+redes_professor: {
+    label:    'Redes (Prof.)',
+    labelFull:'Redes de Computadores — Resumo Ronildo',
+    icone:    'fa-network-wired',
+    modulos: [
+        {
+            titulo: '1. Modelos e Conceitos Gerais',
+            itens: [
+                { id:'rdp_rm_01',  texto:'1.1 Protocolos [PROVA] — Sintaxe, semântica e temporização.' },
+                { id:'rdp_rm_01b', texto:'1.2 Encapsulamento [PROVA] — Header, trailer e fluxo por camadas.' },
+                { id:'rdp_rm_01c', texto:'1.3 PDU (Protocol Data Unit) [DICA] — Bits → Frame → Pacote → Segmento.' },
+                { id:'rdp_rm_01d', texto:'1.4 Comunicação entre camadas — Como protocolos se interligam.' },
+            ]
+        },
+        {
+            titulo: '2. Endereçamento',
+            itens: [
+                { id:'rdp_rm_02a', texto:'2.1 IPv4 — problemas e NAT [PROVA] — Escassez, NAT doméstico.' },
+                { id:'rdp_rm_02b', texto:'2.2 IPv6 — vantagens [PROVA] — IPsec nativo, sem NAT, multicast.' },
+                { id:'rdp_rm_02c', texto:'2.3 IP vs MAC [PROVA] — IP = onde está · MAC = quem é.' },
+                { id:'rdp_rm_02d', texto:'2.4 ARP — mapeamento IP → MAC — Como a resolução de endereço acontece.' },
+            ]
+        },
+        {
+            titulo: '3. Modelos de Arquitetura',
+            itens: [
+                { id:'rdp_rm_03a', texto:'3.1 Cliente-Servidor — Centralização, ponto único de falha.' },
+                { id:'rdp_rm_03b', texto:'3.2 P2P (Peer-to-Peer) [DICA] — Recursos distribuídos, ex: torrent.' },
+                { id:'rdp_rm_03c', texto:'3.3 Híbrido — Combinação dos dois modelos.' },
+            ]
+        },
+        {
+            titulo: '4. Comutação',
+            itens: [
+                { id:'rdp_rm_04a', texto:'4.1 Comutação de Pacotes [PROVA] — Sem caminho fixo, pode haver atraso/perda/desordem.' },
+                { id:'rdp_rm_04b', texto:'4.2 Comutação de Circuitos — Estabelecimento → Transmissão → Encerramento.' },
+                { id:'rdp_rm_04c', texto:'4.3 TCP resolve desordem de pacotes [DICA] — Reordenação e controle de fluxo.' },
+            ]
+        },
+        {
+            titulo: '5. Componentes da Comunicação de Dados',
+            itens: [
+                { id:'rdp_rm_05a', texto:'5.1 Componentes essenciais — Emissor, receptor, meio, protocolo, mensagem.' },
+                { id:'rdp_rm_05b', texto:'5.2 Falha em qualquer componente [DICA] — Quebra toda a comunicação.' },
+            ]
+        },
+        {
+            titulo: '6. Características da Comunicação e Métricas',
+            itens: [
+                { id:'rdp_rm_06a', texto:'6.1 Latência (Delay) [PROVA] — Processamento + fila + transmissão + propagação.' },
+                { id:'rdp_rm_06b', texto:'6.2 Jitter [PROVA] — Variação da latência — impacta voz/vídeo.' },
+                { id:'rdp_rm_06c', texto:'6.3 Bandwidth vs Throughput [PROVA] — Throughput = Bandwidth – perdas.' },
+                { id:'rdp_rm_06d', texto:'6.4 Causas de perda de throughput — Congestionamento, erro, retransmissão.' },
+            ]
+        },
+        {
+            titulo: '7. Dispositivos de Rede',
+            itens: [
+                { id:'rdp_rm_07a', texto:'7.1 Switch — tabela MAC (CAM) [PROVA] — Aprende e envia só ao destino correto.' },
+                { id:'rdp_rm_07b', texto:'7.2 Roteador — tabela de roteamento [PROVA] — RIP, OSPF, BGP.' },
+                { id:'rdp_rm_07c', texto:'7.3 Hub — Obsoleto, gera colisão.' },
+                { id:'rdp_rm_07d', texto:'7.4 AP (Wi-Fi), Firewall, Gateway [DICA] — Funções e diferenças entre si.' },
+            ]
+        },
+        {
+            titulo: '8. Modos de Transmissão e Topologias',
+            itens: [
+                { id:'rdp_rm_08a', texto:'8.1 Simplex, Half-duplex, Full-duplex [PROVA] — TV · Rádio · Internet moderna.' },
+                { id:'rdp_rm_08b', texto:'8.2 Topologia Estrela — Mais usada, depende do switch.' },
+                { id:'rdp_rm_08c', texto:'8.3 Topologia Malha (Mesh) — Alta confiabilidade, backbone de internet.' },
+                { id:'rdp_rm_08d', texto:'8.4 Outras topologias — Barramento, anel, híbrida.' },
+            ]
+        },
+        {
+            titulo: '9. Classificação e Meios de Transmissão',
+            itens: [
+                { id:'rdp_rm_09a', texto:'9.1 Meios guiados — par trançado, coaxial — Características e uso.' },
+                { id:'rdp_rm_09b', texto:'9.2 Fibra óptica — monomodo e multimodo [PROVA] — Longa vs curta distância, sem interferência.' },
+                { id:'rdp_rm_09c', texto:'9.3 Meios não guiados [DICA] — Wi-Fi, Bluetooth, Satélite — interferência e segurança.' },
+                { id:'rdp_rm_09d', texto:'9.4 Comparativo de desempenho — Qual meio usar em qual cenário.' },
+            ]
+        },
+    ],
+    videos: []
+},
+
     poo: {
         label:    'POO',
         labelFull:'Programação Orientada a Objetos',
@@ -386,6 +472,7 @@ export const DISCIPLINAS_DATA = {
         ]
     }
 };
+
 
 // ── UTILITÁRIOS ──────────────────────────────────────────────────────────
 
@@ -511,7 +598,7 @@ export function restaurarVideos(discId, videosAssistidos, container) {
 
 export function atualizarProgressoPainel(discId, container) {
     const total    = totalItensDisciplina(discId);
-    const cbs      = container.querySelectorAll('input[type="checkbox"]');
+    const cbs      = container.querySelectorAll(`input[type="checkbox"][data-disc="${discId}"]`);
     const marcados = [...cbs].filter(c => c.checked).length;
     const pct      = total > 0 ? Math.round((marcados / total) * 100) : 0;
 
