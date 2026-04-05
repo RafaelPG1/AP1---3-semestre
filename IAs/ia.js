@@ -1,5 +1,5 @@
 // ============================================================
-//  ia.js — Módulo global de IA  v6.3
+//  ia.js — Módulo global de IA  v6.4
 //  Carrega questões via window.quizData* (sem import())
 // ============================================================
 
@@ -19,13 +19,13 @@ const IA_DISCIPLINA_MAP = {
 };
 const IA_DISCIPLINA_LABEL = {
   banco:           "Banco de Dados",
-  desing:          "Design",           // ← adicionar
+  desing:          "Design",
   redes:           "Redes",
   poo:             "POO",
   avapoo:          "POO — AVA",
   pooquestoes:     "POO — Questões",
   bancoquestoes:   "Banco — Questões",
-  desingquestoes:  "Design — Questões", // ← adicionar
+  desingquestoes:  "Design — Questões",
   redesquestoes:   "Redes — Questões",
   pessoal:         "Área Pessoal",
 };
@@ -387,7 +387,6 @@ async function abrirIADisciplina() {
 
 // ============================================================
 //  10. Comunicação com o Worker
-//  Retorna o objeto completo { resposta, fonte }
 // ============================================================
 
 async function perguntarIA(pergunta, contexto = "", historico = [], disciplina = null, ehQuestao = false, modoExplicacao = false) {
@@ -412,7 +411,6 @@ async function perguntarIA(pergunta, contexto = "", historico = [], disciplina =
 
   if (!data.resposta) throw new Error("⚠️ O sistema está temporariamente ocupado. Tente novamente.");
 
-  // Retorna o objeto inteiro { resposta, fonte }
   return data;
 }
 
@@ -469,7 +467,27 @@ function formatarMarkdown(texto) {
 }
 
 // ============================================================
-//  13. Interface — Modal principal
+//  13. Helpers do botão btn-ia
+// ============================================================
+
+function _btnIaAtivo(estado) {
+  const btn = document.getElementById('btn-ia');
+  if (!btn) return;
+  if (estado) {
+    btn.classList.add('ativo');
+    btn.style.background  = 'rgba(168,85,247,0.25)';
+    btn.style.borderColor = 'rgba(168,85,247,0.6)';
+    btn.style.color       = '#c084fc';
+  } else {
+    btn.classList.remove('ativo');
+    btn.style.background  = 'rgba(168,85,247,0.1)';
+    btn.style.borderColor = 'rgba(168,85,247,0.35)';
+    btn.style.color       = '#a855f7';
+  }
+}
+
+// ============================================================
+//  14. Interface — Modal principal
 // ============================================================
 
 function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null, textoQuestoes = null) {
@@ -522,6 +540,9 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
 
   document.body.appendChild(modal);
 
+  // ── Marca botão como ativo ────────────────────────────────
+  _btnIaAtivo(true);
+
   const overlay       = modal.querySelector("#ia-overlay");
   const btnFechar     = modal.querySelector("#ia-fechar");
   const btnLimpar     = modal.querySelector("#ia-limpar");
@@ -542,27 +563,25 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
   }
   _atualizarBotaoExplicacao();
 
-// substitui o listener do btnExplicacao por esse
-let _explicacaoTimer = null;
-btnExplicacao.addEventListener("click", () => {
-  if (_explicacaoTimer) return;
-  _explicacaoTimer = setTimeout(() => { _explicacaoTimer = null; }, 1000);
+  let _explicacaoTimer = null;
+  btnExplicacao.addEventListener("click", () => {
+    if (_explicacaoTimer) return;
+    _explicacaoTimer = setTimeout(() => { _explicacaoTimer = null; }, 1000);
 
-  modoExplicacao = !modoExplicacao;
-  _atualizarBotaoExplicacao();
-  
-  if (modoExplicacao) {
-    adicionarMensagem("assistant",
-      "💡 **Modo explicação ativado!** Vou te ensinar o conteúdo passo a passo, " +
-      "com exemplos práticos e de forma bem clara. Pode perguntar o que quiser!"
-    );
-  } else {
-    adicionarMensagem("assistant", "✅ Modo explicação desativado. Voltando ao modo normal!");
-  }
+    modoExplicacao = !modoExplicacao;
+    _atualizarBotaoExplicacao();
 
-  // ← salva imediatamente o novo estado
-  salvarHistorico(disciplina, historico, modoExplicacao);
-});
+    if (modoExplicacao) {
+      adicionarMensagem("assistant",
+        "💡 **Modo explicação ativado!** Vou te ensinar o conteúdo passo a passo, " +
+        "com exemplos práticos e de forma bem clara. Pode perguntar o que quiser!"
+      );
+    } else {
+      adicionarMensagem("assistant", "✅ Modo explicação desativado. Voltando ao modo normal!");
+    }
+
+    salvarHistorico(disciplina, historico, modoExplicacao);
+  });
 
   setTimeout(() => input.focus(), 50);
 
@@ -570,7 +589,12 @@ btnExplicacao.addEventListener("click", () => {
     contador.textContent = `${input.value.length} / 500`;
   });
 
-  const fechar = () => modal.remove();
+  // ── Fechar — remove classe ativo do botão ─────────────────
+  const fechar = () => {
+    modal.remove();
+    _btnIaAtivo(false);
+  };
+
   overlay.addEventListener("click", fechar);
   btnFechar.addEventListener("click", fechar);
   document.addEventListener("keydown", function esc(e) {
@@ -593,7 +617,6 @@ btnExplicacao.addEventListener("click", () => {
       div.innerHTML = typeof conteudo === "string" && conteudo.startsWith("<")
         ? conteudo
         : formatarMarkdown(conteudo);
-      // ✅ Adiciona badge da fonte se disponível
       if (fonte) {
         div.innerHTML += `<span class="ia-fonte">via ${fonte}</span>`;
       }
@@ -604,25 +627,23 @@ btnExplicacao.addEventListener("click", () => {
   }
 
   if (historico.length > 0) {
-// substitui o separador atual por esse
-const separador = document.createElement("div");
-separador.style.cssText = `
-  font-size: 11px;
-  color: rgba(180, 160, 255, 0.5);
-  text-align: center;
-  padding: 6px 0 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-separador.innerHTML = `
-  <span style="flex:1;height:1px;background:rgba(255,255,255,.08);"></span>
-  <span>conversa anterior restaurada</span>
-  <span style="flex:1;height:1px;background:rgba(255,255,255,.08);"></span>
-`;
-chat.appendChild(separador);
+    const separador = document.createElement("div");
+    separador.style.cssText = `
+      font-size: 11px;
+      color: rgba(180, 160, 255, 0.5);
+      text-align: center;
+      padding: 6px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    `;
+    separador.innerHTML = `
+      <span style="flex:1;height:1px;background:rgba(255,255,255,.08);"></span>
+      <span>conversa anterior restaurada</span>
+      <span style="flex:1;height:1px;background:rgba(255,255,255,.08);"></span>
+    `;
+    chat.appendChild(separador);
 
-    // ✅ Passa a fonte salva para adicionarMensagem ao restaurar
     historico.forEach(({ role, content: c, fonte: f }) => {
       adicionarMensagem(role, c, f ?? null);
     });
@@ -659,7 +680,6 @@ chat.appendChild(separador);
       return;
     }
 
-    // ── Monta contexto ────────────────────────────────────────
     let contextoEnviado = "";
 
     if (textoQuestoes) {
@@ -732,12 +752,10 @@ chat.appendChild(separador);
       const textoResposta = resultado.resposta ?? String(resultado);
       const fonte         = resultado.fonte ?? null;
 
-      // ✅ Salva fonte junto com a mensagem do assistant no histórico
       historico.push({ role: "user",      content: pergunta });
       historico.push({ role: "assistant", content: textoResposta, fonte: fonte });
       salvarHistorico(disciplina, historico, modoExplicacao);
 
-      // ✅ Renderiza com badge da fonte
       const htmlFinal =
         formatarMarkdown(textoResposta) +
         (fonte ? `<span class="ia-fonte">via ${fonte}</span>` : "");
@@ -765,7 +783,7 @@ chat.appendChild(separador);
 }
 
 // ============================================================
-//  14. Botão flutuante opcional
+//  15. Botão flutuante opcional
 // ============================================================
 
 function criarBotaoFlutuante(label = "✦ IA") {
@@ -779,7 +797,25 @@ function criarBotaoFlutuante(label = "✦ IA") {
 }
 
 // ============================================================
-//  15. Exports globais
+//  16. Listener automático para btn-ia
+//  Conecta o botão do nav-float assim que o DOM estiver pronto
+// ============================================================
+
+function _conectarBtnIA() {
+  const btn = document.getElementById('btn-ia');
+  if (!btn || btn._iaListenerAdded) return;
+  btn._iaListenerAdded = true;
+  btn.addEventListener('click', () => IA.abrirIADisciplina());
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _conectarBtnIA);
+} else {
+  _conectarBtnIA();
+}
+
+// ============================================================
+//  17. Exports globais
 // ============================================================
 
 window.IA = {

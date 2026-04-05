@@ -1065,7 +1065,7 @@ const quizDataRedes = [
   }
 ];
 
-//qu.js redes
+//qu.js redes modelo 
 // ─── Função para separar texto e enunciado ─────────────────────────────────────
 function splitQuestionParts(questionText) {
     const text = questionText.trim();
@@ -1136,7 +1136,7 @@ function extractWhyCorrect(feedback) {
     return match ? `Por que está certa:${match[1].trim()}` : '';
 }
 
-// ─── Formata o feedback: negrito nos títulos, linha em branco entre seções ───
+// ─── Formata o feedback ───────────────────────────────────────────────────────
 function formatFeedback(feedback) {
     return feedback
         .replace(/\n/g, '<br>')
@@ -1291,7 +1291,7 @@ function updateGlobalResults() {
     if (revealBtn) revealBtn.disabled = true;
 }
 
-// ─── Selecionar opção (feedback imediato) ─────────────────────────────────────
+// ─── Selecionar opção ─────────────────────────────────────────────────────────
 window.selectOption = function(gi, oi) {
     if (userAnswers[gi] !== null) return;
 
@@ -1329,7 +1329,6 @@ window.selectOption = function(gi, oi) {
         setTimeout(saveCurrentProgress, 100);
     }
 
-    // ── Integração com modo step ─────────────────────────────────────────────
     if (quizModo === 'step') {
         atualizarControlesStep();
         setTimeout(sincronizarAlturaStep, 50);
@@ -1457,7 +1456,7 @@ function restartQuiz() {
     }
 }
 
-// ─── Scroll personalizado (com cancelamento) ──────────────────────────────────
+// ─── Scroll personalizado ─────────────────────────────────────────────────────
 let _scrollCancelled = false;
 
 function cancelScroll() { _scrollCancelled = true; }
@@ -1478,7 +1477,6 @@ function smoothScrollTo(targetPosition, duration = 800) {
 }
 function smoothScrollToTop() { smoothScrollTo(0, 800); }
 
-// Qualquer interação do usuário cancela o scroll animado
 window.addEventListener('wheel',     cancelScroll, { passive: true });
 window.addEventListener('touchmove', cancelScroll, { passive: true });
 window.addEventListener('keydown',   cancelScroll, { passive: true });
@@ -1504,14 +1502,12 @@ function showAlertNotification(message) {
 }
 
 // ─── Event Listeners ─────────────────────────────────────────────────────────
-
 document.getElementById('reveal').addEventListener('click', revealAnswers);
 document.getElementById('restart').addEventListener('click', restartQuiz);
 
 document.getElementById('btn-up').addEventListener('click',   () => smoothScrollTo(0, 1000));
 document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../redes.html'; });
 document.getElementById('btn-down').addEventListener('click', () => smoothScrollTo(document.body.scrollHeight, 1000));
-
 
 document.getElementById('restartButton').addEventListener('click', restartQuiz);
 document.getElementById('revealButton').addEventListener('click', revealAnswers);
@@ -1604,7 +1600,6 @@ function showProgressNotification(message) {
         transform: translateX(50px);
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     `;
-
     el.innerText = message;
     container.appendChild(el);
 
@@ -1630,7 +1625,6 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('beforeunload', () => { if (storageInitialized) saveCurrentProgress(); });
 
 setTimeout(initializeStorage, 500);
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MODO STEP
@@ -1944,16 +1938,13 @@ function atualizarBotaoModo() {
     }
 }
 
+// ─── Botão toggle: já existe no HTML, apenas conecta o listener ───────────────
 function criarBotaoToggleModo() {
-    if (document.getElementById('btn-toggle-modo')) return;
-    const btn = document.createElement('button');
-    btn.id        = 'btn-toggle-modo';
-    btn.className = 'btn-toggle-modo';
-    btn.title     = 'Modo Step (uma questão por vez)';
-    btn.innerHTML = '<i class="fas fa-layer-group"></i>';
-    btn.style.bottom = '90px'; // ← adiciona essa linha
-    btn.addEventListener('click', toggleModo);
-    document.body.appendChild(btn);
+    const btn = document.getElementById('btn-toggle-modo');
+    if (btn && !btn._modoListenerAdded) {
+        btn.addEventListener('click', toggleModo);
+        btn._modoListenerAdded = true;
+    }
 }
 
 if (document.readyState === 'loading') {

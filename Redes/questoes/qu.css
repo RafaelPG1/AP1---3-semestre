@@ -1,3 +1,5 @@
+/*qu.css modelo*/
+
 /* ── Reset ─────────────────────────────────────── */
 *, *::before, *::after {
     margin: 0;
@@ -131,7 +133,7 @@ h1 {
     gap: 0;
 }
 
-/* ── Subject Title — roxo ──────────────────────── */
+/* ── Subject Title ─────────────────────────────── */
 .subject-title {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 1.02rem;
@@ -160,7 +162,7 @@ h1 {
     border-color: rgba(168, 85, 247, 0.18);
 }
 
-/* ── Question Number — roxo ────────────────────── */
+/* ── Question Number ───────────────────────────── */
 .question-number {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 1rem;
@@ -171,7 +173,7 @@ h1 {
     margin-bottom: 0.75rem;
 }
 
-/* ── Question Texto (contexto ENADE) ───────────── */
+/* ── Question Texto ────────────────────────────── */
 .question-texto {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.9rem;
@@ -186,7 +188,7 @@ h1 {
     text-align: left;
 }
 
-/* ── Question Enunciado (pergunta ENADE) ───────── */
+/* ── Question Enunciado ────────────────────────── */
 .question-enunciado {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.95rem;
@@ -197,7 +199,7 @@ h1 {
     text-align: left;
 }
 
-/* ── Question Text (fallback genérico) ─────────── */
+/* ── Question Text ─────────────────────────────── */
 .question-text {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.95rem;
@@ -231,7 +233,6 @@ h1 {
     line-height: 1.5;
 }
 
-/* ── Hover roxo ────────────────────────────────── */
 .option:hover {
     background: rgba(168, 85, 247, 0.1);
     border-color: rgba(168, 85, 247, 0.35);
@@ -239,7 +240,6 @@ h1 {
     transform: translateX(3px);
 }
 
-/* ── Selecionado roxo ──────────────────────────── */
 .option.selected {
     background: rgba(168, 85, 247, 0.15);
     border-color: rgba(168, 85, 247, 0.5);
@@ -256,6 +256,11 @@ h1 {
     background: rgba(231, 76, 60, 0.15);
     border-color: rgba(231, 76, 60, 0.4);
     color: #e07a73;
+}
+
+.option.locked {
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 /* ── Feedback ──────────────────────────────────── */
@@ -332,7 +337,6 @@ h1 {
     color: white;
 }
 
-/* ── Submit button — verde ─────────────────────── */
 .submit-button {
     background: rgba(29, 158, 117, 0.15);
     border-color: rgba(29, 158, 117, 0.4);
@@ -345,7 +349,6 @@ h1 {
     color: white;
 }
 
-/* ── Restart button — verde ────────────────────── */
 .restart-button {
     background: rgba(29, 158, 117, 0.12);
     border-color: rgba(29, 158, 117, 0.35);
@@ -417,7 +420,6 @@ h1 {
     margin-bottom: 0.5rem;
 }
 
-/* ── Percentagem roxo ──────────────────────────── */
 .percentage {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 3rem;
@@ -444,7 +446,9 @@ h1 {
     padding-top: 1rem;
 }
 
-/* ── Nav Float ─────────────────────────────────── */
+/* ══════════════════════════════════════════════════
+   NAV FLOAT UNIFICADO
+   ══════════════════════════════════════════════════ */
 .nav-float {
     position: fixed;
     right: 18px;
@@ -459,10 +463,10 @@ h1 {
 .nav-divider {
     height: 1px;
     background: rgba(255, 255, 255, 0.1);
-    margin: 4px 0;
+    margin: 2px 0;
 }
 
-/* ── Nav buttons roxo ──────────────────────────── */
+/* ── Botão base ────────────────────────────────── */
 .nav-btn {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -485,6 +489,43 @@ h1 {
     transform: scale(1.08);
 }
 
+/* ── Botão Step — laranja ───────────────────────── */
+.nav-btn-step {
+    color: #f97316;
+    background: rgba(249, 115, 22, 0.1);
+    border-color: rgba(249, 115, 22, 0.35);
+}
+
+.nav-btn-step:hover {
+    background: rgba(249, 115, 22, 0.22);
+    border-color: rgba(249, 115, 22, 0.55);
+    color: #fb923c;
+    transform: scale(1.08);
+}
+
+.nav-btn-step.modo-step-active {
+    background: rgba(249, 115, 22, 0.25);
+    border-color: rgba(249, 115, 22, 0.6);
+    color: #fb923c;
+}
+
+.nav-btn-step.modo-step-active:hover {
+    background: rgba(249, 115, 22, 0.35);
+    color: white;
+}
+
+/* ── Botão IA — fallback visual (sobrescrito pelo <style> no HTML) ── */
+.nav-btn-ia {
+    font-size: 1.1rem;
+    color: #c4b8ff;
+    background: rgba(124, 58, 237, 0.1);
+    border: 1.5px solid rgba(124, 58, 237, 0.35);
+    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* ── Animations ────────────────────────────────── */
 @keyframes fadeInDown {
     from { opacity: 0; transform: translateY(-20px); }
@@ -501,31 +542,25 @@ h1 {
     .page-wrapper {
         padding: 1.5rem 1rem 3rem;
     }
-
     h1 {
         font-size: 1.8rem;
         letter-spacing: 3px;
     }
-
     .question-container {
         padding: 1.2rem 1rem;
     }
-
     .buttons-container {
         flex-direction: column;
         align-items: center;
     }
-
     .action-button {
         width: 100%;
         max-width: 280px;
         justify-content: center;
     }
-
     .nav-float {
         right: 10px;
     }
-
     .nav-btn {
         width: 34px;
         height: 34px;
@@ -533,10 +568,9 @@ h1 {
     }
 }
 
-
-
-
-/* ── Resultado por Aula ────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════
+   RESULTADO POR AULA
+   ══════════════════════════════════════════════════ */
 .subject-result {
     border-radius: 14px;
     padding: 1.2rem 1.5rem;
@@ -548,7 +582,6 @@ h1 {
     transition: all 0.4s ease;
 }
 
-/* Progresso parcial */
 .subject-result--progress {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -580,19 +613,16 @@ h1 {
     transition: width 0.4s ease;
 }
 
-/* Aula completa — bom (≥70%) */
 .subject-result--good {
     background: rgba(29, 158, 117, 0.1);
     border: 1px solid rgba(29, 158, 117, 0.3);
 }
 
-/* Aula completa — médio (50–69%) */
 .subject-result--mid {
     background: rgba(243, 156, 18, 0.08);
     border: 1px solid rgba(243, 156, 18, 0.25);
 }
 
-/* Aula completa — ruim (<50%) */
 .subject-result--bad {
     background: rgba(231, 76, 60, 0.08);
     border: 1px solid rgba(231, 76, 60, 0.25);
@@ -634,30 +664,19 @@ h1 {
     line-height: 1.1;
 }
 
-.subject-result--good  .sr-pct { color: #3ecfa0; }
-.subject-result--mid   .sr-pct { color: #f5c46a; }
-.subject-result--bad   .sr-pct { color: #e07a73; }
+.subject-result--good .sr-pct { color: #3ecfa0; }
+.subject-result--mid  .sr-pct { color: #f5c46a; }
+.subject-result--bad  .sr-pct { color: #e07a73; }
 
-/* Opções bloqueadas após resposta */
-.option.locked {
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   MODO STEP — tom roxo
-   (adicionar ao final do qu.css existente)
-   ═══════════════════════════════════════════════════════════════════════════════ */
-
-/* ── Utilitários de visibilidade ────────────────── */
+/* ══════════════════════════════════════════════════
+   MODO STEP
+   ══════════════════════════════════════════════════ */
 .step-hidden            { display: none !important; }
 .step-structural-hidden { display: none !important; }
 
-/* ── Container no modo step ─────────────────────── */
 #quiz-container { display: block; }
 #quiz-container.modo-step { overflow: hidden; display: block; }
 
-/* ── Wrapper deslizante (flex horizontal) ───────── */
 .step-quiz-wrapper {
     display: flex;
     flex-direction: row;
@@ -666,7 +685,6 @@ h1 {
     transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Cada questão ocupa 100% da largura do container */
 .step-quiz-wrapper > .question-container {
     min-width: 100%;
     max-width: 100%;
@@ -675,7 +693,6 @@ h1 {
     margin-bottom: 0;
 }
 
-/* ── Shell: header e footer do step ────────────── */
 #step-shell-header,
 #step-shell-footer {
     width: 100%;
@@ -689,7 +706,6 @@ h1 {
     padding-bottom: 0.6rem;
 }
 
-/* Label do assunto — roxo ──────────────────────── */
 .step-subject-label {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.7rem;
@@ -703,7 +719,6 @@ h1 {
     text-overflow: ellipsis;
 }
 
-/* Linha: contador + barra + badges ─────────────── */
 .step-progress-wrapper {
     display: flex;
     align-items: center;
@@ -720,7 +735,6 @@ h1 {
     min-width: 42px;
 }
 
-/* Barra de progresso roxo ──────────────────────── */
 .step-progress-bar {
     flex: 1;
     height: 2px;
@@ -736,7 +750,6 @@ h1 {
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Badges de acertos/erros ──────────────────────── */
 .step-score-badges {
     display: flex;
     gap: 0.4rem;
@@ -766,7 +779,6 @@ h1 {
     color: #e07a73;
 }
 
-/* Footer: prev / dots / next ───────────────────── */
 .step-footer {
     display: flex;
     align-items: center;
@@ -777,7 +789,6 @@ h1 {
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Dots ─────────────────────────────────────────── */
 .step-dots {
     display: flex;
     align-items: center;
@@ -799,13 +810,10 @@ h1 {
 }
 
 .step-dot:hover    { background: rgba(255, 255, 255, 0.28); transform: scale(1.35); }
-
-/* Dot ativo — roxo ─────────────────────────────── */
 .step-dot-active   { width: 20px; border-radius: 4px; background: #a855f7; }
 .step-dot-correct  { background: rgba(29, 158, 117, 0.55); }
 .step-dot-wrong    { background: rgba(231, 76, 60, 0.48); }
 
-/* Botões de navegação ──────────────────────────── */
 .step-btn {
     display: inline-flex;
     align-items: center;
@@ -833,7 +841,6 @@ h1 {
     color: white;
 }
 
-/* Botão primário — roxo ────────────────────────── */
 .step-btn-primary {
     background: rgba(168, 85, 247, 0.16);
     border: 1px solid rgba(168, 85, 247, 0.38);
@@ -848,52 +855,11 @@ h1 {
 
 .step-btn:disabled { opacity: 0.2; cursor: not-allowed; pointer-events: none; }
 
-/* Botão toggle flutuante — roxo ────────────────── */
-.btn-toggle-modo {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(168, 85, 247, 0.1);
-    border: 1px solid rgba(168, 85, 247, 0.28);
-    color: #a855f7;
-    font-size: 0.95rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    transition: background 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
-    box-shadow: 0 4px 18px rgba(168, 85, 247, 0.08);
-}
-
-.btn-toggle-modo:hover {
-    background: rgba(168, 85, 247, 0.22);
-    border-color: rgba(168, 85, 247, 0.5);
-    color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 6px 24px rgba(168, 85, 247, 0.18);
-}
-
-.btn-toggle-modo.modo-step-active {
-    background: rgba(168, 85, 247, 0.2);
-    border-color: rgba(168, 85, 247, 0.52);
-    color: #c084fc;
-}
-
-.btn-toggle-modo.modo-step-active:hover {
-    color: rgba(255, 255, 255, 0.8);
-}
-
-/* ── Responsivo step ────────────────────────────── */
 @media (max-width: 600px) {
-    .step-footer   { gap: 0.5rem; }
-    .step-btn      { padding: 0.5rem 0.85rem; font-size: 0.78rem; }
-    .btn-toggle-modo { bottom: 14px; right: 14px; width: 40px; height: 40px; }
+    .step-footer { gap: 0.5rem; }
+    .step-btn    { padding: 0.5rem 0.85rem; font-size: 0.78rem; }
 }
 
-/* ── Page wrapper no modo step ──────────────────── */
 .modo-step-wrapper #quiz-container.modo-step {
     flex: 0 0 auto;
 }
