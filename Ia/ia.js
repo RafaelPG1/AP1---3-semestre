@@ -27,6 +27,7 @@ const IA_DISCIPLINA_LABEL = {
   bancoquestoes:  "Banco — Questões",
   designquestoes: "Design — Questões",
   redesquestoes:  "Redes — Questões",
+    pessoal: "Área Pessoal",
 };
 
 const IA_QUESTOES_GLOBAL = {
