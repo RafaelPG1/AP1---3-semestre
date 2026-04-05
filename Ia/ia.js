@@ -18,16 +18,16 @@ const IA_DISCIPLINA_MAP = {
   "poo.html":    "poo",
 };
 const IA_DISCIPLINA_LABEL = {
-  banco:          "Banco de Dados",
-  design:         "Design",
-  redes:          "Redes",
-  poo:            "POO",
-  avapoo:         "POO — AVA",
-  pooquestoes:    "POO — Questões",
-  bancoquestoes:  "Banco — Questões",
-  designquestoes: "Design — Questões",
-  redesquestoes:  "Redes — Questões",
-    pessoal: "Área Pessoal",
+  banco:           "Banco de Dados",
+  desing:          "Design",           // ← adicionar
+  redes:           "Redes",
+  poo:             "POO",
+  avapoo:          "POO — AVA",
+  pooquestoes:     "POO — Questões",
+  bancoquestoes:   "Banco — Questões",
+  desingquestoes:  "Design — Questões", // ← adicionar
+  redesquestoes:   "Redes — Questões",
+  pessoal:         "Área Pessoal",
 };
 
 const IA_QUESTOES_GLOBAL = {
@@ -542,18 +542,27 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
   }
   _atualizarBotaoExplicacao();
 
-  btnExplicacao.addEventListener("click", () => {
-    modoExplicacao = !modoExplicacao;
-    _atualizarBotaoExplicacao();
-    if (modoExplicacao) {
-      adicionarMensagem("assistant",
-        "💡 **Modo explicação ativado!** Vou te ensinar o conteúdo passo a passo, " +
-        "com exemplos práticos e de forma bem clara. Pode perguntar o que quiser!"
-      );
-    } else {
-      adicionarMensagem("assistant", "✅ Modo explicação desativado. Voltando ao modo normal!");
-    }
-  });
+// substitui o listener do btnExplicacao por esse
+let _explicacaoTimer = null;
+btnExplicacao.addEventListener("click", () => {
+  if (_explicacaoTimer) return;
+  _explicacaoTimer = setTimeout(() => { _explicacaoTimer = null; }, 1000);
+
+  modoExplicacao = !modoExplicacao;
+  _atualizarBotaoExplicacao();
+  
+  if (modoExplicacao) {
+    adicionarMensagem("assistant",
+      "💡 **Modo explicação ativado!** Vou te ensinar o conteúdo passo a passo, " +
+      "com exemplos práticos e de forma bem clara. Pode perguntar o que quiser!"
+    );
+  } else {
+    adicionarMensagem("assistant", "✅ Modo explicação desativado. Voltando ao modo normal!");
+  }
+
+  // ← salva imediatamente o novo estado
+  salvarHistorico(disciplina, historico, modoExplicacao);
+});
 
   setTimeout(() => input.focus(), 50);
 
@@ -595,13 +604,23 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
   }
 
   if (historico.length > 0) {
-    const separador = document.createElement("div");
-    separador.style.cssText = `
-      font-size: 11px; color: #888; text-align: center;
-      padding: 6px 0 10px; opacity: 0.7;
-    `;
-    separador.textContent = "— conversa anterior restaurada —";
-    chat.appendChild(separador);
+// substitui o separador atual por esse
+const separador = document.createElement("div");
+separador.style.cssText = `
+  font-size: 11px;
+  color: rgba(180, 160, 255, 0.5);
+  text-align: center;
+  padding: 6px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+separador.innerHTML = `
+  <span style="flex:1;height:1px;background:rgba(255,255,255,.08);"></span>
+  <span>conversa anterior restaurada</span>
+  <span style="flex:1;height:1px;background:rgba(255,255,255,.08);"></span>
+`;
+chat.appendChild(separador);
 
     // ✅ Passa a fonte salva para adicionarMensagem ao restaurar
     historico.forEach(({ role, content: c, fonte: f }) => {

@@ -2,8 +2,8 @@
 #ia-overlay {
   position: fixed;
   inset: 0;
-  background: transparent;   /* era rgba(0,0,0,.48) */
-  backdrop-filter: none;     /* era blur(3px) */
+  background: transparent;
+  backdrop-filter: none;
   z-index: 9998;
 }
 
@@ -16,13 +16,11 @@
   z-index: 9999;
   width: min(540px, 95vw);
   max-height: 82vh;
-  background: rgba(255, 255, 255, 0.97);
-  border-radius: 18px;
+  background: #1a1625;
+  border-radius: 24px;
   box-shadow:
-    0 2px 0 rgba(255,255,255,.3) inset,
-    0 4px 60px rgba(0, 0, 0, .22),
-    0 1px 2px rgba(0, 0, 0, .1);
-  border: 1px solid rgba(255, 255, 255, .25);
+    0 0 0 1px rgba(120, 80, 255, .15),
+    0 24px 60px rgba(0, 0, 0, .55);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -35,10 +33,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
-  background: #13111e;
+  padding: 16px 20px;
+  background: #1a1625;
   color: #fff;
   flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
 }
 
 #ia-header-info {
@@ -48,28 +47,28 @@
 }
 
 #ia-titulo {
-  font-size: .88rem;
-  font-weight: 600;
-  letter-spacing: .04em;
-  color: #e8e8ff;
+  font-size: .92rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: #f0eeff;
 }
 
 #ia-disciplina-badge {
   font-size: .68rem;
   font-weight: 600;
-  background: rgba(124, 90, 243, .25);
-  color: #b8a4ff;
-  padding: 3px 10px;
+  background: rgba(255, 255, 255, .08);
+  color: #c4b8ff;
+  padding: 4px 12px;
   border-radius: 20px;
-  letter-spacing: .04em;
+  letter-spacing: .05em;
   text-transform: uppercase;
-  border: 1px solid rgba(124, 90, 243, .3);
+  border: 1px solid rgba(255, 255, 255, .1);
 }
 
 #ia-header-acoes {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 /* ── Botões do header ────────────────────────────────────────── */
@@ -77,65 +76,73 @@
 #ia-fechar {
   background: none;
   border: none;
-  color: #666;
+  color: rgba(255, 255, 255, .4);
   font-size: 1rem;
   cursor: pointer;
   line-height: 1;
-  padding: 5px 7px;
-  border-radius: 7px;
+  padding: 6px 8px;
+  border-radius: 8px;
   transition: color .15s, background .15s;
 }
 
 #ia-limpar:hover,
 #ia-fechar:hover {
   color: #fff;
-  background: rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, .08);
 }
 
 /* ── Botão modo explicação ───────────────────────────────────── */
 #ia-explicacao {
-  background: none;
+  background: rgba(255, 255, 255, .06);
   border: none;
-  font-size: 1rem;
+  font-size: .95rem;
   cursor: pointer;
   line-height: 1;
-  padding: 5px 7px;
-  border-radius: 7px;
-  opacity: .45;
-  color: #666;
-  transition: opacity .2s ease, filter .2s ease, background .15s ease, color .15s ease;
+  padding: 8px 10px;
+  border-radius: 10px;
+  opacity: .5;
+  transition: opacity .2s ease, background .2s ease, box-shadow .2s ease;
 }
 
 #ia-explicacao:hover {
   opacity: .85;
   background: rgba(255, 255, 255, .1);
-  color: #fff;
 }
 
 #ia-explicacao.ativo {
   opacity: 1;
-  color: #4fc3f7;
-  filter: drop-shadow(0 0 5px rgba(79, 195, 247, .7));
-  background: rgba(79, 195, 247, .1);
+  background: rgba(140, 100, 255, .25);
+  box-shadow: 0 0 0 1px rgba(140, 100, 255, .4);
 }
 
 /* ── Área de chat ────────────────────────────────────────────── */
 #ia-chat {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 14px;
+  padding: 18px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   scroll-behavior: smooth;
-  background: #f7f7fb;
+  background: #1a1625;
+}
+
+#ia-chat::-webkit-scrollbar {
+  width: 4px;
+}
+#ia-chat::-webkit-scrollbar-track {
+  background: transparent;
+}
+#ia-chat::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .1);
+  border-radius: 4px;
 }
 
 /* Bolha genérica */
 .ia-msg-bloco {
-  max-width: 86%;
-  padding: 10px 14px;
-  border-radius: 14px;
+  max-width: 88%;
+  padding: 12px 16px;
+  border-radius: 18px;
   font-size: .875rem;
   line-height: 1.65;
   word-break: break-word;
@@ -144,22 +151,21 @@
 /* Usuário */
 .ia-msg-user {
   align-self: flex-end;
-  background: #13111e;
-  color: #e8e8ff;
-  border-bottom-right-radius: 5px;
+  background: #2d2040;
+  color: #e8e0ff;
+  border-bottom-right-radius: 6px;
 }
 
 /* Assistente */
 .ia-msg-assistant {
   align-self: flex-start;
-  background: #ffffff;
-  color: #1a1a2e;
-  border-bottom-left-radius: 5px;
-  border: 1px solid #ebebf0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+  background: #231d35;
+  color: #e0ddf0;
+  border-bottom-left-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, .06);
 }
 
-.ia-pensando { padding: 12px 16px; }
+.ia-pensando { padding: 14px 18px; }
 
 /* ── Markdown ────────────────────────────────────────────────── */
 .ia-msg-assistant p    { margin: 0 0 .6em; }
@@ -170,7 +176,7 @@
   margin: .8em 0 .3em;
   font-size: .875rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #c4b8ff;
 }
 
 .ia-msg-assistant ul {
@@ -180,23 +186,31 @@
 
 .ia-msg-assistant li { margin-bottom: .25em; }
 
+.ia-msg-assistant strong {
+  font-weight: 700;
+  color: #c4b8ff;
+}
+
+.ia-msg-assistant em { font-style: italic; }
+
 .ia-msg-assistant code {
-  background: #eeeef5;
-  padding: 1px 5px;
-  border-radius: 4px;
+  background: rgba(140, 100, 255, .15);
+  padding: 2px 6px;
+  border-radius: 5px;
   font-family: 'Menlo', 'Consolas', monospace;
   font-size: .82em;
-  color: #4a3fa0;
+  color: #c4a8ff;
 }
 
 .ia-msg-assistant pre {
-  background: #13111e;
-  color: #d4d4ff;
+  background: #120f1e;
+  color: #d4c8ff;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow-x: auto;
   font-size: .8rem;
   margin: .5em 0;
+  border: 1px solid rgba(255, 255, 255, .06);
 }
 
 .ia-msg-assistant pre code {
@@ -206,24 +220,23 @@
   font-size: inherit;
 }
 
-.ia-msg-assistant strong { font-weight: 700; }
-.ia-msg-assistant em     { font-style: italic; }
-
 /* ── Avisos / erros ──────────────────────────────────────────── */
 .ia-aviso {
-  background: #fff8e1;
-  color: #7a5800;
-  border-radius: 8px;
+  background: rgba(255, 200, 0, .1);
+  color: #f0d060;
+  border-radius: 10px;
   padding: 8px 12px;
   font-size: .82rem;
+  border: 1px solid rgba(255, 200, 0, .2);
 }
 
 .ia-erro {
-  background: #fdecea;
-  color: #b71c1c;
-  border-radius: 8px;
+  background: rgba(255, 80, 80, .1);
+  color: #ff9090;
+  border-radius: 10px;
   padding: 8px 12px;
   font-size: .82rem;
+  border: 1px solid rgba(255, 80, 80, .2);
 }
 
 /* ── Loader ──────────────────────────────────────────────────── */
@@ -237,7 +250,7 @@
 .ia-loading span {
   width: 8px;
   height: 8px;
-  background: #7c3af3;
+  background: #8b5cf6;
   border-radius: 50%;
   animation: ia-bounce .9s infinite ease-in-out;
 }
@@ -247,54 +260,59 @@
 
 /* ── Área de input ───────────────────────────────────────────── */
 #ia-input-area {
-  border-top: 1px solid #ebebf0;
-  padding: 12px 14px;
-  background: #fff;
+  border-top: 1px solid rgba(255, 255, 255, .06);
+  padding: 14px 16px;
+  background: #1a1625;
   flex-shrink: 0;
 }
 
 #ia-input {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid #e0e0ea;
-  border-radius: 10px;
-  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 14px;
+  padding: 11px 14px;
   font-size: .875rem;
   font-family: inherit;
   resize: none;
   outline: none;
-  transition: border-color .15s;
-  background: #f9f9fc;
+  transition: border-color .2s;
+  background: #231d35;
   line-height: 1.5;
-  color: #1a1a2e;
+  color: #e0ddf0;
 }
 
-#ia-input:focus { border-color: #7c3af3; }
+#ia-input::placeholder { color: rgba(255, 255, 255, .3); }
+#ia-input:focus { border-color: rgba(140, 100, 255, .5); }
 
 #ia-rodape {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
-#ia-contador { font-size: .72rem; color: #bbb; }
+#ia-contador {
+  font-size: .7rem;
+  color: rgba(255, 255, 255, .25);
+}
 
 #ia-enviar {
-  background: #13111e;
+  background: #7c3af3;
   color: #fff;
   border: none;
-  border-radius: 9px;
-  padding: 8px 20px;
+  border-radius: 12px;
+  padding: 9px 22px;
   font-size: .85rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: opacity .15s;
-  min-width: 106px;
+  transition: background .15s, opacity .15s;
+  min-width: 110px;
+  letter-spacing: .01em;
 }
 
-#ia-enviar:disabled    { opacity: .45; cursor: default; }
-#ia-enviar:not(:disabled):hover { opacity: .82; }
+#ia-enviar:disabled    { opacity: .4; cursor: default; }
+#ia-enviar:not(:disabled):hover { background: #6d28e0; }
 
 /* ── Animações ───────────────────────────────────────────────── */
 @keyframes ia-fade {
@@ -308,7 +326,7 @@
 }
 
 @keyframes ia-bounce {
-  0%, 80%, 100% { transform: scale(0); opacity: .4; }
+  0%, 80%, 100% { transform: scale(0); opacity: .3; }
   40%           { transform: scale(1); opacity:  1; }
 }
 
@@ -316,8 +334,8 @@
 @media (max-width: 480px) {
   #ia-box {
     width: 100vw;
-    max-height: 90vh;
-    border-radius: 16px 16px 0 0;
+    max-height: 92vh;
+    border-radius: 24px 24px 0 0;
     top: auto;
     bottom: 0;
     left: 0;
@@ -334,56 +352,48 @@
 /* ── Fonte da resposta ───────────────────────────────────────── */
 .ia-fonte {
   font-size: 10px;
-  opacity: .4;
+  opacity: .3;
   display: block;
   text-align: right;
   margin-top: 6px;
+  color: #a090cc;
 }
 
 /* ── Oculta FAB padrão ───────────────────────────────────────── */
 #ia-fab { display: none !important; }
 
-/* ── Botão flutuante da IA — ícone com expand no hover ──────── */
+/* ── Botão flutuante ─────────────────────────────────────────── */
 .ia-fab-custom {
   position: fixed;
   bottom: 28px;
   right: 28px;
   z-index: 9990;
-
   display: flex;
   align-items: center;
   gap: 0;
-
-  background: #0f0f1a;
-  color: #e8e8ff;
-  border: 1px solid rgba(120, 100, 255, 0.4);
+  background: #1a1625;
+  color: #e8e0ff;
+  border: 1px solid rgba(120, 80, 255, .4);
   border-radius: 50px;
-
-  /* Padding só horizontal para o ícone */
   padding: 13px 14px;
-
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: system-ui, sans-serif;
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
   cursor: pointer;
   overflow: hidden;
-
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, .45),
-    0 0 40px rgba(90, 60, 255, 0.12);
-
+    0 8px 32px rgba(0, 0, 0, .5),
+    0 0 0 1px rgba(100, 60, 255, .1);
   transition:
     padding 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
     border-color 0.25s ease,
     box-shadow 0.25s ease;
-
   animation: ia-pulse-ring 4s ease-in-out infinite;
 }
 
-/* Ícone ✦ */
 .ia-fab-icon {
-  font-size: 1rem;
+  font-size: 1.05rem;
   line-height: 1;
   color: #a78bff;
   flex-shrink: 0;
@@ -392,30 +402,26 @@
   transition: transform 0.3s ease;
 }
 
-/* Label — começa escondido */
 .ia-fab-label {
   max-width: 0;
   overflow: hidden;
   white-space: nowrap;
   opacity: 0;
   margin-left: 0;
-  background: linear-gradient(90deg, #d4c8ff, #a78bff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #c4b0ff;
   transition:
     max-width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.25s ease,
     margin-left 0.3s ease;
 }
 
-/* Hover — expande */
 .ia-fab-custom:hover {
   padding: 13px 18px 13px 14px;
-  border-color: rgba(130, 100, 255, 0.65);
+  border-color: rgba(140, 100, 255, .7);
   box-shadow:
-    0 12px 40px rgba(0, 0, 0, .5),
-    0 0 60px rgba(100, 70, 255, 0.25);
+    0 12px 40px rgba(0, 0, 0, .55),
+    0 0 0 1px rgba(120, 80, 255, .3),
+    0 0 40px rgba(100, 60, 255, .2);
   animation: none;
 }
 
@@ -429,31 +435,26 @@
   transform: rotate(20deg) scale(1.1);
 }
 
-.ia-fab-custom:active {
-  transform: scale(0.97);
-}
+.ia-fab-custom:active { transform: scale(0.97); }
 
-/* Pulse de atenção */
 @keyframes ia-pulse-ring {
   0%, 90%, 100% {
     box-shadow:
-      0 8px 32px rgba(0, 0, 0, .45),
-      0 0 40px rgba(90, 60, 255, 0.12);
+      0 8px 32px rgba(0, 0, 0, .5),
+      0 0 0 1px rgba(100, 60, 255, .1);
   }
   45% {
     box-shadow:
-      0 0 0 6px rgba(100, 80, 255, 0.08),
-      0 8px 32px rgba(0, 0, 0, .45),
-      0 0 60px rgba(90, 60, 255, 0.2);
+      0 0 0 6px rgba(100, 60, 255, .07),
+      0 8px 32px rgba(0, 0, 0, .5),
+      0 0 50px rgba(100, 60, 255, .18);
   }
 }
 
-/* Responsivo */
 @media (max-width: 480px) {
   .ia-fab-custom {
     bottom: 18px;
     right: 18px;
     padding: 11px 12px;
-    font-size: 0.8rem;
   }
 }
