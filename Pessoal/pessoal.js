@@ -454,19 +454,20 @@ function _renderizarChecklistCompleto(discId, panelEl) {
         // ── FABs ──────────────────────────────────────────────────────
         mostrarFABs(true);
 
-        const fabCollapse = document.getElementById('fab-collapse');
-        if (fabCollapse) {
-            const novoBtn = fabCollapse.cloneNode(true);
-            fabCollapse.parentNode.replaceChild(novoBtn, fabCollapse);
-            novoBtn.addEventListener('click', () => {
-                panelEl.querySelectorAll('.ck-secao-header').forEach(header => {
-                    const body    = header.nextElementSibling;
-                    const chevron = header.querySelector('.ck-secao-chevron');
-                    if (body)    body.style.display      = 'none';
-                    if (chevron) chevron.style.transform = 'rotate(0deg)';
-                });
-            });
-        }
+// REMOVER ESTE BLOCO:
+const fabCollapse = document.getElementById('fab-collapse');
+if (fabCollapse) {
+    const novoBtn = fabCollapse.cloneNode(true);
+    fabCollapse.parentNode.replaceChild(novoBtn, fabCollapse);
+    novoBtn.addEventListener('click', () => {
+        panelEl.querySelectorAll('.ck-secao-header').forEach(header => {
+            const body    = header.nextElementSibling;
+            const chevron = header.querySelector('.ck-secao-chevron');
+            if (body)    body.style.display      = 'none';
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+        });
+    });
+}
 
     } else {
         mostrarFABs(false);

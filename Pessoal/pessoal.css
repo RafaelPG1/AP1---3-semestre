@@ -37,10 +37,7 @@ body {
     color: var(--c-text);
     min-height: 100vh;
     overflow-x: hidden;
-    
 }
-
-
 
 /* ── Glows ─────────────────────────────────────── */
 .bg-glow { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
@@ -80,7 +77,6 @@ body {
 }
 .btn-voltar i { font-size: .75rem; }
 
-/* ── Corrige tab-prog invisível em 0% ───────────  */
 /* ═══════════════════════════════════════════════
    FIX 1 — tab-prog: garante "0 de X itens" visível
 ═══════════════════════════════════════════════ */
@@ -97,7 +93,6 @@ body {
     visibility: visible !important;
 }
 
-/* garante que .tab-info nunca esconde o filho */
 .tab-info {
     display: flex;
     flex-direction: column;
@@ -107,32 +102,22 @@ body {
     overflow: visible;
 }
 
-
 /* ═══════════════════════════════════════════════
-   FIX 2 — spinner "Carregando..." que não girava
+   FIX 2 — spinner
 ═══════════════════════════════════════════════ */
 @keyframes spin {
-    from { transform: rotate(0deg);   }
+    from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
 }
-
-/* Font Awesome usa fa-spin, mas vamos garantir
-   caso o elemento use uma classe customizada      */
-.fa-spin,
-.fa-spinner,
-.loading-icon,
-[class*="fa-circle-notch"],
-[class*="fa-sync"] {
+.fa-spin, .fa-spinner, .loading-icon,
+[class*="fa-circle-notch"], [class*="fa-sync"] {
     animation: spin 1s linear infinite !important;
-    display: inline-block;          /* precisa de display block para transform funcionar */
+    display: inline-block;
 }
-
-/* Se o spinner for um elemento próprio (ex: <span class="spinner">) */
 .spinner {
     animation: spin 1s linear infinite !important;
     display: inline-block;
 }
-
 
 /* ── Util ───────────────────────────────────────── */
 .hidden { display: none !important; }
@@ -252,8 +237,8 @@ body {
 .disc-tabs { display: flex; flex-direction: column; gap: .3rem; }
 
 .disc-tab {
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
     gap: .65rem;
     padding: .6rem .75rem .6rem .95rem;
     border-radius: 10px;
@@ -264,52 +249,33 @@ body {
     background: none;
     text-align: left;
     width: 100%;
-    font-family: 'Inter', sans-serif; /* Inter costuma ter ótima leitura em negrito */
-    font-weight: 600; /* ← Adicione isto: 600 para Semi-bold ou 700 para Bold */
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
     overflow: hidden;
 }
-
-/* Exemplo: Negrito apenas na aba ativa */
 .disc-tab.active {
     font-weight: 700;
     color: var(--ck-text-primary);
-}
-.disc-tab:hover { background: rgba(255,255,255,.05); }
-.disc-tab.active {
     background: rgba(255,255,255,.07);
     border-color: rgba(255,255,255,.1);
 }
+.disc-tab:hover { background: rgba(255,255,255,.05); }
 
-/* ── Stripe colorida à esquerda ─────────────────
-   Barra grossa, altura total do card, com glow     */
 .disc-tab::before {
     content: '';
     position: absolute;
-    left: 0; top: 0; bottom: 0;   /* altura total */
-    width: 4px;                    /* mais grossa, igual à imagem */
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
     border-radius: 0 2px 2px 0;
     opacity: 0;
     transition: opacity .2s ease;
 }
 .disc-tab.active::before { opacity: 1; }
 
-/* Cores + glow por disciplina */
-.disc-tab[data-disc="design"]::before {
-    background: #e785b0;
-    box-shadow: 2px 0 10px rgba(231,133,176,.45);
-}
-.disc-tab[data-disc="banco"]::before {
-    background: #60aef5;
-    box-shadow: 2px 0 10px rgba(96,174,245,.45);
-}
-.disc-tab[data-disc="redes"]::before {
-    background: #a855f7;
-    box-shadow: 2px 0 10px rgba(168,85,247,.45);
-}
-.disc-tab[data-disc="poo"]::before {
-    background: #f5b84c;
-    box-shadow: 2px 0 10px rgba(245,184,76,.45);
-}
+.disc-tab[data-disc="design"]::before { background: #e785b0; box-shadow: 2px 0 10px rgba(231,133,176,.45); }
+.disc-tab[data-disc="banco"]::before  { background: #60aef5; box-shadow: 2px 0 10px rgba(96,174,245,.45); }
+.disc-tab[data-disc="redes"]::before  { background: #a855f7; box-shadow: 2px 0 10px rgba(168,85,247,.45); }
+.disc-tab[data-disc="poo"]::before    { background: #f5b84c; box-shadow: 2px 0 10px rgba(245,184,76,.45); }
 
 /* ── Ícone da tab ───────────────────────────────── */
 .tab-icon {
@@ -320,14 +286,13 @@ body {
 
 .tab-icon-design { background: rgba(212,83,126,.15); border: 1px solid rgba(212,83,126,.25); }
 .tab-icon-design i { color: #e785b0; }
-.tab-icon-banco  { background: rgba(55,138,221,.15); border: 1px solid rgba(55,138,221,.25); }
+.tab-icon-banco  { background: rgba(55,138,221,.15);  border: 1px solid rgba(55,138,221,.25); }
 .tab-icon-banco i  { color: #60aef5; }
-.tab-icon-redes  { background: rgba(168,85,247,.15); border: 1px solid rgba(168,85,247,.25); }
+.tab-icon-redes  { background: rgba(168,85,247,.15);  border: 1px solid rgba(168,85,247,.25); }
 .tab-icon-redes i  { color: #a855f7; }
-.tab-icon-poo    { background: rgba(239,159,39,.15); border: 1px solid rgba(239,159,39,.25); }
+.tab-icon-poo    { background: rgba(239,159,39,.15);  border: 1px solid rgba(239,159,39,.25); }
 .tab-icon-poo i    { color: #f5b84c; }
 
-.tab-info { flex: 1; min-width: 0; }
 .tab-name { font-size: .8rem; font-weight: 600; color: var(--c-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 .tab-prog { font-size: .65rem; color: var(--c-muted); white-space: normal; line-height: 1.3; }
 
@@ -357,7 +322,6 @@ body {
     padding: 1.8rem 2rem;
 }
 
-/* Cabeçalho do painel */
 .panel-header {
     display: flex; align-items: center; gap: 1rem;
     margin-bottom: 1.6rem; padding-bottom: 1.2rem;
@@ -390,7 +354,10 @@ body {
 }
 .stat-pill strong { color: var(--c-text); font-weight: 600; }
 
-/* ── Seção de vídeos ───────────────────────────── */
+
+/* ═══════════════════════════════════════════════
+   SEÇÃO DE VÍDEOS — v2
+═══════════════════════════════════════════════ */
 .panel-videos { margin-bottom: 1.8rem; }
 
 .section-title {
@@ -400,32 +367,102 @@ body {
 }
 .section-title i { color: var(--c-green-l); }
 
-.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: .6rem; }
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: .5rem;
+}
 
+/* ── Card base (Google Drive) ── */
 .vbtn {
-    display: flex; align-items: center; gap: .7rem;
-    padding: .65rem .9rem; border-radius: 10px;
-    background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.28);
-    color: rgba(255,255,255,.82); text-decoration: none; font-size: .82rem;
-    transition: background .22s, border-color .22s, color .22s, transform .18s;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    padding: .6rem .85rem;
+    border-radius: 10px;
+    background: rgba(16,185,129,.07);
+    border: 1px solid rgba(16,185,129,.22);
+    color: rgba(255,255,255,.82);
+    text-decoration: none;
+    font-size: .82rem;
+    transition: background .2s, border-color .2s, transform .18s;
 }
-.vbtn:hover { 
-    background: rgba(16,185,129,.22); 
-    border-color: rgba(16,185,129,.5); 
-    color: white; 
-    transform: translateY(-2px); 
+.vbtn:hover {
+    background: rgba(16,185,129,.15);
+    border-color: rgba(16,185,129,.45);
+    color: white;
+    transform: translateY(-2px);
 }
-.vbtn .vplay { 
-    width: 22px; height: 22px; border-radius: 6px; 
-    background: rgba(16,185,129,.28); 
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0; 
+
+/* ── Ícone play (Drive) ── */
+.vplay {
+    width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+    background: rgba(16,185,129,.22);
+    display: flex; align-items: center; justify-content: center;
 }
-.vbtn .vplay i { font-size: .6rem; color: var(--c-green-l); }
-.vbtn span { flex: 1; }
-.vbtn .vext { font-size: .6rem; color: rgba(255,255,255,.2); }
-.vbtn.watched { border-color: rgba(16,185,129,.55); background: rgba(16,185,129,.2); }
-.vbtn.watched .vplay { background: rgba(16,185,129,.4); }
-.vbtn.watched .vplay i { color: white; }
+.vplay i { font-size: .6rem; color: var(--c-green-l); }
+
+/* ── Ícone play (YouTube) ── */
+.vplay-yt { background: rgba(255,70,70,.18); }
+
+/* ── Textos do card ── */
+.vbtn-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.vbtn-label {
+    font-size: .8rem;
+    font-weight: 500;
+    color: rgba(255,255,255,.88);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.vbtn-sub    { font-size: .66rem; color: rgba(255,255,255,.3); }
+.vbtn-sub-yt { font-size: .66rem; color: rgba(255,112,112,.55); }
+
+/* ── Ícone externo ── */
+.vext { font-size: .6rem; color: rgba(255,255,255,.18); flex-shrink: 0; }
+
+/* ── Card YouTube ── */
+.vbtn-yt {
+    background: rgba(255,70,70,.05);
+    border-color: rgba(255,70,70,.15);
+}
+.vbtn-yt:hover {
+    background: rgba(255,70,70,.10);
+    border-color: rgba(255,70,70,.28);
+}
+
+/* Label branco normal, sem vermelho */
+.vbtn-yt .vbtn-label {
+    color: rgba(255,255,255,.88);
+}
+
+/* Ícone externo neutro */
+.vbtn-yt .vext {
+    color: rgba(255,255,255,.18);
+}
+
+/* Estado assistido para YouTube */
+.vbtn-yt.watched {
+    border-color: rgba(255,70,70,.35);
+    background: rgba(255,70,70,.10);
+}
+.vbtn-yt.watched .vplay-yt {
+    background: rgba(255,70,70,.3);
+}
+/* ── Divisor YouTube ── */
+.yt-divider {
+    display: flex; align-items: center; gap: .4rem;
+    font-size: .67rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: rgba(255,112,112,.55);
+    margin: .9rem 0 .55rem;
+}
+
 
 /* ═══════════════════════════════════════════════
    CHECKLIST — REDESIGN v4
@@ -463,7 +500,7 @@ body {
     padding: 14px 18px 13px;
     border-bottom: 1px solid var(--ck-border-mod);
     font-size: .83rem;
-    font-weight: 700; /* ← Alterado de 600 para 700 */
+    font-weight: 700;
     letter-spacing: -.01em;
     color: var(--ck-text-primary);
     text-transform: none;
@@ -618,10 +655,9 @@ body {
     .ck-item   { padding: 10px 14px; }
     .mod-title { padding: 12px 14px 11px; font-size: .8rem; }
     .ck-text   { font-size: .845rem; }
+
+    .video-grid { grid-template-columns: 1fr; }
 }
-
-
-
 
 
 /* ── Seções colapsáveis do checklist (Redes) ─────────────────────── */

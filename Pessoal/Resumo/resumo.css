@@ -370,7 +370,6 @@
     gap: 0;
     z-index: 50;
 
-    /* Começa recolhida — só a "orelha" aparece */
     --fab-w: 40px;
 }
 
@@ -388,18 +387,15 @@
     border-radius: 14px 0 0 14px;
     box-shadow: -4px 0 24px rgba(0,0,0,.45);
 
-    /* Escondida para fora */
+    /* Escondida para fora — padrão desktop */
     transform: translateX(calc(100% + 1px));
     opacity: 0;
-transition: transform .5s cubic-bezier(.4, 0, .2, 1),
-                opacity .4s ease; 
-
+    transition: transform .5s cubic-bezier(.4, 0, .2, 1),
+                opacity .4s ease;
     pointer-events: none;
 }
 
-/* Orelha sempre visível */
-/* Orelha sempre visível */
-/* Orelha sempre visível */
+/* Orelha — visível apenas no desktop */
 .fab-ear {
     position: absolute;
     right: 0;
@@ -427,18 +423,39 @@ transition: transform .5s cubic-bezier(.4, 0, .2, 1),
     transition: background .18s;
 }
 
-/* Hover no grupo inteiro: abre o trilho */
-.fab-group:hover .fab-group-inner {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
+/* ── Desktop: abre no hover ──────────────────────────────────────────── */
+@media (min-width: 721px) {
+    .fab-group:hover .fab-group-inner {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .fab-group:hover .fab-ear {
+        width: 12px;
+        background: rgba(255,255,255,.12);
+    }
+    .fab-group:hover .fab-ear::before {
+        background: rgba(255,255,255,.7);
+    }
 }
-.fab-group:hover .fab-ear {
-    width: 12px;
-    background: rgba(255,255,255,.12);
-}
-.fab-group:hover .fab-ear::before {
-    background: rgba(255,255,255,.7);
+
+/* ── Mobile: trilho sempre visível, orelha oculta ────────────────────── */
+@media (max-width: 720px) {
+    .fab-group {
+        top: auto;
+        bottom: 5rem;
+        transform: none;
+    }
+    .fab-group-inner {
+        transform: translateX(0) !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        border-radius: 14px;
+        border-right: 1px solid rgba(255,255,255,.08);
+    }
+    .fab-ear {
+        display: none !important;
+    }
 }
 
 
@@ -482,10 +499,6 @@ transition: transform .5s cubic-bezier(.4, 0, .2, 1),
     height: 1px;
     background: rgba(255,255,255,.07);
     margin: .05rem 0;
-}
-
-@media (max-width: 720px) {
-    .fab-group { top: auto; bottom: 5rem; transform: none; }
 }
 
 

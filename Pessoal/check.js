@@ -269,6 +269,7 @@ export const DISCIPLINAS_DATA = {
             { label:'Aulas 3 e 4', url:'https://drive.google.com/file/d/1gALBefY4Au-OsoEbmqG69NAsdZe2P5Qc/view?usp=drive_link' },
             { label:'Aula 5',      url:'https://drive.google.com/file/d/1BmIUddd-gsCfQzRds-XM1qDui3qFGICM/view?usp=drive_link' },
             { label:'Aula 6',      url:'https://drive.google.com/file/d/1b1ztYxjGwB3WzVJdXZUh_8EqK42NxmxX/view?usp=drive_link' },
+            { label: 'CURSO FUND. DE REDES', url: 'https://youtube.com/playlist?list=PLAp37wMSBouDdpuuYhZfEK9oH0qk0IANb&si=qe_XWuYBRVZF2VBy' },
         ]
     },
 
@@ -473,7 +474,7 @@ redes_professor: {
     }
 };
 
-//check.js
+
 // ── UTILITÁRIOS ──────────────────────────────────────────────────────────
 
 export function criarSalvador(fn, ms = 800, maxMs = 3000) {
@@ -507,11 +508,20 @@ export function totalItensDisciplina(discId) {
     return DISCIPLINAS_DATA[discId].modulos.reduce((acc, m) => acc + m.itens.length, 0);
 }
 
+// ── HELPER: detecta se URL é do YouTube ──────────────────────────────────
+
+function isYouTube(url) {
+    return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+}
+
 // ── RENDERIZAÇÃO ─────────────────────────────────────────────────────────
 
 export function renderizarPainel(discId, container) {
     const disc  = DISCIPLINAS_DATA[discId];
     const total = totalItensDisciplina(discId);
+
+    const videosDrive = disc.videos.filter(v => !isYouTube(v.url));
+    const videosYT    = disc.videos.filter(v =>  isYouTube(v.url));
 
     container.innerHTML = `
         <div class="panel-header">
@@ -530,17 +540,54 @@ export function renderizarPainel(discId, container) {
         ${disc.videos.length > 0 ? `
         <div class="panel-videos">
             <p class="section-title"><i class="fas fa-play-circle"></i> Vídeos das Aulas</p>
+
             <div class="video-grid">
-                ${disc.videos.map((v, i) => `
+                ${videosDrive.map(v => {
+                    const i = disc.videos.indexOf(v);
+                    return `
                     <a href="${v.url}" target="_blank" rel="noopener noreferrer"
                        class="vbtn" id="vbtn-${discId}-${i}"
                        data-disc="${discId}" data-idx="${i}">
                         <div class="vplay"><i class="fas fa-play"></i></div>
-                        <span>${v.label}</span>
+                        <div class="vbtn-body">
+                            <span class="vbtn-label">${v.label}</span>
+                            <span class="vbtn-sub">Google Drive</span>
+                        </div>
                         <i class="fas fa-external-link-alt vext"></i>
-                    </a>
-                `).join('')}
+                    </a>`;
+                }).join('')}
             </div>
+
+            ${videosYT.length > 0 ? `
+            <div class="yt-divider">
+                <svg width="14" height="10" viewBox="0 0 20 14" fill="none">
+                    <rect width="20" height="14" rx="3" fill="rgba(255,70,70,.7)"/>
+                    <path d="M8 4l6 3-6 3V4z" fill="white"/>
+                </svg>
+                YouTube
+            </div>
+            <div class="video-grid">
+                ${videosYT.map(v => {
+                    const i = disc.videos.indexOf(v);
+                    return `
+                    <a href="${v.url}" target="_blank" rel="noopener noreferrer"
+                       class="vbtn vbtn-yt" id="vbtn-${discId}-${i}"
+                       data-disc="${discId}" data-idx="${i}">
+                        <div class="vplay vplay-yt">
+                            <svg width="10" height="8" viewBox="0 0 20 14" fill="none">
+                                <rect width="20" height="14" rx="3" fill="rgba(255,70,70,.6)"/>
+                                <path d="M8 4l6 3-6 3V4z" fill="#ffaaaa"/>
+                            </svg>
+                        </div>
+                        <div class="vbtn-body">
+                            <span class="vbtn-label">${v.label}</span>
+                            <span class="vbtn-sub vbtn-sub-yt">youtube.com · playlist</span>
+                        </div>
+                        <i class="fas fa-external-link-alt vext"></i>
+                    </a>`;
+                }).join('')}
+            </div>
+            ` : ''}
         </div>
         ` : ''}
 
