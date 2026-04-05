@@ -473,7 +473,7 @@ redes_professor: {
     }
 };
 
-
+//check.js
 // ── UTILITÁRIOS ──────────────────────────────────────────────────────────
 
 export function criarSalvador(fn, ms = 800, maxMs = 3000) {

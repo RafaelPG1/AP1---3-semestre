@@ -1,0 +1,25 @@
+Capacidades da IA na Área Pessoal:
+O que ela CONSEGUE fazer:
+
+Responder perguntas sobre qualquer matéria (Redes, POO, Banco, Design) livremente, sem restrição
+Modo normal (Groq) — respostas curtas e diretas
+Modo explicação 💡 (OpenRouter) — respostas didáticas, com exemplos e analogias
+Manter histórico da conversa por até 30 horas via localStorage
+Restaurar a conversa anterior ao reabrir o modal
+
+O que ela NÃO consegue fazer na Área Pessoal:
+
+Acessar suas anotações — o módulo de anotações é separado e não é injetado como contexto
+Acessar seus checklists ou progresso
+Saber qual aba/disciplina você está visualizando no momento
+Responder sobre questões específicas numeradas (ex: "explica a questão 3") — isso só funciona nas páginas de quiz onde o quizData está disponível no window
+Ter contexto de resumos — na Área Pessoal o textoResumo e textoQuestoes ficam nulos porque detectarDisciplina() retorna "pessoal", que não está mapeado em IA_QUESTOES_GLOBAL
+
+
+
+
+
+
+
+
+
