@@ -525,3 +525,11 @@
     font-size: 0.8rem;
   }
 }
+
+.ia-fonte {
+  font-size: 10px;
+  opacity: 0.45;
+  display: block;
+  text-align: right;
+  margin-top: 6px;
+}

@@ -1,5 +1,5 @@
 // ============================================================
-//  ia.js — Módulo global de IA  v6.1
+//  ia.js — Módulo global de IA  v6.3
 //  Carrega questões via window.quizData* (sem import())
 // ============================================================
 
@@ -17,22 +17,29 @@ const IA_DISCIPLINA_MAP = {
   "redes.html":  "redes",
   "poo.html":    "poo",
 };
-
 const IA_DISCIPLINA_LABEL = {
-  banco:  "Banco de Dados",
-  design: "Design",
-  redes:  "Redes",
-  poo:    "POO",
+  banco:          "Banco de Dados",
+  design:         "Design",
+  redes:          "Redes",
+  poo:            "POO",
+  avapoo:         "POO — AVA",
+  pooquestoes:    "POO — Questões",
+  bancoquestoes:  "Banco — Questões",
+  designquestoes: "Design — Questões",
+  redesquestoes:  "Redes — Questões",
 };
 
-// Mapa disciplina → nome da variável global exposta pelo qu.js
 const IA_QUESTOES_GLOBAL = {
-  poo:    "quizDataPoo",
-  banco:  "quizDataBanco",
-  design: "quizDataDesign",
-  redes:  "quizDataRedes",
+  poo:            "quizDataPoo",
+  banco:          "quizDataBanco",
+  design:         "quizDataDesign",
+  redes:          "quizDataRedes",
+  avapoo:         "quizDataAVAPoo",
+  pooquestoes:    "quizDataPoo",
+  bancoquestoes:  "quizDataBanco",
+  designquestoes: "quizDataDesign",
+  redesquestoes:  "quizDataRedes",
 };
-
 const IA_CACHE_RESUMO   = {};
 const IA_CACHE_QUESTOES = {};
 
@@ -85,7 +92,7 @@ async function carregarQuestoes(disciplina) {
 
   const dados = window[nomeVar];
   if (!dados || !Array.isArray(dados)) {
-    console.warn(`[IA] Variável global "${nomeVar}" não encontrada. Certifique-se de que o qu.js expõe window.${nomeVar}`);
+    console.warn(`[IA] Variável global "${nomeVar}" não encontrada.`);
     return null;
   }
 
@@ -379,6 +386,7 @@ async function abrirIADisciplina() {
 
 // ============================================================
 //  10. Comunicação com o Worker
+//  Retorna o objeto completo { resposta, fonte }
 // ============================================================
 
 async function perguntarIA(pergunta, contexto = "", historico = [], disciplina = null, ehQuestao = false, modoExplicacao = false) {
@@ -402,7 +410,9 @@ async function perguntarIA(pergunta, contexto = "", historico = [], disciplina =
   }
 
   if (!data.resposta) throw new Error("⚠️ O sistema está temporariamente ocupado. Tente novamente.");
-  return data.resposta;
+
+  // Retorna o objeto inteiro { resposta, fonte }
+  return data;
 }
 
 // ============================================================
@@ -564,7 +574,7 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     input.focus();
   });
 
-  function adicionarMensagem(role, conteudo) {
+  function adicionarMensagem(role, conteudo, fonte = null) {
     const div = document.createElement("div");
     div.classList.add("ia-msg-bloco", `ia-msg-${role}`);
     if (role === "user") {
@@ -573,6 +583,10 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
       div.innerHTML = typeof conteudo === "string" && conteudo.startsWith("<")
         ? conteudo
         : formatarMarkdown(conteudo);
+      // ✅ Adiciona badge da fonte se disponível
+      if (fonte) {
+        div.innerHTML += `<span class="ia-fonte">via ${fonte}</span>`;
+      }
     }
     chat.appendChild(div);
     requestAnimationFrame(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }));
@@ -588,7 +602,10 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     separador.textContent = "— conversa anterior restaurada —";
     chat.appendChild(separador);
 
-    historico.forEach(({ role, content: c }) => adicionarMensagem(role, c));
+    // ✅ Passa a fonte salva para adicionarMensagem ao restaurar
+    historico.forEach(({ role, content: c, fonte: f }) => {
+      adicionarMensagem(role, c, f ?? null);
+    });
 
     if (modoExplicacao) {
       _atualizarBotaoExplicacao();
@@ -626,14 +643,12 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     let contextoEnviado = "";
 
     if (textoQuestoes) {
-      // Tenta extrair a questão específica que o aluno pediu
       const numeroQuestao = extrairNumeroQuestao(pergunta);
       const questaoEspecifica = numeroQuestao
         ? extrairQuestaoDoTexto(textoQuestoes, numeroQuestao)
         : null;
 
       if (questaoEspecifica) {
-        // Tem questão específica → manda só ela (com gabarito completo)
         const resumoFiltrado = temResumo
           ? filtrarContexto(textoBase, pergunta, 2, 800)
           : "";
@@ -646,7 +661,6 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
 
         console.info(`[IA] Questão ${numeroQuestao} extraída e enviada no contexto.`);
       } else {
-        // Sem número específico → filtra as questões pelo tema da pergunta
         const questoesFiltradas = filtrarContexto(textoQuestoes, pergunta, IA_MAX_SECOES, 2000);
         const resumoFiltrado    = temResumo
           ? filtrarContexto(textoBase, pergunta, 2, 800)
@@ -657,7 +671,6 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
         ).slice(0, 4400);
       }
     } else {
-      // Sem questões carregadas → usa só o resumo
       contextoEnviado = temResumo
         ? filtrarContexto(textoBase, pergunta)
         : limitarContexto(textoBase);
@@ -696,16 +709,21 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
         modoExplicacao
       );
 
-      const textoResposta = (typeof resultado === "object" && resultado.resposta)
-        ? resultado.resposta
-        : resultado;
+      const textoResposta = resultado.resposta ?? String(resultado);
+      const fonte         = resultado.fonte ?? null;
 
+      // ✅ Salva fonte junto com a mensagem do assistant no histórico
       historico.push({ role: "user",      content: pergunta });
-      historico.push({ role: "assistant", content: textoResposta });
+      historico.push({ role: "assistant", content: textoResposta, fonte: fonte });
       salvarHistorico(disciplina, historico, modoExplicacao);
 
+      // ✅ Renderiza com badge da fonte
+      const htmlFinal =
+        formatarMarkdown(textoResposta) +
+        (fonte ? `<span class="ia-fonte">via ${fonte}</span>` : "");
+
       loadingEl.classList.remove("ia-pensando");
-      loadingEl.innerHTML = formatarMarkdown(textoResposta);
+      loadingEl.innerHTML = htmlFinal;
       requestAnimationFrame(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }));
 
     } catch (err) {

@@ -1,5 +1,5 @@
 //ava.js - modelo
-const originalQuizData = [
+const quizDataAVAPoo = [
   {
     subject: "Programação Orientada a Objetos",
     questions: [
@@ -412,7 +412,7 @@ function shuffleArray(array) {
 }
 
 function createShuffledQuizData() {
-    return originalQuizData.map(subject => ({
+    return quizDataAVAPoo.map(subject => ({
         ...subject,
         questions: subject.questions.map(question => {
             const optionIndices = question.options.map((_, index) => index);
@@ -445,7 +445,7 @@ function formatFeedback(feedback) {
 }
 
 function createOriginalQuizData() {
-    return originalQuizData.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
+        return quizDataAVAPoo.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
 }
 
 // ─── Inicialização ────────────────────────────────────────────────────────────
@@ -1288,6 +1288,7 @@ function criarBotaoToggleModo() {
     btn.className = 'btn-toggle-modo';
     btn.title     = 'Modo Step (uma questão por vez)';
     btn.innerHTML = '<i class="fas fa-layer-group"></i>';
+    btn.style.bottom = '90px'; // ← adiciona essa linha
     btn.addEventListener('click', toggleModo);
     document.body.appendChild(btn);
 }
@@ -1309,3 +1310,5 @@ function sincronizarAlturaStep() {
     stepWrapper.style.height                               = altura + 'px';
     document.getElementById('quiz-container').style.height = altura + 'px';
 }
+
+window.quizDataAVAPoo = quizDataAVAPoo;

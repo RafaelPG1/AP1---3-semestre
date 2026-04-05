@@ -1951,6 +1951,7 @@ function criarBotaoToggleModo() {
     btn.className = 'btn-toggle-modo';
     btn.title     = 'Modo Step (uma questão por vez)';
     btn.innerHTML = '<i class="fas fa-layer-group"></i>';
+    btn.style.bottom = '90px'; // ← adiciona essa linha
     btn.addEventListener('click', toggleModo);
     document.body.appendChild(btn);
 }
