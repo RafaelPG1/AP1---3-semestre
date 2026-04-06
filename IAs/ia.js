@@ -376,21 +376,29 @@ function limparHistorico(disciplina) {
 //  8b. Rascunho do input (sessionStorage por disciplina)
 // ============================================================
 
+// ============================================================
+//  8b. Rascunho do input (localStorage por disciplina)
+// ============================================================
+
 function _salvarRascunho(disciplina, texto) {
   try {
-    sessionStorage.setItem(`${IA_DRAFT_KEY}_${disciplina || 'geral'}`, texto);
+    if (texto.trim()) {
+      localStorage.setItem(`${IA_DRAFT_KEY}_${disciplina || 'geral'}`, texto);
+    } else {
+      localStorage.removeItem(`${IA_DRAFT_KEY}_${disciplina || 'geral'}`);
+    }
   } catch {}
 }
 
 function _carregarRascunho(disciplina) {
   try {
-    return sessionStorage.getItem(`${IA_DRAFT_KEY}_${disciplina || 'geral'}`) || '';
+    return localStorage.getItem(`${IA_DRAFT_KEY}_${disciplina || 'geral'}`) || '';
   } catch { return ''; }
 }
 
 function _limparRascunho(disciplina) {
   try {
-    sessionStorage.removeItem(`${IA_DRAFT_KEY}_${disciplina || 'geral'}`);
+    localStorage.removeItem(`${IA_DRAFT_KEY}_${disciplina || 'geral'}`);
   } catch {}
 }
 
@@ -601,12 +609,10 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
             maxlength="500"
             autocomplete="off"
           ></textarea>
-          <button id="ia-limpar-input" title="Limpar texto" aria-label="Limpar campo">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
-              <line x1="3" y1="3" x2="13" y2="13"/>
-              <line x1="13" y1="3" x2="3" y2="13"/>
-            </svg>
-          </button>
+<button id="ia-limpar-input" title="Limpar texto" aria-label="Limpar campo">
+  <img src="/IAs/limpa.svg" alt="" width="15" height="15"
+       style="display:block; opacity:.7; filter: brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(220deg);">
+</button>
         </div>
         <div id="ia-rodape">
           <span id="ia-contador">0 / 500</span>
@@ -633,12 +639,14 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
   const btnLimparInput   = modal.querySelector("#ia-limpar-input");
 
   // ── Botão limpar input ─────────────────────────────────────
-  function _atualizarBtnLimparInput() {
-    const temTexto = input.value.length > 0;
-    btnLimparInput.style.opacity       = temTexto ? "1" : "0";
-    btnLimparInput.style.pointerEvents = temTexto ? "auto" : "none";
-    btnLimparInput.style.transform     = temTexto ? "scale(1)" : "scale(0.7)";
-  }
+function _atualizarBtnLimparInput() {
+  const temTexto = input.value.length > 0;
+  btnLimparInput.style.opacity       = temTexto ? "1" : "0";
+  btnLimparInput.style.pointerEvents = temTexto ? "auto" : "none";
+  btnLimparInput.style.transform     = temTexto
+    ? "translateY(50%) scale(1)"
+    : "translateY(50%) scale(0.7)";
+}
 
   btnLimparInput.addEventListener("click", () => {
     input.value = "";
