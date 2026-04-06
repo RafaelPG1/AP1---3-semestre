@@ -1,6 +1,8 @@
 // ============================================================
-//  ia.js — Módulo global de IA  v6.4
-//  Carrega questões via window.quizData* (sem import())
+//  ia.js — Módulo global de IA  v7.1
+//  + Rascunho preservado entre aberturas
+//  + Botões de posição (esquerda / centro / direita / arrastar)
+//  + Botão de limpar o campo de texto
 // ============================================================
 
 const IA_WORKER_URL    = "https://restless-flower-1924.rafaelpeixoto475.workers.dev/";
@@ -9,7 +11,8 @@ const IA_MAX_HISTORICO = 20;
 const IA_MAX_HISTORICO_ENVIO = 10;
 const IA_MAX_SECOES    = 5;
 const IA_MAX_SECAO_LEN = 800;
-const IA_HISTORICO_TTL = 30 * 60 * 60 * 1000; // 30 horas em ms
+const IA_HISTORICO_TTL = 30 * 60 * 60 * 1000;
+const IA_DRAFT_KEY     = 'ia_input_draft';
 
 const IA_DISCIPLINA_MAP = {
   "banco.html":  "banco",
@@ -370,6 +373,28 @@ function limparHistorico(disciplina) {
 }
 
 // ============================================================
+//  8b. Rascunho do input (sessionStorage por disciplina)
+// ============================================================
+
+function _salvarRascunho(disciplina, texto) {
+  try {
+    sessionStorage.setItem(`${IA_DRAFT_KEY}_${disciplina || 'geral'}`, texto);
+  } catch {}
+}
+
+function _carregarRascunho(disciplina) {
+  try {
+    return sessionStorage.getItem(`${IA_DRAFT_KEY}_${disciplina || 'geral'}`) || '';
+  } catch { return ''; }
+}
+
+function _limparRascunho(disciplina) {
+  try {
+    sessionStorage.removeItem(`${IA_DRAFT_KEY}_${disciplina || 'geral'}`);
+  } catch {}
+}
+
+// ============================================================
 //  9. Abre a IA com contexto da disciplina
 // ============================================================
 
@@ -516,20 +541,73 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
           ${labelDisc ? `<span id="ia-disciplina-badge">${labelDisc}</span>` : ""}
         </div>
         <div id="ia-header-acoes">
+
+          <div id="ia-pos-group" aria-label="Posição do modal">
+            <button class="ia-pos-btn ia-pos-ativo" data-pos="centro" title="Centralizado" aria-label="Centralizar">
+              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="3" width="8" height="12" rx="1.5"/>
+                <line x1="1.5" y1="6" x2="4" y2="6"/>
+                <line x1="14" y1="6" x2="16.5" y2="6"/>
+              </svg>
+            </button>
+            <button class="ia-pos-btn" data-pos="esquerda" title="Lado esquerdo" aria-label="Mover para esquerda">
+              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1.5" y="3" width="8" height="12" rx="1.5"/>
+                <line x1="12" y1="6" x2="16.5" y2="6"/>
+                <line x1="12" y1="9" x2="16.5" y2="9"/>
+                <line x1="12" y1="12" x2="16.5" y2="12"/>
+              </svg>
+            </button>
+            <button class="ia-pos-btn" data-pos="direita" title="Lado direito" aria-label="Mover para direita">
+              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="8.5" y="3" width="8" height="12" rx="1.5"/>
+                <line x1="1.5" y1="6" x2="7" y2="6"/>
+                <line x1="1.5" y1="9" x2="7" y2="9"/>
+                <line x1="1.5" y1="12" x2="7" y2="12"/>
+              </svg>
+            </button>
+            <div class="ia-pos-sep"></div>
+            <button class="ia-pos-btn ia-pos-drag-btn" data-pos="livre" title="Arrastar livremente" aria-label="Modo arrastar">
+              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="9" r="1.4" fill="currentColor" stroke="none"/>
+                <line x1="9" y1="2" x2="9" y2="5.5"/>
+                <line x1="9" y1="12.5" x2="9" y2="16"/>
+                <line x1="2" y1="9" x2="5.5" y2="9"/>
+                <line x1="12.5" y1="9" x2="16" y2="9"/>
+                <polyline points="7.5,3.5 9,2 10.5,3.5"/>
+                <polyline points="7.5,14.5 9,16 10.5,14.5"/>
+                <polyline points="3.5,7.5 2,9 3.5,10.5"/>
+                <polyline points="14.5,7.5 16,9 14.5,10.5"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="ia-header-sep"></div>
+
           <button id="ia-explicacao" title="Ativar modo explicação" aria-label="Modo explicação">💡</button>
           <button id="ia-limpar" title="Limpar conversa" aria-label="Limpar conversa">↺</button>
           <button id="ia-fechar" aria-label="Fechar">✕</button>
         </div>
       </div>
+
       <div id="ia-chat"></div>
+
       <div id="ia-input-area">
-        <textarea
-          id="ia-input"
-          placeholder="Digite sua dúvida..."
-          rows="2"
-          maxlength="500"
-          autocomplete="off"
-        ></textarea>
+        <div id="ia-input-wrapper">
+          <textarea
+            id="ia-input"
+            placeholder="Digite sua dúvida..."
+            rows="2"
+            maxlength="500"
+            autocomplete="off"
+          ></textarea>
+          <button id="ia-limpar-input" title="Limpar texto" aria-label="Limpar campo">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
+              <line x1="3" y1="3" x2="13" y2="13"/>
+              <line x1="13" y1="3" x2="3" y2="13"/>
+            </svg>
+          </button>
+        </div>
         <div id="ia-rodape">
           <span id="ia-contador">0 / 500</span>
           <button id="ia-enviar">Perguntar</button>
@@ -540,18 +618,123 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
 
   document.body.appendChild(modal);
 
-  // ── Marca botão como ativo ────────────────────────────────
   _btnIaAtivo(true);
 
-  const overlay       = modal.querySelector("#ia-overlay");
-  const btnFechar     = modal.querySelector("#ia-fechar");
-  const btnLimpar     = modal.querySelector("#ia-limpar");
-  const btnExplicacao = modal.querySelector("#ia-explicacao");
-  const btnEnviar     = modal.querySelector("#ia-enviar");
-  const input         = modal.querySelector("#ia-input");
-  const contador      = modal.querySelector("#ia-contador");
-  const chat          = modal.querySelector("#ia-chat");
+  const overlay          = modal.querySelector("#ia-overlay");
+  const btnFechar        = modal.querySelector("#ia-fechar");
+  const btnLimpar        = modal.querySelector("#ia-limpar");
+  const btnExplicacao    = modal.querySelector("#ia-explicacao");
+  const btnEnviar        = modal.querySelector("#ia-enviar");
+  const input            = modal.querySelector("#ia-input");
+  const contador         = modal.querySelector("#ia-contador");
+  const chat             = modal.querySelector("#ia-chat");
+  const iaBox            = modal.querySelector("#ia-box");
+  const iaHeader         = modal.querySelector("#ia-header");
+  const btnLimparInput   = modal.querySelector("#ia-limpar-input");
 
+  // ── Botão limpar input ─────────────────────────────────────
+  function _atualizarBtnLimparInput() {
+    const temTexto = input.value.length > 0;
+    btnLimparInput.style.opacity       = temTexto ? "1" : "0";
+    btnLimparInput.style.pointerEvents = temTexto ? "auto" : "none";
+    btnLimparInput.style.transform     = temTexto ? "scale(1)" : "scale(0.7)";
+  }
+
+  btnLimparInput.addEventListener("click", () => {
+    input.value = "";
+    contador.textContent = "0 / 500";
+    _limparRascunho(disciplina);
+    _atualizarBtnLimparInput();
+    input.focus();
+  });
+
+  // ── Posicionamento ─────────────────────────────────────────
+  let _isDragging   = false;
+  let _dragOffX     = 0, _dragOffY = 0;
+  let _modoArrastar = false;
+
+  function _aplicarPosicao(pos) {
+    _modoArrastar = pos === 'livre';
+    iaBox.style.right = '';
+
+    if (_modoArrastar) {
+      iaBox.style.transition = 'none';
+      const rect = iaBox.getBoundingClientRect();
+      iaBox.style.left      = `${rect.left}px`;
+      iaBox.style.top       = `${rect.top}px`;
+      iaBox.style.transform = 'none';
+      iaHeader.style.cursor = 'grab';
+    } else {
+      iaBox.style.transition    = 'left .28s cubic-bezier(.4,0,.2,1), top .28s cubic-bezier(.4,0,.2,1), transform .28s cubic-bezier(.4,0,.2,1)';
+      iaHeader.style.cursor     = 'default';
+
+      if (pos === 'esquerda') {
+        iaBox.style.top       = '50%';
+        iaBox.style.left      = '20px';
+        iaBox.style.transform = 'translateY(-50%)';
+      } else if (pos === 'centro') {
+        iaBox.style.top       = '50%';
+        iaBox.style.left      = '50%';
+        iaBox.style.transform = 'translate(-50%, -50%)';
+      } else if (pos === 'direita') {
+        iaBox.style.top       = '50%';
+        iaBox.style.left      = 'auto';
+        iaBox.style.right     = '20px';
+        iaBox.style.transform = 'translateY(-50%)';
+      }
+    }
+
+    modal.querySelectorAll('.ia-pos-btn').forEach(b => {
+      b.classList.toggle('ia-pos-ativo', b.dataset.pos === pos);
+    });
+  }
+
+  function _onDragStart(e) {
+    if (!_modoArrastar) return;
+    if (e.target.closest && e.target.closest('.ia-pos-btn, #ia-explicacao, #ia-limpar, #ia-fechar')) return;
+    _isDragging = true;
+    const rect    = iaBox.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    _dragOffX = clientX - rect.left;
+    _dragOffY = clientY - rect.top;
+    iaHeader.style.cursor = 'grabbing';
+    e.preventDefault();
+  }
+
+  function _onDragMove(e) {
+    if (!_isDragging) return;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const w = iaBox.offsetWidth;
+    const h = iaBox.offsetHeight;
+    const x = Math.max(0, Math.min(window.innerWidth  - w, clientX - _dragOffX));
+    const y = Math.max(0, Math.min(window.innerHeight - h, clientY - _dragOffY));
+    iaBox.style.left = `${x}px`;
+    iaBox.style.top  = `${y}px`;
+  }
+
+  function _onDragEnd() {
+    if (!_isDragging) return;
+    _isDragging = false;
+    iaHeader.style.cursor = 'grab';
+  }
+
+  iaHeader.addEventListener('mousedown',  _onDragStart);
+  document.addEventListener('mousemove',  _onDragMove);
+  document.addEventListener('mouseup',    _onDragEnd);
+  iaHeader.addEventListener('touchstart', _onDragStart, { passive: false });
+  document.addEventListener('touchmove',  _onDragMove,  { passive: false });
+  document.addEventListener('touchend',   _onDragEnd);
+
+  modal.querySelectorAll('.ia-pos-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      _aplicarPosicao(btn.dataset.pos);
+    });
+  });
+
+  // ── Modo explicação ────────────────────────────────────────
   function _atualizarBotaoExplicacao() {
     if (modoExplicacao) {
       btnExplicacao.title = "Modo explicação ativo — clique para desativar";
@@ -583,14 +766,33 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     salvarHistorico(disciplina, historico, modoExplicacao);
   });
 
-  setTimeout(() => input.focus(), 50);
+  // ── Rascunho ───────────────────────────────────────────────
+  const rascunho = _carregarRascunho(disciplina);
+  if (rascunho) {
+    input.value = rascunho;
+    contador.textContent = `${rascunho.length} / 500`;
+  }
+
+  // Estado inicial do botão limpar
+  _atualizarBtnLimparInput();
+
+  setTimeout(() => {
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  }, 50);
 
   input.addEventListener("input", () => {
     contador.textContent = `${input.value.length} / 500`;
+    _salvarRascunho(disciplina, input.value);
+    _atualizarBtnLimparInput();
   });
 
-  // ── Fechar — remove classe ativo do botão ─────────────────
+  // ── Fechar ─────────────────────────────────────────────────
   const fechar = () => {
+    document.removeEventListener('mousemove', _onDragMove);
+    document.removeEventListener('mouseup',   _onDragEnd);
+    document.removeEventListener('touchmove', _onDragMove);
+    document.removeEventListener('touchend',  _onDragEnd);
     modal.remove();
     _btnIaAtivo(false);
   };
@@ -608,6 +810,7 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     input.focus();
   });
 
+  // ── Mensagens ──────────────────────────────────────────────
   function adicionarMensagem(role, conteudo, fonte = null) {
     const div = document.createElement("div");
     div.classList.add("ia-msg-bloco", `ia-msg-${role}`);
@@ -728,6 +931,8 @@ function abrirIA(contextoCompleto = "", disciplina = null, questaoInicial = null
     adicionarMensagem("user", pergunta);
     input.value           = "";
     contador.textContent  = "0 / 500";
+    _limparRascunho(disciplina);
+    _atualizarBtnLimparInput();
     emAndamento           = true;
     btnEnviar.disabled    = true;
     btnEnviar.textContent = "Pensando...";
@@ -798,7 +1003,6 @@ function criarBotaoFlutuante(label = "✦ IA") {
 
 // ============================================================
 //  16. Listener automático para btn-ia
-//  Conecta o botão do nav-float assim que o DOM estiver pronto
 // ============================================================
 
 function _conectarBtnIA() {

@@ -1,5 +1,6 @@
-/*ia.css*/
-/* ── Overlay — sem blur, sem preto ─────────────────────────── */
+/*ia.css — v7.1*/
+
+/* ── Overlay ─────────────────────────────────────────────────── */
 #ia-overlay {
   position: fixed;
   inset: 0;
@@ -8,7 +9,7 @@
   z-index: 9998;
 }
 
-/* ── Caixa principal ────────────────────────────────────────── */
+/* ── Caixa principal ─────────────────────────────────────────── */
 #ia-box {
   position: fixed;
   top: 50%;
@@ -29,22 +30,25 @@
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* ── Header ─────────────────────────────────────────────────── */
+/* ── Header ──────────────────────────────────────────────────── */
 #ia-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 13px 14px 13px 18px;
   background: #1a1625;
   color: #fff;
   flex-shrink: 0;
   border-bottom: 1px solid rgba(255, 255, 255, .06);
+  gap: 8px;
+  user-select: none;
 }
 
 #ia-header-info {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 #ia-titulo {
@@ -52,6 +56,7 @@
   font-weight: 700;
   letter-spacing: .02em;
   color: #f0eeff;
+  white-space: nowrap;
 }
 
 #ia-disciplina-badge {
@@ -64,21 +69,104 @@
   letter-spacing: .05em;
   text-transform: uppercase;
   border: 1px solid rgba(255, 255, 255, .1);
+  white-space: nowrap;
 }
 
 #ia-header-acoes {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  flex-shrink: 0;
 }
 
-/* ── Botões do header ────────────────────────────────────────── */
+/* ── Separador vertical entre grupos ─────────────────────────── */
+.ia-header-sep {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, .1);
+  margin: 0 3px;
+  flex-shrink: 0;
+}
+
+/* ── Grupo de botões de posição ──────────────────────────────── */
+#ia-pos-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(120, 80, 255, .2);
+  border-radius: 12px;
+  padding: 3px 4px;
+}
+
+.ia-pos-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 26px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: rgba(180, 160, 255, .45);
+  transition:
+    background .15s ease,
+    color .15s ease,
+    transform .1s ease;
+  padding: 0;
+  outline: none;
+  flex-shrink: 0;
+}
+
+.ia-pos-btn:hover {
+  background: rgba(120, 80, 255, .18);
+  color: #c4b0ff;
+  transform: scale(1.08);
+}
+
+.ia-pos-btn:active {
+  transform: scale(0.94);
+}
+
+.ia-pos-btn.ia-pos-ativo {
+  background: rgba(120, 80, 255, .28);
+  color: #d0bcff;
+  box-shadow: inset 0 0 0 1px rgba(150, 100, 255, .3);
+}
+
+/* Separador interno do grupo */
+.ia-pos-sep {
+  width: 1px;
+  height: 14px;
+  background: rgba(120, 80, 255, .25);
+  margin: 0 3px;
+  flex-shrink: 0;
+}
+
+/* Botão arrastar — estilo âmbar quando ativo */
+.ia-pos-drag-btn {
+  color: rgba(180, 160, 255, .38);
+}
+
+.ia-pos-drag-btn.ia-pos-ativo {
+  background: rgba(255, 180, 80, .15);
+  color: #fbbf24;
+  box-shadow: inset 0 0 0 1px rgba(255, 180, 80, .25);
+}
+
+.ia-pos-drag-btn:hover {
+  background: rgba(255, 180, 80, .12);
+  color: #fbbf24;
+}
+
+/* ── Botões do header (limpar conversa, fechar) ──────────────── */
 #ia-limpar,
 #ia-fechar {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, .4);
-  font-size: 1rem;
+  color: rgba(255, 255, 255, .35);
+  font-size: .95rem;
   cursor: pointer;
   line-height: 1;
   padding: 6px 8px;
@@ -94,29 +182,29 @@
 
 /* ── Botão modo explicação ───────────────────────────────────── */
 #ia-explicacao {
-  background: rgba(255, 255, 255, .06);
+  background: rgba(255, 255, 255, .04);
   border: none;
-  font-size: .95rem;
+  font-size: .9rem;
   cursor: pointer;
   line-height: 1;
-  padding: 8px 10px;
-  border-radius: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
   opacity: .5;
   transition: opacity .2s ease, background .2s ease, box-shadow .2s ease;
 }
 
 #ia-explicacao:hover {
   opacity: .85;
-  background: rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, .08);
 }
 
 #ia-explicacao.ativo {
   opacity: 1;
-  background: rgba(140, 100, 255, .25);
-  box-shadow: 0 0 0 1px rgba(140, 100, 255, .4);
+  background: rgba(140, 100, 255, .2);
+  box-shadow: inset 0 0 0 1px rgba(140, 100, 255, .35);
 }
 
-/* ── Área de chat ────────────────────────────────────────────── */
+/* ── Área de chat ─────────────────────────────────────────────── */
 #ia-chat {
   flex: 1;
   overflow-y: auto;
@@ -128,12 +216,8 @@
   background: #1a1625;
 }
 
-#ia-chat::-webkit-scrollbar {
-  width: 4px;
-}
-#ia-chat::-webkit-scrollbar-track {
-  background: transparent;
-}
+#ia-chat::-webkit-scrollbar { width: 4px; }
+#ia-chat::-webkit-scrollbar-track { background: transparent; }
 #ia-chat::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, .1);
   border-radius: 4px;
@@ -168,7 +252,7 @@
 
 .ia-pensando { padding: 14px 18px; }
 
-/* ── Markdown ────────────────────────────────────────────────── */
+/* ── Markdown ─────────────────────────────────────────────────── */
 .ia-msg-assistant p    { margin: 0 0 .6em; }
 .ia-msg-assistant p:last-child { margin-bottom: 0; }
 
@@ -221,7 +305,7 @@
   font-size: inherit;
 }
 
-/* ── Avisos / erros ──────────────────────────────────────────── */
+/* ── Avisos / erros ───────────────────────────────────────────── */
 .ia-aviso {
   background: rgba(255, 200, 0, .1);
   color: #f0d060;
@@ -240,7 +324,7 @@
   border: 1px solid rgba(255, 80, 80, .2);
 }
 
-/* ── Loader ──────────────────────────────────────────────────── */
+/* ── Loader ───────────────────────────────────────────────────── */
 .ia-loading {
   display: flex;
   gap: 6px;
@@ -259,7 +343,7 @@
 .ia-loading span:nth-child(2) { animation-delay: .15s; }
 .ia-loading span:nth-child(3) { animation-delay: .30s; }
 
-/* ── Área de input ───────────────────────────────────────────── */
+/* ── Área de input ────────────────────────────────────────────── */
 #ia-input-area {
   border-top: 1px solid rgba(255, 255, 255, .06);
   padding: 14px 16px;
@@ -267,12 +351,17 @@
   flex-shrink: 0;
 }
 
+/* Wrapper com posicionamento relativo para o botão X */
+#ia-input-wrapper {
+  position: relative;
+}
+
 #ia-input {
   width: 100%;
   box-sizing: border-box;
   border: 1px solid rgba(255, 255, 255, .1);
   border-radius: 14px;
-  padding: 11px 14px;
+  padding: 11px 40px 11px 14px;
   font-size: .875rem;
   font-family: inherit;
   resize: none;
@@ -286,6 +375,42 @@
 #ia-input::placeholder { color: rgba(255, 255, 255, .3); }
 #ia-input:focus { border-color: rgba(140, 100, 255, .5); }
 
+/* ── Botão limpar o campo de texto ───────────────────────────── */
+#ia-limpar-input {
+  position: absolute;
+  bottom: 9px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, .07);
+  color: rgba(255, 255, 255, .4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.7);
+  transition:
+    opacity .18s ease,
+    transform .18s cubic-bezier(.34, 1.56, .64, 1),
+    background .15s ease,
+    color .15s ease;
+}
+
+#ia-limpar-input:hover {
+  background: rgba(255, 70, 70, .2);
+  color: #ff8888;
+}
+
+#ia-limpar-input:active {
+  transform: scale(0.88) !important;
+}
+
+/* ── Rodapé do input ──────────────────────────────────────────── */
 #ia-rodape {
   display: flex;
   justify-content: space-between;
@@ -315,12 +440,7 @@
 #ia-enviar:disabled    { opacity: .4; cursor: default; }
 #ia-enviar:not(:disabled):hover { background: #6d28e0; }
 
-/* ── Animações ───────────────────────────────────────────────── */
-@keyframes ia-fade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
+/* ── Animações ────────────────────────────────────────────────── */
 @keyframes ia-slide {
   from { opacity: 0; transform: translate(-50%, -47%); }
   to   { opacity: 1; transform: translate(-50%, -50%); }
@@ -331,26 +451,7 @@
   40%           { transform: scale(1); opacity:  1; }
 }
 
-/* ── Responsivo ──────────────────────────────────────────────── */
-@media (max-width: 480px) {
-  #ia-box {
-    width: 100vw;
-    max-height: 92vh;
-    border-radius: 24px 24px 0 0;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    transform: none;
-    animation: ia-slide-up .22s ease;
-  }
-}
-
-@keyframes ia-slide-up {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Fonte da resposta ───────────────────────────────────────── */
+/* ── Fonte da resposta ────────────────────────────────────────── */
 .ia-fonte {
   font-size: 10px;
   opacity: .3;
@@ -360,10 +461,7 @@
   color: #a090cc;
 }
 
-/* ── Oculta FAB padrão ───────────────────────────────────────── */
-
-
-/* ── Botão flutuante ─────────────────────────────────────────── */
+/* ── Botão flutuante ──────────────────────────────────────────── */
 .ia-fab-custom {
   position: fixed;
   bottom: 28px;
@@ -452,10 +550,35 @@
   }
 }
 
+/* ── Responsivo ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  #ia-pos-group,
+  .ia-header-sep:first-of-type {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
+  #ia-box {
+    width: 100vw;
+    max-height: 92vh;
+    border-radius: 24px 24px 0 0;
+    top: auto;
+    bottom: 0;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    animation: ia-slide-up .22s ease;
+  }
+
   .ia-fab-custom {
     bottom: 18px;
     right: 18px;
     padding: 11px 12px;
   }
+}
+
+@keyframes ia-slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
