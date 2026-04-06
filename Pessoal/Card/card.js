@@ -133,6 +133,10 @@ function _srMontarDeck(discId) {
     return _shuffle(selecionados);
 }
 
+// ── FIX 3: _srEstatisticas corrigida ──────────────
+// Cards dominados com proximaVez <= agora agora
+// caem no bucket "dominados" (revisão de manutenção),
+// não no bucket "vencidos".
 function _srEstatisticas(discId) {
     const todos = CARDS_DATA[discId] || [];
     const agora = Date.now();
@@ -142,10 +146,20 @@ function _srEstatisticas(discId) {
         const p     = _srPerfil(card.id);
         const visto = p.tentativas > 0;
 
-        if (!visto)                     novos++;
-        else if (p.dominado)            dominados++;
-        else if (p.proximaVez > agora)  dominados++;
-        else                            vencidos++;
+        if (!visto) {
+            novos++;
+        } else if (p.dominado) {
+            // dominados sempre contam como dominados,
+            // independente de proximaVez
+            dominados++;
+        } else if (p.proximaVez > agora) {
+            // não dominado + ainda no prazo → também conta como dominado
+            // (em dia, não precisa revisar agora)
+            dominados++;
+        } else {
+            // não dominado + vencido → precisa revisar
+            vencidos++;
+        }
     });
 
     return { total: todos.length, dominados, vencidos, novos };
@@ -163,7 +177,13 @@ let _estado = {
     resultado:   {},
     panelEl:     null,
     marcando:    false,
+    // FIX 1: histórico para desfazer
+    historico:   [],
 };
+
+// ── FIX 2: controle de atalhos de teclado ─────────
+let _keyHandlerAtivo = false;
+let _keyHandlerFn    = null;
 
 function _shuffle(arr) {
     const a = [...arr];
@@ -219,6 +239,7 @@ export async function exibirCards(discId, panelEl, nomeUsuario) {
             resultado:  sessaoSalva.resultado,
             panelEl,
             marcando:   false,
+            historico:  [],
         };
     } else {
         cards = _srMontarDeck(discId);
@@ -233,16 +254,143 @@ export async function exibirCards(discId, panelEl, nomeUsuario) {
             resultado:  {},
             panelEl,
             marcando:   false,
+            historico:  [],
         };
     }
 
     _estado = estadoInicial;
     panelEl.appendChild(_criarWrapper(discId, cards));
     _renderCard();
+
+    // FIX 2: registra atalhos de teclado ao abrir
+    _registrarAtalhos();
 }
 
 export function removerCards(panelEl) {
     panelEl?.querySelector('.panel-cards')?.remove();
+    // FIX 2: remove atalhos ao desmontar
+    _removerAtalhos();
+}
+
+// ═════════════════════════════════════════════════
+//  FIX 2: ATALHOS DE TECLADO
+// ═════════════════════════════════════════════════
+
+function _registrarAtalhos() {
+    _removerAtalhos(); // garante que não duplique
+
+    _keyHandlerFn = (e) => {
+        // Ignora se o foco estiver em input/textarea
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+        const { cards, current, resultado, flipped, marcando } = _estado;
+        const card = cards[current];
+        if (!card) return;
+
+        switch (e.key) {
+            case ' ':
+            case 'Spacebar':
+                e.preventDefault();
+                _flipCard();
+                break;
+
+            case 'ArrowRight':
+            case 'ArrowDown':
+                e.preventDefault();
+                _proximo();
+                break;
+
+            case 'ArrowLeft':
+            case 'ArrowUp':
+                e.preventDefault();
+                _anterior();
+                break;
+
+            case 'a':
+            case 'A':
+                if (!marcando) _marcar(true);
+                break;
+
+            case 'e':
+            case 'E':
+                if (!marcando) _marcar(false);
+                break;
+
+            case 'z':
+            case 'Z':
+                _desfazer();
+                break;
+
+            case '1':
+                if (flipped) _marcarDificuldade('easy');
+                break;
+            case '2':
+                if (flipped) _marcarDificuldade('medium');
+                break;
+            case '3':
+                if (flipped) _marcarDificuldade('hard');
+                break;
+        }
+    };
+
+    document.addEventListener('keydown', _keyHandlerFn);
+    _keyHandlerAtivo = true;
+}
+
+function _removerAtalhos() {
+    if (_keyHandlerFn) {
+        document.removeEventListener('keydown', _keyHandlerFn);
+        _keyHandlerFn    = null;
+        _keyHandlerAtivo = false;
+    }
+}
+
+// ═════════════════════════════════════════════════
+//  FIX 1: DESFAZER ÚLTIMA RESPOSTA
+// ═════════════════════════════════════════════════
+
+function _desfazer() {
+    if (_estado.historico.length === 0) return;
+
+    const snapshot = _estado.historico.pop();
+
+    // Restaura o estado anterior (sem alterar panelEl e nomeUsuario)
+    _estado.current    = snapshot.current;
+    _estado.stats      = { ...snapshot.stats };
+    _estado.resultado  = { ...snapshot.resultado };
+    _estado.difficulty = { ...snapshot.difficulty };
+    _estado.flipped    = false;
+    _estado.marcando   = false;
+
+    // Reverte o cache SRS em memória (sem salvar no Firebase —
+    // o Firebase será sobrescrito na próxima resposta do card)
+    if (snapshot.srPerfilAnterior) {
+        const { cardId, perfil } = snapshot.srPerfilAnterior;
+        _srCache[cardId] = perfil;
+    }
+
+    _salvarSessao();
+    _renderCard();
+    _mostrarToastUndo();
+}
+
+function _mostrarToastUndo() {
+    const panelEl = _estado.panelEl;
+    if (!panelEl) return;
+
+    let toast = panelEl.querySelector('.cards-undo-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'cards-undo-toast';
+        toast.innerHTML = '<i class="fas fa-rotate-left"></i> Resposta desfeita';
+        panelEl.appendChild(toast);
+    }
+
+    toast.classList.remove('undo-toast-visible');
+    // força reflow para reiniciar a animação
+    void toast.offsetWidth;
+    toast.classList.add('undo-toast-visible');
 }
 
 // ═════════════════════════════════════════════════
@@ -267,8 +415,14 @@ function _criarWrapper(discId, cards) {
                 </div>
             </div>
             <div class="cards-actions">
+                <button class="cards-ctrl-btn" id="cards-btn-undo" title="Desfazer última resposta (Z)">
+                    <i class="fas fa-rotate-left"></i>
+                </button>
                 <button class="cards-ctrl-btn" id="cards-btn-shuffle" title="Embaralhar deck">
                     <i class="fas fa-shuffle"></i>
+                </button>
+                <button class="cards-ctrl-btn cards-ctrl-btn--kbd" id="cards-btn-kbd" title="Atalhos de teclado">
+                    <i class="fas fa-keyboard"></i>
                 </button>
             </div>
         </div>
@@ -305,6 +459,23 @@ function _criarWrapper(discId, cards) {
                 </button>
             </div>
         </div>
+
+        <div class="cards-kbd-panel" id="cards-kbd-panel" style="display:none;">
+            <div class="kbd-panel-inner">
+                <div class="kbd-panel-title"><i class="fas fa-keyboard"></i> Atalhos de teclado</div>
+                <div class="kbd-grid">
+                    <div class="kbd-row"><kbd>Espaço</kbd><span>Virar card</span></div>
+                    <div class="kbd-row"><kbd>A</kbd><span>Acertei</span></div>
+                    <div class="kbd-row"><kbd>E</kbd><span>Errei</span></div>
+                    <div class="kbd-row"><kbd>Z</kbd><span>Desfazer resposta</span></div>
+                    <div class="kbd-row"><kbd>→</kbd><span>Próximo</span></div>
+                    <div class="kbd-row"><kbd>←</kbd><span>Anterior</span></div>
+                    <div class="kbd-row"><kbd>1</kbd><span>Fácil</span></div>
+                    <div class="kbd-row"><kbd>2</kbd><span>Médio</span></div>
+                    <div class="kbd-row"><kbd>3</kbd><span>Difícil</span></div>
+                </div>
+            </div>
+        </div>
     `;
 
     wrap.querySelector('#cards-btn-wrong').addEventListener('click',   () => _marcar(false));
@@ -312,6 +483,17 @@ function _criarWrapper(discId, cards) {
     wrap.querySelector('#cards-btn-prev').addEventListener('click',    _anterior);
     wrap.querySelector('#cards-btn-next').addEventListener('click',    _proximo);
     wrap.querySelector('#cards-btn-shuffle').addEventListener('click', _embaralhar);
+
+    // FIX 1: botão desfazer
+    wrap.querySelector('#cards-btn-undo').addEventListener('click', _desfazer);
+
+    // FIX 2: painel de atalhos
+    wrap.querySelector('#cards-btn-kbd').addEventListener('click', () => {
+        const panel = wrap.querySelector('#cards-kbd-panel');
+        const aberto = panel.style.display !== 'none';
+        panel.style.display = aberto ? 'none' : 'block';
+        wrap.querySelector('#cards-btn-kbd').classList.toggle('active', !aberto);
+    });
 
     return wrap;
 }
@@ -391,10 +573,10 @@ function _htmlCena(card, tagCls) {
                             <span class="cards-diff-badge" id="cards-diff-badge"></span>
                         </div>
                         <div class="cards-difficulty">
-                            <span class="cards-diff-label">Como foi pra você?</span>
-                            <button class="cards-diff-btn easy"   data-diff="easy">Fácil</button>
-                            <button class="cards-diff-btn medium" data-diff="medium">Médio</button>
-                            <button class="cards-diff-btn hard"   data-diff="hard">Difícil</button>
+                            <span class="cards-diff-label">Como foi pra você? </span>
+                            <button class="cards-diff-btn easy"   data-diff="easy">Fácil [1]</button>
+                            <button class="cards-diff-btn medium" data-diff="medium">Médio [2]</button>
+                            <button class="cards-diff-btn hard"   data-diff="hard">Difícil [3]</button>
                         </div>
                     </div>
                 </div>
@@ -483,7 +665,17 @@ function _escHtml(str) {
 //  RENDER
 // ═════════════════════════════════════════════════
 
-function _renderCard() {
+// FIX 4: animação de entrada do card
+function _animarEntradaCard(sceneWrap, direcao = 'next') {
+    const cena = sceneWrap.querySelector('#cards-scene');
+    if (!cena) return;
+    const cls = direcao === 'next' ? 'card-enter-next' : 'card-enter-prev';
+    cena.classList.add(cls);
+    // remove a classe após a animação para não interferir no flip
+    cena.addEventListener('animationend', () => cena.classList.remove(cls), { once: true });
+}
+
+function _renderCard(direcaoAnimacao = 'next') {
     const { cards, current, discId, panelEl } = _estado;
 
     const todosRespondidos = cards.every(c => _estado.resultado[c.id]);
@@ -511,6 +703,9 @@ function _renderCard() {
     bottom.style.display = '';
     const card = cards[current];
     wrap.innerHTML = _htmlCena(card, tagCls);
+
+    // FIX 4: dispara animação de entrada
+    _animarEntradaCard(wrap, direcaoAnimacao);
 
     wrap.querySelector('#cards-scene').addEventListener('click', _flipCard);
     wrap.querySelectorAll('.cards-diff-btn').forEach(btn => {
@@ -589,7 +784,7 @@ function _atualizarBadgeDiff(cardId) {
 }
 
 function _atualizarUI() {
-    const { cards, current, resultado, stats, panelEl } = _estado;
+    const { cards, current, resultado, stats, panelEl, historico } = _estado;
     const total       = cards.length;
     const respondidos = Object.keys(resultado).length;
     const pct         = total ? Math.round((respondidos / total) * 100) : 0;
@@ -611,6 +806,10 @@ function _atualizarUI() {
     const cardAtual = cards[current];
     const respondido = cardAtual ? !!resultado[cardAtual.id] : true;
     const next = q('#cards-btn-next'); if (next) next.disabled = current >= total || !respondido;
+
+    // FIX 1: habilita/desabilita botão desfazer
+    const undoBtn = q('#cards-btn-undo');
+    if (undoBtn) undoBtn.disabled = historico.length === 0;
 
     _atualizarDots();
 }
@@ -643,7 +842,7 @@ function _atualizarDots() {
             const cardAlvo = cards[i];
             if (i > _estado.current && cardAlvo && !_estado.resultado[cardAlvo.id]) return;
             _estado.current = i;
-            _renderCard();
+            _renderCard(i > _estado.current ? 'next' : 'prev');
         });
         dotsRow.appendChild(btn);
     }
@@ -673,6 +872,18 @@ function _marcar(acertou) {
     const card     = cards[current];
     const anterior = _estado.resultado[card.id];
 
+    // FIX 1: salva snapshot no histórico antes de alterar o estado
+    _estado.historico.push({
+        current:    current,
+        stats:      { ..._estado.stats },
+        resultado:  { ..._estado.resultado },
+        difficulty: { ..._estado.difficulty },
+        srPerfilAnterior: {
+            cardId: card.id,
+            perfil: { ..._srPerfil(card.id) },
+        },
+    });
+
     _estado.resultado[card.id] = acertou ? 'correct' : 'wrong';
 
     if (anterior === 'correct') _estado.stats.correct = Math.max(0, _estado.stats.correct - 1);
@@ -682,8 +893,14 @@ function _marcar(acertou) {
     _srAtualizar(card.id, acertou, _estado.difficulty[card.id] || null);
 
     _atualizarResultadoVisual(card.id);
+
+    // FIX 5: desabilita botões durante o timeout para evitar clique duplo
+    const btnWrong = panelEl.querySelector('#cards-btn-wrong');
+    const btnRight = panelEl.querySelector('#cards-btn-right');
+    if (btnWrong) btnWrong.disabled = true;
+    if (btnRight) btnRight.disabled = true;
+
     _atualizarUI();
-    // _salvarSessao();  ← REMOVER DAQUI
 
     if (current === cards.length - 1) {
         const bottom = panelEl.querySelector('#cards-bottom');
@@ -693,8 +910,13 @@ function _marcar(acertou) {
     setTimeout(() => {
         _estado.current++;
         _estado.marcando = false;
-        _salvarSessao(); // ← FICA AQUI
-        _renderCard();
+
+        // FIX 5: reabilita botões
+        if (btnWrong) btnWrong.disabled = false;
+        if (btnRight) btnRight.disabled = false;
+
+        _salvarSessao();
+        _renderCard('next');
     }, 700);
 }
 
@@ -707,7 +929,7 @@ function _proximo() {
     if (current < cards.length) {
         _estado.current++;
         _salvarSessao();
-        _renderCard();
+        _renderCard('next');
     }
 }
 
@@ -715,14 +937,13 @@ function _anterior() {
     if (_estado.current > 0) {
         _estado.current--;
         _salvarSessao();
-        _renderCard();
+        _renderCard('prev');
     }
 }
 
 function _embaralhar() {
     const { cards, resultado } = _estado;
 
-    // Separa índices respondidos e não respondidos
     const indicesRespondidos    = [];
     const indicesNaoRespondidos = [];
 
@@ -731,11 +952,9 @@ function _embaralhar() {
         else indicesNaoRespondidos.push(i);
     });
 
-    // Extrai e embaralha só os cards não respondidos
     const cardsNaoRespondidos = indicesNaoRespondidos.map(i => cards[i]);
     const embaralhados        = _shuffle(cardsNaoRespondidos);
 
-    // Reconstrói o array: respondidos no lugar, não respondidos embaralhados
     const novoCards = [...cards];
     indicesNaoRespondidos.forEach((posOriginal, i) => {
         novoCards[posOriginal] = embaralhados[i];
@@ -743,12 +962,11 @@ function _embaralhar() {
 
     _estado.cards = novoCards;
 
-    // Vai para o primeiro não respondido
     const primeirosPendente = novoCards.findIndex(c => !resultado[c.id]);
     _estado.current = primeirosPendente >= 0 ? primeirosPendente : _estado.current;
 
     _salvarSessao();
-    _renderCard();
+    _renderCard('next');
 }
 
 function _reiniciar() {
@@ -760,5 +978,6 @@ function _reiniciar() {
     _estado.difficulty = {};
     _estado.resultado  = {};
     _estado.marcando   = false;
-    _renderCard();
+    _estado.historico  = [];
+    _renderCard('next');
 }

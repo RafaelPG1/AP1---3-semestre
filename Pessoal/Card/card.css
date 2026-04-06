@@ -470,7 +470,7 @@
     width: 100%;
 }
 .cards-diff-label {
-    font-size: .6rem; color: rgba(255,255,255,.22);
+    font-size: .8rem; color: rgba(255,255,255,.70);
     letter-spacing: .07em; text-transform: uppercase;
     width: 100%; text-align: center; margin-bottom: .1rem;
 }
@@ -694,4 +694,174 @@
     .cards-dominado-badge    { top: 10px; left: 10px; width: 22px; height: 22px; font-size: .55rem; }
     .cards-penalidade-badge  { bottom: 10px; left: 10px; width: 20px; height: 20px; font-size: .52rem; }
     .cards-tooltip           { min-width: 180px; max-width: 200px; font-size: .6rem; }
+}
+
+/* ═══════════════════════════════════════════════════
+   card.css — ADIÇÕES (melhorias 1–5)
+   Adicione este bloco ao final do card.css existente
+═══════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════
+   FIX 4 — Animação de entrada do card
+   .card-enter-next  → slide vindo da direita
+   .card-enter-prev  → slide vindo da esquerda
+══════════════════════════════════════════════════ */
+@keyframes cardEnterNext {
+    from { opacity: 0; transform: translateX(40px) scale(.97); }
+    to   { opacity: 1; transform: translateX(0)    scale(1); }
+}
+@keyframes cardEnterPrev {
+    from { opacity: 0; transform: translateX(-40px) scale(.97); }
+    to   { opacity: 1; transform: translateX(0)     scale(1); }
+}
+
+.card-enter-next {
+    animation: cardEnterNext .32s cubic-bezier(.22,1,.36,1) both;
+}
+.card-enter-prev {
+    animation: cardEnterPrev .32s cubic-bezier(.22,1,.36,1) both;
+}
+
+
+/* ══════════════════════════════════════════════════
+   FIX 1 — Toast de desfazer
+══════════════════════════════════════════════════ */
+.cards-undo-toast {
+    position: absolute;
+    bottom: -48px;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    background: rgba(124,58,237,.18);
+    border: 1px solid rgba(124,58,237,.38);
+    color: #a78bfa;
+    padding: 6px 18px;
+    border-radius: 99px;
+    font-size: .72rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 20;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.cards-undo-toast.undo-toast-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    animation: undoToastOut 2s ease forwards;
+}
+
+@keyframes undoToastOut {
+    0%   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    70%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+}
+
+/* O panel-cards precisa de position: relative para o toast */
+.panel-cards {
+    position: relative;
+}
+
+
+/* ══════════════════════════════════════════════════
+   FIX 2 — Painel de atalhos de teclado
+══════════════════════════════════════════════════ */
+.cards-kbd-panel {
+    animation: ckFadeUp .22s ease both;
+}
+
+.kbd-panel-inner {
+    background: rgba(18,18,28,.82);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 12px;
+    padding: .85rem 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.kbd-panel-title {
+    font-size: .65rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.35);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .65rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.kbd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: .35rem .8rem;
+}
+
+.kbd-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .72rem;
+    color: rgba(255,255,255,.45);
+    font-family: 'DM Sans', sans-serif;
+}
+
+kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    padding: 2px 7px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.14);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    font-size: .65rem;
+    font-weight: 600;
+    color: rgba(255,255,255,.55);
+    font-family: 'DM Sans', sans-serif;
+    flex-shrink: 0;
+}
+
+/* Botão de atalhos com estado ativo */
+.cards-ctrl-btn.active {
+    background: rgba(124,58,237,.15);
+    border-color: rgba(124,58,237,.38);
+    color: #a78bfa;
+}
+
+/* FIX 5 — botão desfazer desabilitado */
+.cards-ctrl-btn:disabled {
+    opacity: .2;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
+/* ══════════════════════════════════════════════════
+   FIX 2 — Hint de atalho nos botões de dificuldade
+══════════════════════════════════════════════════ */
+.cards-diff-kbd-hint {
+    font-size: .52rem;
+    color: rgba(255,255,255,.18);
+    letter-spacing: .06em;
+    margin-left: 4px;
+    font-weight: 500;
+}
+
+
+/* ══════════════════════════════════════════════════
+   Responsivo — ajustes para as novidades
+══════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+    .kbd-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .cards-ctrl-btn--kbd {
+        display: none; /* em mobile, atalhos de teclado são menos relevantes */
+    }
 }
