@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   pessoal.js — Área Pessoal  (v18 — pill de redes corrigida em todos os modos)
+   pessoal.js — Área Pessoal  (v19 — badge de cards pendentes nas tabs)
 ════════════════════════════════════════════════════════════════════════ */
 
 import {
@@ -26,10 +26,8 @@ import {
     removerAnotacao
 } from './Anotacao/anotacao.js';
 
-import {
-    salvarNoFirebase,
-    carregarDoFirebase
-} from './firebase.js';
+import { salvarNoFirebase, carregarDoFirebase, carregarTodosPerfisSRS } from './firebase.js';
+import { exibirCards, removerCards } from './Card/card.js';
 
 // ── CREDENCIAIS ───────────────────────────────────────────────────────
 const USUARIOS = [
@@ -73,6 +71,94 @@ document.querySelector('.toggle-senha')?.addEventListener('click', function () {
 
 
 // ═════════════════════════════════════════════════════════════════════
+//  NAVEGAÇÃO — Persistência entre F5
+// ═════════════════════════════════════════════════════════════════════
+
+function _salvarEstadoNav() {
+    localStorage.setItem('nav_modo', modoAtual);
+    localStorage.setItem('nav_disc', discAtual ?? Object.keys(DISCIPLINAS_DATA)[0]);
+}
+
+function _restaurarEstadoNav() {
+    modoAtual = localStorage.getItem('nav_modo') ?? 'checklist';
+    discAtual = localStorage.getItem('nav_disc') ?? Object.keys(DISCIPLINAS_DATA)[0];
+}
+
+function _limparEstadoNav() {
+    localStorage.removeItem('nav_modo');
+    localStorage.removeItem('nav_disc');
+}
+
+
+// ═════════════════════════════════════════════════════════════════════
+//  BADGE DE CARDS PENDENTES NAS TABS
+// ═════════════════════════════════════════════════════════════════════
+
+// Prefixo de ID por disciplina — mesmo padrão do firebase.js
+const _DISC_PREFIXO = { design: 'd', banco: 'b', redes: 'r', poo: 'p' };
+
+// Quantidade de cards por disciplina (50 fixos no cards_data.js)
+const CARDS_DATA_COUNTS = { design: 50, banco: 50, redes: 50, poo: 50 };
+
+/**
+ * Carrega todos os perfis SRS do usuário e calcula quantos cards
+ * estão vencidos (precisam de revisão hoje) por disciplina.
+ * Retorna { design: 3, banco: 0, redes: 7, poo: 2 }
+ */
+async function _calcularPendentesPorDisc(nomeUsuario) {
+    try {
+        const todos  = await carregarTodosPerfisSRS(nomeUsuario);
+        const agora  = Date.now();
+        const result = { design: 0, banco: 0, redes: 0, poo: 0 };
+
+        Object.entries(todos).forEach(([cardId, perfil]) => {
+            const disc = Object.entries(_DISC_PREFIXO).find(([, p]) => cardId.startsWith(p))?.[0];
+            if (!disc) return;
+            if (!perfil.dominado && perfil.tentativas > 0 && perfil.proximaVez <= agora) {
+                result[disc]++;
+            }
+        });
+
+        return result;   // ← sem o bloco de "novos"
+    } catch (err) {
+        console.warn('[Pessoal] Falha ao calcular pendentes SRS:', err);
+        return {};
+    }
+}
+
+/**
+ * Atualiza o badge de cards pendentes numa tab específica.
+ * Se pendentes === 0, remove o badge.
+ */
+function _atualizarBadgeTab(discId, pendentes) {
+    const tab = discTabsEl.querySelector(`.disc-tab[data-disc="${discId}"]`);
+    if (!tab) return;
+
+    tab.querySelector('.tab-srs-badge')?.remove();
+    if (!pendentes || pendentes <= 0) return;
+
+    const badge = document.createElement('span');
+    badge.className   = 'tab-srs-badge';
+    badge.textContent = pendentes > 99 ? '99+' : pendentes;
+    badge.title       = `${pendentes} card${pendentes !== 1 ? 's' : ''} para revisar hoje`;
+
+    // Insere depois do tab-icon
+    const icon = tab.querySelector('.tab-icon');
+    if (icon) icon.after(badge);
+    else tab.appendChild(badge);
+}
+
+/**
+ * Carrega os pendentes e atualiza todos os badges de uma vez.
+ * Chamado logo após o login e sempre que um deck é concluído.
+ */
+async function atualizarBadgesSRS() {
+    const pendentes = await _calcularPendentesPorDisc(usuarioAtual);
+    Object.entries(pendentes).forEach(([disc, n]) => _atualizarBadgeTab(disc, n));
+}
+
+
+// ═════════════════════════════════════════════════════════════════════
 //  LOGIN
 // ═════════════════════════════════════════════════════════════════════
 
@@ -112,15 +198,19 @@ async function entrarNoDashboard() {
     dashScreen.classList.add('active');
     dashNome.textContent = usuarioAtual;
 
+    // ── Restaura modo e disciplina salvos (F5) ────────────────────────
+    _restaurarEstadoNav();
+    const discInicial = discAtual ?? Object.keys(DISCIPLINAS_DATA)[0];
+
     // ── Renderiza a UI imediatamente sem esperar o Firebase ───────────
     construirTabs();
     _criarToast();
     _criarFABs();
-    selecionarDisc(Object.keys(DISCIPLINAS_DATA)[0]);
+    selecionarDisc(discInicial);
 
     // ── Carrega Firebase em paralelo no fundo ─────────────────────────
     try {
-        const [dadosChecklist] = await Promise.all([
+        await Promise.all([
             carregarDados(),
             initAnotacoes(usuarioAtual)
         ]);
@@ -131,6 +221,9 @@ async function entrarNoDashboard() {
     // ── Atualiza a UI com os dados carregados ─────────────────────────
     atualizarTodasAsTabs(checklistCompleto);
     selecionarDisc(discAtual ?? Object.keys(DISCIPLINAS_DATA)[0]);
+
+    // ── Badges SRS nas tabs (assíncrono, não bloqueia) ────────────────
+    atualizarBadgesSRS();
 }
 
 btnSair.addEventListener('click', () => {
@@ -142,6 +235,7 @@ btnSair.addEventListener('click', () => {
     checklistCompleto = {};
     videosCompletos   = {};
     localStorage.removeItem('sessao_usuario');
+    _limparEstadoNav();
     dashScreen.classList.remove('active');
     loginScreen.classList.add('active');
     inputNome.value      = '';
@@ -238,6 +332,7 @@ function _atualizarPillRedes(panelEl) {
 function selecionarDisc(discId) {
     discSelecionada = discId;
     discAtual       = discId;
+    _salvarEstadoNav();
 
     discTabsEl.querySelectorAll('.disc-tab').forEach(t =>
         t.classList.toggle('active', t.dataset.disc === discId)
@@ -247,7 +342,6 @@ function selecionarDisc(discId) {
     discPanel.querySelector('.panel-videos')?.remove();
     discPanel.querySelector('.panel-modules')?.remove();
 
-    // ── Corrigir pill de redes imediatamente, antes de qualquer modo ──
     if (discId === 'redes') {
         _atualizarPillRedes(discPanel);
     }
@@ -259,6 +353,9 @@ function selecionarDisc(discId) {
         mostrarFABs(true);
     } else if (modoAtual === 'anotacao') {
         exibirAnotacao(discId, discPanel);
+        mostrarFABs(false);
+    } else if (modoAtual === 'cards') {
+        _exibirCardsWrapper(discId, discPanel);
         mostrarFABs(false);
     } else {
         _renderizarChecklistCompleto(discId, discPanel);
@@ -287,7 +384,6 @@ function _renderizarChecklistCompleto(discId, panelEl) {
             const disc     = DISCIPLINAS_DATA['redes'];
             const discProf = DISCIPLINAS_DATA['redes_professor'];
 
-            // ── Renderizar módulos do professor no DOM ────────────────
             if (discProf?.modulos?.length) {
                 discProf.modulos.forEach(mod => {
                     const modBlock = document.createElement('div');
@@ -314,7 +410,6 @@ function _renderizarChecklistCompleto(discId, panelEl) {
                 });
             }
 
-            // ── Separar blocos normais dos do professor ───────────────
             const modBlocks        = [...modulesEl.querySelectorAll('.mod-block')];
             const numModulosNormal = disc.modulos.length;
             const numModulosProf   = discProf?.modulos?.length ?? 0;
@@ -324,7 +419,6 @@ function _renderizarChecklistCompleto(discId, panelEl) {
 
             modulesEl.innerHTML = '';
 
-            // ── Seção Normal (começa fechada) ─────────────────────────
             const secNormal  = document.createElement('div');
             secNormal.className = 'ck-secao';
 
@@ -350,7 +444,6 @@ function _renderizarChecklistCompleto(discId, panelEl) {
             secNormal.appendChild(bodyNormal);
             modulesEl.appendChild(secNormal);
 
-            // ── Seção Professor (começa fechada) ──────────────────────
             if (blocosProf.length > 0) {
                 const secProf  = document.createElement('div');
                 secProf.className = 'ck-secao';
@@ -378,7 +471,6 @@ function _renderizarChecklistCompleto(discId, panelEl) {
                 modulesEl.appendChild(secProf);
             }
 
-            // ── Toggle das seções ─────────────────────────────────────
             modulesEl.querySelectorAll('.ck-secao-header').forEach(header => {
                 header.addEventListener('click', () => {
                     const body    = header.nextElementSibling;
@@ -423,7 +515,6 @@ function _renderizarChecklistCompleto(discId, panelEl) {
                 });
             });
 
-            // ── Contadores + pill do topo ─────────────────────────────
             function atualizarContadores() {
                 const totalN    = disc.modulos.reduce((a, m) => a + m.itens.length, 0);
                 const marcadosN = disc.modulos.reduce((a, m) =>
@@ -451,29 +542,26 @@ function _renderizarChecklistCompleto(discId, panelEl) {
             panelEl.addEventListener('change', atualizarContadores, { passive: true });
         }
 
-        // ── FABs ──────────────────────────────────────────────────────
         mostrarFABs(true);
 
-// REMOVER ESTE BLOCO:
-const fabCollapse = document.getElementById('fab-collapse');
-if (fabCollapse) {
-    const novoBtn = fabCollapse.cloneNode(true);
-    fabCollapse.parentNode.replaceChild(novoBtn, fabCollapse);
-    novoBtn.addEventListener('click', () => {
-        panelEl.querySelectorAll('.ck-secao-header').forEach(header => {
-            const body    = header.nextElementSibling;
-            const chevron = header.querySelector('.ck-secao-chevron');
-            if (body)    body.style.display      = 'none';
-            if (chevron) chevron.style.transform = 'rotate(0deg)';
-        });
-    });
-}
+        const fabCollapse = document.getElementById('fab-collapse');
+        if (fabCollapse) {
+            const novoBtn = fabCollapse.cloneNode(true);
+            fabCollapse.parentNode.replaceChild(novoBtn, fabCollapse);
+            novoBtn.addEventListener('click', () => {
+                panelEl.querySelectorAll('.ck-secao-header').forEach(header => {
+                    const body    = header.nextElementSibling;
+                    const chevron = header.querySelector('.ck-secao-chevron');
+                    if (body)    body.style.display      = 'none';
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                });
+            });
+        }
 
     } else {
         mostrarFABs(false);
     }
 
-    // ── Listener de checkboxes ────────────────────────────────────────
     panelEl.addEventListener('change', e => {
         if (e.target.type !== 'checkbox') return;
         const disc = e.target.dataset.disc;
@@ -542,6 +630,9 @@ function _injetarModeToggle(discId, panelEl) {
         <button class="mode-btn ${modoAtual === 'resumos' ? 'active' : ''}" data-mode="resumos">
             <i class="fas fa-book-open"></i> Resumos
         </button>
+        <button class="mode-btn ${modoAtual === 'cards' ? 'active' : ''}" data-mode="cards">
+            <i class="fas fa-layer-group"></i> Cards
+        </button>
         <button class="mode-btn ${modoAtual === 'anotacao' ? 'active' : ''}" data-mode="anotacao">
             <i class="fas fa-pen-to-square"></i> Anotações
         </button>
@@ -559,6 +650,7 @@ function _injetarModeToggle(discId, panelEl) {
             const modo = btn.dataset.mode;
             if (modo === modoAtual) return;
             modoAtual = modo;
+            _salvarEstadoNav();
 
             toggle.querySelectorAll('.mode-btn').forEach(b =>
                 b.classList.toggle('active', b.dataset.mode === modoAtual)
@@ -566,13 +658,20 @@ function _injetarModeToggle(discId, panelEl) {
 
             if (modoAtual === 'resumos') {
                 removerAnotacao(panelEl);
+                removerCards(panelEl);              // ← FIX: remove cards ao ir para resumos
                 _exibirResumos(discId, panelEl);
                 mostrarFABs(true);
             } else if (modoAtual === 'anotacao') {
+                removerCards(panelEl);              // ← FIX: remove cards ao ir para anotações
                 _exibirAnotacaoWrapper(discId, panelEl);
+                mostrarFABs(false);
+            } else if (modoAtual === 'cards') {
+                removerAnotacao(panelEl);
+                _exibirCardsWrapper(discId, panelEl);
                 mostrarFABs(false);
             } else {
                 removerAnotacao(panelEl);
+                removerCards(panelEl);              // ← FIX: remove cards ao ir para checklist
                 _exibirChecklist(discId, panelEl);
             }
         });
@@ -620,7 +719,6 @@ function _exibirResumos(discId, panelEl) {
     const wrapper = document.createElement('div');
     wrapper.className = 'panel-resumos';
 
-    // ── Bloco: resumos das aulas ──────────────────────────────────────
     let htmlAulas = '';
     if (resumos.length > 0) {
         if (discId === 'redes') {
@@ -647,7 +745,6 @@ function _exibirResumos(discId, panelEl) {
         }
     }
 
-    // ── Bloco: resumo do professor (só redes) ─────────────────────────
     let htmlProf = '';
     if (discId === 'redes' && resumosProf.length > 0) {
         htmlProf = `
@@ -667,7 +764,6 @@ function _exibirResumos(discId, panelEl) {
     wrapper.innerHTML = htmlAulas + htmlProf;
     panelEl.appendChild(wrapper);
 
-    // ── Toggle das seções (Aulas / Professor) ─────────────────────────
     wrapper.querySelectorAll('.resumo-secao-toggle').forEach(header => {
         header.addEventListener('click', () => {
             const secao   = header.dataset.secao;
@@ -715,7 +811,6 @@ function _exibirResumos(discId, panelEl) {
         });
     });
 
-    // ── Eventos dos cards ─────────────────────────────────────────────
     wrapper.querySelectorAll('.resumo-card').forEach(card => {
         const rid = card.dataset.resumoId;
 
@@ -761,6 +856,26 @@ function _exibirResumos(discId, panelEl) {
             }).catch(() => _mostrarToast('Não foi possível copiar automaticamente'));
         });
     });
+}
+
+function _exibirCardsWrapper(discId, panelEl) {
+    panelEl.querySelector('.panel-videos')?.remove();
+    panelEl.querySelector('.panel-modules')?.remove();
+    panelEl.querySelector('.panel-resumos')?.remove();
+    removerCards(panelEl);
+
+    _injetarModeToggle(discId, panelEl);
+
+    // Após concluir o deck, atualiza os badges (cards foram revisados)
+    const observer = new MutationObserver(() => {
+        if (panelEl.querySelector('.cards-finish-scene')) {
+            observer.disconnect();
+            atualizarBadgesSRS();
+        }
+    });
+    observer.observe(panelEl, { childList: true, subtree: true });
+
+    exibirCards(discId, panelEl, usuarioAtual);
 }
 
 
@@ -900,10 +1015,7 @@ function _criarFABs() {
 
         const el     = discPanel.scrollHeight > discPanel.clientHeight ? discPanel : document.documentElement;
         const inicio = el.scrollTop;
-        const alvo   = direcao === 'up'
-            ? 0
-            : el.scrollHeight - el.clientHeight;
-
+        const alvo   = direcao === 'up' ? 0 : el.scrollHeight - el.clientHeight;
         const duracao = 1000;
         let cancelado = false;
 

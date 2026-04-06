@@ -7,17 +7,12 @@
     <link rel="stylesheet" href="pessoal.css">
     <link rel="stylesheet" href="Anotacao/anotacao.css">
     <link rel="stylesheet" href="Resumo/resumo.css">
+    <link rel="stylesheet" href="Card/card.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-    <!-- Quill CSS — adicionar no <head> junto aos outros links -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css">
+    <link rel="stylesheet" href="../IAs/ia.css">
 
-<link rel="stylesheet" href="../IAs/ia.css">
-
-
-<body data-disciplina="pessoal">
-    
-</body>
     <style>
         /* ── Botão Voltar — embaixo do Entrar ────────── */
         .back-link-login {
@@ -53,7 +48,7 @@
         }
     </style>
 </head>
-<body>
+<body data-disciplina="pessoal">
 
     <div class="bg-glow g1"></div>
     <div class="bg-glow g2"></div>
@@ -132,10 +127,11 @@
     <script type="module" src="pessoal.js"></script>
 
     <button class="ia-fab-custom" onclick="IA.abrirIADisciplina()">
-  <span class="ia-fab-icon">✦</span>
-  <span class="ia-fab-label">Assistente IA</span>
-</button>
+        <span class="ia-fab-icon">✦</span>
+        <span class="ia-fab-label">Assistente IA</span>
+    </button>
 
-<script src="../IAs/ia.js" defer></script>
+    <script src="../IAs/ia.js" defer></script>
+
 </body>
 </html>
