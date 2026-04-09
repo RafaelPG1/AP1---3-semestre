@@ -924,14 +924,14 @@ function showProgressNotification(message) {
 
     const el = document.createElement('div');
     el.style.cssText = `
-        background: rgba(59, 130, 246, 0.15);
-        color: #93c5fd;
-        border: 1px solid rgba(59, 130, 246, 0.3);
+        background: rgba(249, 115, 22, 0.12);
+        color: #fb923c;
+        border: 1px solid rgba(249, 115, 22, 0.3);
         padding: 12px 20px;
         border-radius: 12px;
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 32px rgba(249, 115, 22, 0.08);
         font-family: 'Space Grotesk', sans-serif;
         font-size: 14px;
         font-weight: 600;
@@ -946,8 +946,8 @@ function showProgressNotification(message) {
     container.appendChild(el);
 
     requestAnimationFrame(() => {
-        el.style.opacity    = '1';
-        el.style.transform  = 'translateX(0)';
+        el.style.opacity   = '1';
+        el.style.transform = 'translateX(0)';
     });
 
     setTimeout(() => {
