@@ -1337,11 +1337,19 @@ window.selectOption = function(gi, oi) {
 
 // ─── Revelar todas as respostas ───────────────────────────────────────────────
 function revealAnswers() {
+    // Marca que foi revelado — não deve ser salvo como progresso real
+    stopAutoSave();
+    if (storageInitialized) {
+        try { storage.saveProgress(QUIZ_ID, [], {}); } catch(e) {}
+    }
+
     questionMap.forEach((m, gi) => {
         if (userAnswers[gi] === null) {
             userAnswers[gi] = quizData[m.sIdx].questions[m.qIdx].answer;
         }
     });
+
+    // ... resto da função original permanece igual
 
     const eraModoStep = quizModo === 'step';
 
