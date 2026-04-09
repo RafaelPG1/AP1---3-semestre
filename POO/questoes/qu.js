@@ -944,8 +944,8 @@ window.selectOption = function(gi, oi) {
     updateGlobalResults();
 
     if (typeof storageInitialized !== 'undefined' && storageInitialized) {
-        setTimeout(saveCurrentProgress, 100);
-    }
+    saveCurrentProgress(); // save imediato, sem delay
+}
 };
 
 // ─── Revelar todas as respostas ───────────────────────────────────────────────
