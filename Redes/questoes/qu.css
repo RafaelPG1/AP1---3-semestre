@@ -863,3 +863,40 @@ h1 {
 .modo-step-wrapper #quiz-container.modo-step {
     flex: 0 0 auto;
 }
+
+/* ══════════════════════════════════════════════════
+   BOTÃO VER ERROS
+   ══════════════════════════════════════════════════ */
+.errors-button {
+    background: rgba(231, 76, 60, 0.12);
+    border-color: rgba(231, 76, 60, 0.38);
+    color: #e07a73;
+    display: none;
+}
+
+.errors-button:hover {
+    background: rgba(231, 76, 60, 0.24);
+    border-color: rgba(231, 76, 60, 0.6);
+    color: white;
+}
+
+.errors-button.active {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.45);
+    color: #93c5fd;
+}
+
+.errors-button.active:hover {
+    background: rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.65);
+    color: white;
+}
+
+.errors-button.visible {
+    display: inline-flex;
+}
+.errors-button i {
+    display: flex;
+    align-items: center;
+    line-height: 1;
+}

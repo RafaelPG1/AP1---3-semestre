@@ -1852,3 +1852,158 @@ function sincronizarAlturaStep() {
 }
 
 window.quizDataBanco = quizDataBanco;
+
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BOTÃO VER ERROS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let mostrandoSoErros = false;
+
+function contarErros() {
+    let count = 0;
+    questionMap.forEach((m, gi) => {
+        const ans = userAnswers[gi];
+        if (ans !== null && ans !== quizData[m.sIdx].questions[m.qIdx].answer) count++;
+    });
+    return count;
+}
+
+function atualizarBotaoErros() {
+    const btn = document.getElementById('errors');
+    if (!btn) return;
+
+    const totalRespondidas = userAnswers.filter(a => a !== null).length;
+    const totalQuestoes    = userAnswers.length;
+    const quizCompleto     = totalRespondidas === totalQuestoes;
+
+    if (!quizCompleto) {
+        btn.classList.remove('visible', 'active');
+        mostrandoSoErros = false;
+        return;
+    }
+
+    const erros = contarErros();
+    btn.classList.add('visible');
+
+    if (erros === 0) {
+        btn.innerHTML = '<i class="fas fa-circle-check"></i> Sem erros!';
+        btn.disabled = true;
+        btn.classList.remove('active');
+    } else {
+        btn.innerHTML = `<i class="fas fa-triangle-exclamation"></i> Ver erros (${erros})`;
+        btn.disabled = false;
+    }
+}
+
+function toggleVerErros() {
+    mostrandoSoErros = !mostrandoSoErros;
+
+    const btn = document.getElementById('errors');
+    if (btn) {
+        btn.classList.toggle('active', mostrandoSoErros);
+        if (mostrandoSoErros) {
+            btn.innerHTML = '<i class="fas fa-list" style="display:flex;align-items:center;line-height:1"></i> Ver completo';
+        } else {
+            const erros = contarErros();
+            btn.innerHTML = `<i class="fas fa-triangle-exclamation" style="display:flex;align-items:center;line-height:1"></i> Ver erros (${erros})`;
+        }
+        // Reconecta o listener após reescrever o innerHTML
+        btn.removeEventListener('click', toggleVerErros);
+        btn.addEventListener('click', toggleVerErros);
+    }
+
+    if (mostrandoSoErros) {
+        filtrarSoErros();
+    } else {
+        mostrarTodasVisiveis();
+    }
+}
+
+function filtrarSoErros() {
+    // Oculta questões certas e mostra só as erradas
+    questionMap.forEach((m, gi) => {
+        const el = document.getElementById(`q-${gi}`);
+        if (!el) return;
+        const acertou = userAnswers[gi] === quizData[m.sIdx].questions[m.qIdx].answer;
+        el.style.display = acertou ? 'none' : '';
+    });
+
+    // Oculta títulos de aula cujas aulas não têm nenhum erro
+    ocultarTitulosSemErro();
+
+    smoothScrollToTop();
+}
+
+function mostrarTodasVisiveis() {
+    questionMap.forEach((_, gi) => {
+        const el = document.getElementById(`q-${gi}`);
+        if (el) el.style.display = '';
+    });
+
+    // Reexibe todos os títulos de aula
+    document.querySelectorAll('.subject-title').forEach(t => t.style.display = '');
+    document.querySelectorAll('.subject-result').forEach(r => r.style.display = '');
+
+    smoothScrollToTop();
+}
+
+function ocultarTitulosSemErro() {
+    // Para cada aula, verifica se há algum erro; oculta título e resultado se não houver
+    quizData.forEach((_, sIdx) => {
+        const temErro = questionMap.some((m, gi) => {
+            if (m.sIdx !== sIdx) return false;
+            const ans = userAnswers[gi];
+            return ans !== null && ans !== quizData[m.sIdx].questions[m.qIdx].answer;
+        });
+
+        // Tenta localizar o subject-title pelo texto
+        document.querySelectorAll('.subject-title').forEach(el => {
+            if (el.textContent.trim() === quizData[sIdx].subject) {
+                el.style.display = temErro ? '' : 'none';
+            }
+        });
+
+        const srEl = document.getElementById(`sr-${sIdx}`);
+        if (srEl) srEl.style.display = temErro ? '' : 'none';
+    });
+}
+
+// ─── Conecta o botão e integra ao updateGlobalResults ────────────────────────
+// ─── Conecta o botão e integra ao updateGlobalResults ────────────────────────
+function conectarBotaoErros() {
+    const btn = document.getElementById('errors');
+    if (btn) {
+        btn.removeEventListener('click', toggleVerErros);
+        btn.addEventListener('click', toggleVerErros);
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', conectarBotaoErros);
+} else {
+    conectarBotaoErros();
+}
+
+// Sobrescreve updateGlobalResults para incluir a atualização do botão de erros
+const _updateGlobalResultsOriginal = updateGlobalResults;
+updateGlobalResults = function () {
+    _updateGlobalResultsOriginal();
+    atualizarBotaoErros();
+};
+
+// Reseta o estado do botão ao reiniciar/limpar
+const _restartQuizOriginal = restartQuiz;
+restartQuiz = function () {
+    mostrandoSoErros = false;
+    _restartQuizOriginal();
+    atualizarBotaoErros();
+};
+
+const _clearAnswersOriginal = clearAnswers;
+clearAnswers = function () {
+    mostrandoSoErros = false;
+    _clearAnswersOriginal();
+    atualizarBotaoErros();
+  };
