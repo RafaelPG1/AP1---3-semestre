@@ -1415,7 +1415,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ─── Auto-Save ────────────────────────────────────────────────────────────────
-const QUIZ_ID = 'questoes_banco_de_dados';
+const QUIZ_ID = 'questoes_desing';
 const AUTO_SAVE_CONFIG = { enabled: true, interval: 10000, saveOnAnswer: true };
 let autoSaveInterval   = null;
 let storageInitialized = false;

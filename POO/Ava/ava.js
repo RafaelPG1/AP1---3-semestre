@@ -858,7 +858,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ─── Auto-Save ────────────────────────────────────────────────────────────────
-const QUIZ_ID = 'questoes_poo_revisao';
+const QUIZ_ID = 'questoes_poo_ava';
 const AUTO_SAVE_CONFIG = { enabled: true, interval: 10000, saveOnAnswer: true };
 let autoSaveInterval   = null;
 let storageInitialized = false;
