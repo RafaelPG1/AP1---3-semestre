@@ -2128,6 +2128,7 @@ restartQuiz = function () {
     _restartQuizOriginal();
     atualizarBotaoErros();
 };
+
 const _clearAnswersOriginal = clearAnswers;
 clearAnswers = function () {
     mostrandoSoErros = false;
