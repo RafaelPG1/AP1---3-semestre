@@ -328,6 +328,7 @@ const quizDataAVAPoo = [
   }
 ];
 
+
 // ─── Função para separar texto e enunciado ─────────────────────────────────────
 function splitQuestionParts(questionText) {
     const text = questionText.trim();
@@ -407,7 +408,7 @@ function formatFeedback(feedback) {
 }
 
 function createOriginalQuizData() {
-        return quizDataAVAPoo.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
+    return quizDataAVAPoo.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
 }
 
 // ─── Inicialização ────────────────────────────────────────────────────────────
@@ -457,12 +458,6 @@ function renderCodeBlock(code) {
     return `<div class="code-block"><pre>${highlightJava(code)}</pre></div>`;
 }
 
-// ─── Renderiza fonte/referência bibliográfica ─────────────────────────────────
-function renderSource(source) {
-    if (!source) return '';
-    return `<div class="question-source">${source}</div>`;
-}
-
 // ─── Renderiza afirmativas romanas ────────────────────────────────────────────
 function renderAssertions(assertions) {
     if (!assertions || assertions.length === 0) return '';
@@ -500,10 +495,6 @@ function buildQuestionBody(question) {
 
     if (question.texto) {
         html += `<div class="question-texto">${question.texto.replace(/\n/g, '<br>')}</div>`;
-    }
-
-    if (question.source) {
-        html += renderSource(question.source);
     }
 
     if (question.miniEnunciado) {
@@ -688,6 +679,11 @@ window.selectOption = function(gi, oi) {
 
 // ─── Revelar todas as respostas ───────────────────────────────────────────────
 function revealAnswers() {
+    stopAutoSave();
+    if (storageInitialized) {
+        try { storage.saveProgress(QUIZ_ID, [], {}); } catch(e) {}
+    }
+
     questionMap.forEach((m, gi) => {
         if (userAnswers[gi] === null) {
             userAnswers[gi] = quizData[m.sIdx].questions[m.qIdx].answer;
@@ -761,9 +757,7 @@ function restartQuiz() {
     if (revealBtn) revealBtn.disabled = false;
 
     if (eraModoStep) {
-        setTimeout(() => {
-            ativarModoStep();
-        }, 50);
+        setTimeout(() => ativarModoStep(), 50);
     } else {
         smoothScrollToTop();
     }
@@ -819,7 +813,7 @@ document.getElementById('reveal').addEventListener('click', revealAnswers);
 document.getElementById('restart').addEventListener('click', restartQuiz);
 
 document.getElementById('btn-up').addEventListener('click',   () => smoothScrollTo(0, 1000));
-document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../redes.html'; });
+document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../poo.html'; });
 document.getElementById('btn-down').addEventListener('click', () => smoothScrollTo(document.body.scrollHeight, 1000));
 
 document.getElementById('restartButton').addEventListener('click', restartQuiz);
@@ -830,7 +824,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ─── Auto-Save ────────────────────────────────────────────────────────────────
-const QUIZ_ID = 'questoes_redes_ap1';
+const QUIZ_ID = 'questoes_poo_revisao';
 const AUTO_SAVE_CONFIG = { enabled: true, interval: 10000, saveOnAnswer: true };
 let autoSaveInterval   = null;
 let storageInitialized = false;
@@ -932,8 +926,6 @@ function showProgressNotification(message) {
     }, 4000);
 }
 
-
-
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) { saveCurrentProgress(); stopAutoSave(); }
     else if (AUTO_SAVE_CONFIG.enabled && storageInitialized) startAutoSave();
@@ -941,7 +933,6 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('beforeunload', () => { if (storageInitialized) saveCurrentProgress(); });
 
 setTimeout(initializeStorage, 500);
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MODO STEP
@@ -954,13 +945,11 @@ let scrollObserver  = null;
 
 function iniciarScrollObserver() {
     if (scrollObserver) scrollObserver.disconnect();
-
     const opcoes = {
         root: null,
         rootMargin: '-30% 0px -50% 0px',
         threshold: 0
     };
-
     scrollObserver = new IntersectionObserver((entries) => {
         if (quizModo !== 'scroll') return;
         entries.forEach(entry => {
@@ -971,7 +960,6 @@ function iniciarScrollObserver() {
             }
         });
     }, opcoes);
-
     document.querySelectorAll('.question-container').forEach(el => {
         scrollObserver.observe(el);
     });
@@ -1274,21 +1262,15 @@ if (document.readyState === 'loading') {
 
 function sincronizarAlturaStep() {
     if (quizModo !== 'step' || !stepWrapper) return;
-
     const questoes = stepWrapper.querySelectorAll('.question-container');
     const atual    = questoes[currentQuestion];
     if (!atual) return;
-
     const altura = atual.scrollHeight;
     stepWrapper.style.height                               = altura + 'px';
     document.getElementById('quiz-container').style.height = altura + 'px';
 }
 
 window.quizDataAVAPoo = quizDataAVAPoo;
-
-
-
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // BOTÃO VER ERROS
@@ -1344,7 +1326,6 @@ function toggleVerErros() {
             const erros = contarErros();
             btn.innerHTML = `<i class="fas fa-triangle-exclamation" style="display:flex;align-items:center;line-height:1"></i> Ver erros (${erros})`;
         }
-        // Reconecta o listener após reescrever o innerHTML
         btn.removeEventListener('click', toggleVerErros);
         btn.addEventListener('click', toggleVerErros);
     }
@@ -1357,17 +1338,13 @@ function toggleVerErros() {
 }
 
 function filtrarSoErros() {
-    // Oculta questões certas e mostra só as erradas
     questionMap.forEach((m, gi) => {
         const el = document.getElementById(`q-${gi}`);
         if (!el) return;
         const acertou = userAnswers[gi] === quizData[m.sIdx].questions[m.qIdx].answer;
         el.style.display = acertou ? 'none' : '';
     });
-
-    // Oculta títulos de aula cujas aulas não têm nenhum erro
     ocultarTitulosSemErro();
-
     smoothScrollToTop();
 }
 
@@ -1376,37 +1353,29 @@ function mostrarTodasVisiveis() {
         const el = document.getElementById(`q-${gi}`);
         if (el) el.style.display = '';
     });
-
-    // Reexibe todos os títulos de aula
     document.querySelectorAll('.subject-title').forEach(t => t.style.display = '');
     document.querySelectorAll('.subject-result').forEach(r => r.style.display = '');
-
     smoothScrollToTop();
 }
 
 function ocultarTitulosSemErro() {
-    // Para cada aula, verifica se há algum erro; oculta título e resultado se não houver
     quizData.forEach((_, sIdx) => {
         const temErro = questionMap.some((m, gi) => {
             if (m.sIdx !== sIdx) return false;
             const ans = userAnswers[gi];
             return ans !== null && ans !== quizData[m.sIdx].questions[m.qIdx].answer;
         });
-
-        // Tenta localizar o subject-title pelo texto
         document.querySelectorAll('.subject-title').forEach(el => {
             if (el.textContent.trim() === quizData[sIdx].subject) {
                 el.style.display = temErro ? '' : 'none';
             }
         });
-
         const srEl = document.getElementById(`sr-${sIdx}`);
         if (srEl) srEl.style.display = temErro ? '' : 'none';
     });
 }
 
-// ─── Conecta o botão e integra ao updateGlobalResults ────────────────────────
-// ─── Conecta o botão e integra ao updateGlobalResults ────────────────────────
+// ─── Conecta o botão ─────────────────────────────────────────────────────────
 function conectarBotaoErros() {
     const btn = document.getElementById('errors');
     if (btn) {
@@ -1421,24 +1390,17 @@ if (document.readyState === 'loading') {
     conectarBotaoErros();
 }
 
-// Sobrescreve updateGlobalResults para incluir a atualização do botão de erros
+// ─── Integra ao updateGlobalResults ──────────────────────────────────────────
 const _updateGlobalResultsOriginal = updateGlobalResults;
 updateGlobalResults = function () {
     _updateGlobalResultsOriginal();
     atualizarBotaoErros();
 };
 
-// Reseta o estado do botão ao reiniciar/limpar
+// ─── Reseta ao reiniciar ──────────────────────────────────────────────────────
 const _restartQuizOriginal = restartQuiz;
 restartQuiz = function () {
     mostrandoSoErros = false;
     _restartQuizOriginal();
     atualizarBotaoErros();
 };
-
-const _clearAnswersOriginal = clearAnswers;
-clearAnswers = function () {
-    mostrandoSoErros = false;
-    _clearAnswersOriginal();
-    atualizarBotaoErros();
-  };
