@@ -676,9 +676,7 @@ window.selectOption = function(gi, oi) {
 
     updateGlobalResults();
 
-    if (typeof storageInitialized !== 'undefined' && storageInitialized) {
-        setTimeout(saveCurrentProgress, 100);
-    }
+    setTimeout(saveCurrentProgress, 100);
 
     if (quizModo === 'step') {
         atualizarControlesStep();
@@ -819,7 +817,7 @@ document.getElementById('reveal').addEventListener('click', revealAnswers);
 document.getElementById('restart').addEventListener('click', restartQuiz);
 
 document.getElementById('btn-up').addEventListener('click',   () => smoothScrollTo(0, 1000));
-document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../poo.html'; });
+document.getElementById('btn-left').addEventListener('click', () => { window.location.href = '../redes.html'; });
 document.getElementById('btn-down').addEventListener('click', () => smoothScrollTo(document.body.scrollHeight, 1000));
 
 document.getElementById('restartButton').addEventListener('click', restartQuiz);
