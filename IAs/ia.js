@@ -68,7 +68,7 @@ async function carregarResumo(disciplina) {
     return IA_CACHE_RESUMO[disciplina];
   }
   try {
-    const mod = await import("/Pessoal/Resumo/resumo.js");
+    const mod = await import("../Pessoal/Resumo/resumo.js");
     const resumoData = mod.resumoData ?? mod.default;
     if (!resumoData || !resumoData[disciplina]) return null;
     const texto = extrairTexto(resumoData[disciplina]);
