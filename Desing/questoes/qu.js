@@ -2014,18 +2014,13 @@ updateGlobalResults = function () {
 const _restartQuizOriginal = restartQuiz;
 restartQuiz = function () {
     mostrandoSoErros = false;
-    
-    // 👇 ADICIONA ISSO: limpa o storage para evitar restaurar índices do quiz embaralhado
+
     if (storageInitialized) {
         try { storage.clearProgress(QUIZ_ID); } catch(e) {}
     }
-    
+    stopAutoSave();
+    storageInitialized = false;
+
     _restartQuizOriginal();
     atualizarBotaoErros();
 };
-const _clearAnswersOriginal = clearAnswers;
-clearAnswers = function () {
-    mostrandoSoErros = false;
-    _clearAnswersOriginal();
-    atualizarBotaoErros();
-  };
