@@ -1,11 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   firebase.js — Firestore modular v10
-   Estrutura:
-     2026.1 (coleção)
-       └── {usuario} (documento)
-             ├── checklists/{id}
-             ├── anotacoes/notas/itens/{id}
-             └── flashcards/cards/itens/{id}
+   firebase.js — Firestore modular v10  (sem Google Auth)
+   Acesso direto por nome de usuário — autenticação feita no pessoal.js
 ═══════════════════════════════════════════════════════════════════════ */
 
 import { initializeApp }
@@ -27,44 +22,47 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const db   = getFirestore(app);
 
 const COL = '2026.1';
 
+
 // ─── helpers de referência ────────────────────────────────────────────
 
+// Remove acentos e converte para minúsculo — igual ao pessoal.js
+function _norm(nome) {
+    return nome
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+}
+
 function _checklistDoc(usuario, id) {
-    return doc(db, COL, usuario.toLowerCase(), 'checklists', id);
+    return doc(db, COL, _norm(usuario), 'checklists', id);
 }
-
 function _checklistsCol(usuario) {
-    return collection(db, COL, usuario.toLowerCase(), 'checklists');
+    return collection(db, COL, _norm(usuario), 'checklists');
 }
-
 function _notaDoc(usuario, id) {
-    return doc(db, COL, usuario.toLowerCase(), 'anotacoes', 'notas', 'itens', id);
+    return doc(db, COL, _norm(usuario), 'anotacoes', 'notas', 'itens', id);
 }
-
 function _notasCol(usuario) {
-    return collection(db, COL, usuario.toLowerCase(), 'anotacoes', 'notas', 'itens');
+    return collection(db, COL, _norm(usuario), 'anotacoes', 'notas', 'itens');
 }
-
 function _cardDoc(usuario, id) {
-    return doc(db, COL, usuario.toLowerCase(), 'flashcards', 'cards', 'itens', id);
+    return doc(db, COL, _norm(usuario), 'flashcards', 'cards', 'itens', id);
 }
-
 function _cardsCol(usuario) {
-    return collection(db, COL, usuario.toLowerCase(), 'flashcards', 'cards', 'itens');
+    return collection(db, COL, _norm(usuario), 'flashcards', 'cards', 'itens');
 }
 
 
 // ═════════════════════════════════════════════════════════════════════
 //  CHECKLIST
-//  Usado por: pessoal.js → salvarNoFirebase / carregarDoFirebase / assinarFirebase
 // ═════════════════════════════════════════════════════════════════════
 
 export async function salvarNoFirebase(nome, checklist, videosAssistidos) {
-    const ref = _checklistDoc(nome, nome.toLowerCase());
+    const ref = _checklistDoc(nome, _norm(nome));
     console.log(`[FIREBASE] ✉ Salvando checklist — usuário: ${nome}`);
     try {
         await setDoc(ref, {
@@ -82,7 +80,7 @@ export async function salvarNoFirebase(nome, checklist, videosAssistidos) {
 
 export async function carregarDoFirebase(nome) {
     console.log(`[FIREBASE] 🔍 Carregando checklist — usuário: ${nome}`);
-    const ref  = _checklistDoc(nome, nome.toLowerCase());
+    const ref  = _checklistDoc(nome, _norm(nome));
     const snap = await getDoc(ref);
     if (snap.exists()) {
         console.log(`[FIREBASE] ✅ Checklist encontrado — usuário: ${nome}`);
@@ -93,13 +91,12 @@ export async function carregarDoFirebase(nome) {
 }
 
 export function assinarFirebase(nome, callback) {
-    const ref = _checklistDoc(nome, nome.toLowerCase());
+    const ref = _checklistDoc(nome, _norm(nome));
     return onSnapshot(ref, snap => {
         if (snap.exists()) callback(snap.data());
     });
 }
 
-// Aliases para novos nomes (uso interno / futuro)
 export async function salvarChecklist(usuario, dados) {
     return salvarNoFirebase(usuario, dados.checklist ?? dados, dados.videosAssistidos ?? {});
 }
@@ -110,7 +107,7 @@ export async function listarChecklists(usuario) {
 }
 
 export async function carregarChecklist(usuario, id) {
-    const ref  = _checklistDoc(usuario, id ?? usuario.toLowerCase());
+    const ref  = _checklistDoc(usuario, id ?? _norm(usuario));
     const snap = await getDoc(ref);
     return snap.exists() ? { id: snap.id, ...snap.data() } : null;
 }
@@ -120,7 +117,7 @@ export async function deletarChecklist(usuario, id) {
 }
 
 export function assinarChecklist(usuario, id, callback) {
-    return onSnapshot(_checklistDoc(usuario, id ?? usuario.toLowerCase()), snap => {
+    return onSnapshot(_checklistDoc(usuario, id ?? _norm(usuario)), snap => {
         if (snap.exists()) callback({ id: snap.id, ...snap.data() });
     });
 }
@@ -128,8 +125,6 @@ export function assinarChecklist(usuario, id, callback) {
 
 // ═════════════════════════════════════════════════════════════════════
 //  ANOTAÇÕES
-//  Usado por: anotacao.js → salvarAnotacaoNoFirebase / deletarAnotacaoNoFirebase
-//                         → carregarAnotacoesDoFirebase
 // ═════════════════════════════════════════════════════════════════════
 
 export async function salvarAnotacaoNoFirebase(nome, nota) {
@@ -173,7 +168,7 @@ export async function carregarAnotacoesDoFirebase(nome) {
             if (!dados[disc]) dados[disc] = {};
             dados[disc][nota.id] = nota;
         });
-        console.log(`[FIREBASE] ✅ Anotações carregadas — usuário: ${nome} (${snap.size} nota(s))`);
+        console.log(`[FIREBASE] ✅ Anotações carregadas — ${snap.size} nota(s)`);
         return dados;
     } catch (err) {
         console.error(`[FIREBASE] ❌ Erro ao carregar anotações — usuário: ${nome}`, err);
@@ -181,7 +176,6 @@ export async function carregarAnotacoesDoFirebase(nome) {
     }
 }
 
-// Aliases para novos nomes
 export async function salvarNota(usuario, nota) {
     return salvarAnotacaoNoFirebase(usuario, nota);
 }
@@ -198,8 +192,6 @@ export async function deletarNota(usuario, id) {
 
 // ═════════════════════════════════════════════════════════════════════
 //  FLASHCARDS — SRS
-//  Usado por: card.js → carregarPerfisSRS / salvarPerfilSRS
-//             pessoal.js → carregarTodosPerfisSRS
 // ═════════════════════════════════════════════════════════════════════
 
 export async function carregarPerfisSRS(nome, discId) {
@@ -252,7 +244,6 @@ export async function carregarTodosPerfisSRS(nome) {
     }
 }
 
-// Aliases para novos nomes
 export async function salvarFlashcard(usuario, card) {
     const id = card.id ?? `card_${Date.now()}`;
     return salvarPerfilSRS(usuario, id, card);
