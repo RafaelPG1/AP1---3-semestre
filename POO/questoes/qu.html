@@ -1,5 +1,3 @@
-<!-- qu.html - modelo -->
-
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -25,14 +23,12 @@
             box-shadow: none;
             transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         #btn-ia.nav-btn.nav-btn-ia:hover {
             background: rgba(124, 58, 237, 0.22);
             border-color: rgba(167, 139, 250, 0.6);
             color: #e8d9ff;
             transform: scale(1.05);
         }
-
         #btn-ia.nav-btn.nav-btn-ia.ativo {
             background: rgba(124, 58, 237, 0.25);
             border-color: rgba(192, 132, 252, 0.7);
@@ -67,7 +63,7 @@
                 <button id="restart" class="action-button restart-button">
                     <i class="fas fa-redo"></i> Reiniciar
                 </button>
-                                <button id="errors" class="action-button errors-button">
+                <button id="errors" class="action-button errors-button">
                     <i class="fas fa-triangle-exclamation"></i> Ver erros
                 </button>
                 <button id="reveal" class="action-button reveal-button">
@@ -78,7 +74,7 @@
 
         <div id="results" class="results"></div>
 
-        <div class="page-footer">Questões Personalizadas · Redes</div>
+        <div class="page-footer">Questões Personalizadas · POO</div>
 
     </div>
 
@@ -94,12 +90,11 @@
             style="background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.35);color:#f97316;">
             <i class="fas fa-layer-group"></i>
         </button>
-        <button id="btn-ia" class="nav-btn nav-btn-ia" title="Assistente IA">
-            ✦
-        </button>
+        <button id="btn-ia" class="nav-btn nav-btn-ia" title="Assistente IA">✦</button>
     </div>
 
     <script src="qu.js"></script>
+    <script src="quiz-storage-patch.js"></script> 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         var btn = document.getElementById('btn-toggle-modo');
@@ -123,22 +118,14 @@
         document.getElementById('btn-ia')?.addEventListener('click', function () {
             const tentar = (tentativas) => {
                 const fab = document.querySelector('.ia-fab-custom');
-                if (fab) {
-                    fab.click();
-                } else if (tentativas > 0) {
-                    setTimeout(() => tentar(tentativas - 1), 100);
-                }
+                if (fab) { fab.click(); }
+                else if (tentativas > 0) { setTimeout(() => tentar(tentativas - 1), 100); }
             };
             tentar(20);
         });
     });
     </script>
     <script src="../../IAs/ia.js"></script>
-    <script>
-        var s = document.createElement('script');
-        s.src = '../../storage.js';
-        s.onerror = function() { console.warn('storage.js não encontrado — auto-save desativado.'); };
-        document.body.appendChild(s);
-    </script>
+
 </body>
-</html> 
+</html>

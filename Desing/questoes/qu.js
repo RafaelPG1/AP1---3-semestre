@@ -1070,7 +1070,7 @@ function createOriginalQuizData() {
     return quizDataDesign.map(subject => ({ ...subject, questions: subject.questions.map(q => ({ ...q })) }));
 }
 
-// ─── Monta o feedback dinamicamente (evita duplicação) ───────────────────────
+// ─── Monta o feedback dinamicamente ──────────────────────────────────────────
 function buildFeedbackHTML(question, isCorrect) {
     const letters = ['A', 'B', 'C', 'D', 'E'];
     const correctLetter = letters[question.answer];
@@ -1261,10 +1261,6 @@ window.selectOption = function(gi, oi) {
 
     updateGlobalResults();
 
-    if (typeof storageInitialized !== 'undefined' && storageInitialized) {
-        setTimeout(saveCurrentProgress, 100);
-    }
-
     // ── Integração com modo step ─────────────────────────────────────────────
     if (quizModo === 'step') {
         atualizarControlesStep();
@@ -1374,7 +1370,6 @@ function smoothScrollTo(targetPosition, duration = 800) {
 }
 function smoothScrollToTop() { smoothScrollTo(0, 800); }
 
-// Qualquer interação do usuário cancela o scroll animado
 window.addEventListener('wheel',     cancelScroll, { passive: true });
 window.addEventListener('touchmove', cancelScroll, { passive: true });
 window.addEventListener('keydown',   cancelScroll, { passive: true });
@@ -1413,117 +1408,6 @@ document.getElementById('revealButton').addEventListener('click', revealAnswers)
 document.addEventListener("DOMContentLoaded", () => {
     initializeQuiz();
 });
-
-// ─── Auto-Save ────────────────────────────────────────────────────────────────
-const QUIZ_ID = 'questoes_desing';
-const AUTO_SAVE_CONFIG = { enabled: true, interval: 10000, saveOnAnswer: true };
-let autoSaveInterval   = null;
-let storageInitialized = false;
-
-function initializeStorage() {
-    if (typeof storage === 'undefined') return false;
-    if (!storage.isStorageAvailable()) return false;
-    storageInitialized = true;
-    loadSavedProgress();
-    if (AUTO_SAVE_CONFIG.enabled) startAutoSave();
-    return true;
-}
-
-function loadSavedProgress() {
-    if (!storageInitialized) return;
-    try {
-        const saved = storage.loadProgress(QUIZ_ID);
-        if (saved?.respostas) {
-            const hasAnswers = saved.respostas.some(a => a !== null && a !== undefined);
-            if (hasAnswers) {
-                userAnswers = [...saved.respostas];
-                showAllQuestions();
-                updateGlobalResults();
-                const count = saved.respostas.filter(a => a !== null && a !== undefined).length;
-                showProgressNotification(`Progresso restaurado! 📚 (${count} questões respondidas)`);
-            }
-        }
-    } catch (e) { console.error('[Storage] Erro ao carregar:', e); }
-}
-
-function saveCurrentProgress() {
-    if (!storageInitialized || !userAnswers) return;
-    try {
-        storage.saveProgress(QUIZ_ID, userAnswers, {
-            totalQuestions: userAnswers.length,
-            answeredCount: userAnswers.filter(a => a !== null).length,
-            isCompleted: userAnswers.every(a => a !== null)
-        });
-    } catch (e) { console.error('[Storage] Erro ao salvar:', e); }
-}
-
-function startAutoSave() {
-    if (autoSaveInterval) clearInterval(autoSaveInterval);
-    autoSaveInterval = setInterval(saveCurrentProgress, AUTO_SAVE_CONFIG.interval);
-}
-
-function stopAutoSave() {
-    if (autoSaveInterval) { clearInterval(autoSaveInterval); autoSaveInterval = null; }
-}
-
-function showProgressNotification(message) {
-    let container = document.getElementById('notification-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'notification-container';
-        container.style.cssText = `
-            position: fixed; top: 20px; right: 20px;
-            display: flex; flex-direction: column; gap: 8px;
-            z-index: 10000; pointer-events: none;
-        `;
-        document.body.appendChild(container);
-    }
-
-    const el = document.createElement('div');
-    el.style.cssText = `
-        background: rgba(212, 83, 126, 0.15);
-        color: #e785b0;
-        border: 1px solid rgba(212, 83, 126, 0.3);
-        padding: 12px 22px;
-        border-radius: 12px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 4px 20px rgba(212, 83, 126, 0.15);
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 14px;
-        font-weight: 600;
-        min-width: 220px;
-        pointer-events: auto;
-        opacity: 0;
-        transform: translateX(40px) scale(0.95);
-        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-    `;
-
-    el.innerText = message;
-    container.appendChild(el);
-
-    requestAnimationFrame(() => {
-        el.style.opacity = '1';
-        el.style.transform = 'translateX(0) scale(1)';
-    });
-
-    setTimeout(() => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateX(30px) scale(0.9)';
-        el.addEventListener('transitionend', () => {
-            el.remove();
-            if (container.childNodes.length === 0) container.remove();
-        });
-    }, 4000);
-}
-
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { saveCurrentProgress(); stopAutoSave(); }
-    else if (AUTO_SAVE_CONFIG.enabled && storageInitialized) startAutoSave();
-});
-window.addEventListener('beforeunload', () => { if (storageInitialized) saveCurrentProgress(); });
-
-setTimeout(initializeStorage, 500);
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1845,7 +1729,7 @@ function criarBotaoToggleModo() {
     btn.className = 'btn-toggle-modo';
     btn.title     = 'Modo Step (uma questão por vez)';
     btn.innerHTML = '<i class="fas fa-layer-group"></i>';
-    btn.style.bottom = '90px'; // ← adiciona essa linha
+    btn.style.bottom = '90px';
     btn.addEventListener('click', toggleModo);
     document.body.appendChild(btn);
 }
@@ -1869,7 +1753,6 @@ function sincronizarAlturaStep() {
 }
 
 window.quizDataDesign = quizDataDesign;
-
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1926,7 +1809,6 @@ function toggleVerErros() {
             const erros = contarErros();
             btn.innerHTML = `<i class="fas fa-triangle-exclamation" style="display:flex;align-items:center;line-height:1"></i> Ver erros (${erros})`;
         }
-        // Reconecta o listener após reescrever o innerHTML
         btn.removeEventListener('click', toggleVerErros);
         btn.addEventListener('click', toggleVerErros);
     }
@@ -1939,7 +1821,6 @@ function toggleVerErros() {
 }
 
 function filtrarSoErros() {
-    // Oculta questões certas e mostra só as erradas
     questionMap.forEach((m, gi) => {
         const el = document.getElementById(`q-${gi}`);
         if (!el) return;
@@ -1947,9 +1828,7 @@ function filtrarSoErros() {
         el.style.display = acertou ? 'none' : '';
     });
 
-    // Oculta títulos de aula cujas aulas não têm nenhum erro
     ocultarTitulosSemErro();
-
     smoothScrollToTop();
 }
 
@@ -1959,7 +1838,6 @@ function mostrarTodasVisiveis() {
         if (el) el.style.display = '';
     });
 
-    // Reexibe todos os títulos de aula
     document.querySelectorAll('.subject-title').forEach(t => t.style.display = '');
     document.querySelectorAll('.subject-result').forEach(r => r.style.display = '');
 
@@ -1967,7 +1845,6 @@ function mostrarTodasVisiveis() {
 }
 
 function ocultarTitulosSemErro() {
-    // Para cada aula, verifica se há algum erro; oculta título e resultado se não houver
     quizData.forEach((_, sIdx) => {
         const temErro = questionMap.some((m, gi) => {
             if (m.sIdx !== sIdx) return false;
@@ -1975,7 +1852,6 @@ function ocultarTitulosSemErro() {
             return ans !== null && ans !== quizData[m.sIdx].questions[m.qIdx].answer;
         });
 
-        // Tenta localizar o subject-title pelo texto
         document.querySelectorAll('.subject-title').forEach(el => {
             if (el.textContent.trim() === quizData[sIdx].subject) {
                 el.style.display = temErro ? '' : 'none';
@@ -1987,8 +1863,6 @@ function ocultarTitulosSemErro() {
     });
 }
 
-// ─── Conecta o botão e integra ao updateGlobalResults ────────────────────────
-// ─── Conecta o botão e integra ao updateGlobalResults ────────────────────────
 function conectarBotaoErros() {
     const btn = document.getElementById('errors');
     if (btn) {
@@ -2003,24 +1877,176 @@ if (document.readyState === 'loading') {
     conectarBotaoErros();
 }
 
-// Sobrescreve updateGlobalResults para incluir a atualização do botão de erros
 const _updateGlobalResultsOriginal = updateGlobalResults;
 updateGlobalResults = function () {
     _updateGlobalResultsOriginal();
     atualizarBotaoErros();
 };
 
-// Reseta o estado do botão ao reiniciar/limpar
 const _restartQuizOriginal = restartQuiz;
 restartQuiz = function () {
     mostrandoSoErros = false;
-
-    if (storageInitialized) {
-        try { storage.clearProgress(QUIZ_ID); } catch(e) {}
-    }
-    stopAutoSave();
-    storageInitialized = false;
-
     _restartQuizOriginal();
     atualizarBotaoErros();
 };
+
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// QUIZ PERSISTENCE — localStorage
+// Adicione este bloco no final do arquivo qu.js,
+// ou inclua como <script src="quiz-storage-patch.js"></script>
+// DEPOIS do <script src="qu.js"></script> no HTML.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+(function () {
+    'use strict';
+
+    // ─── Chave única por página (usa o atributo data-disciplina do <body>) ────
+    const DISC_ID = document.body.dataset.disciplina || 'quiz_default';
+    const SAVE_KEY = 'quiz_progress_v1_' + DISC_ID;
+
+    // ─── Helpers de storage ───────────────────────────────────────────────────
+
+    function salvarProgresso() {
+        try {
+            // Serializa quizData apenas com os campos necessários para restaurar
+            // (options já embaralhadas + answer já reindexado)
+            const snapshot = {
+                quizData: quizData.map(subject => ({
+                    subject: subject.subject,
+                    questions: subject.questions.map(q => ({
+                        answer: q.answer,
+                        options: q.options
+                        // demais campos (texto, code, etc.) vêm do quizDataPoo original
+                    }))
+                })),
+                userAnswers: userAnswers,
+                savedAt: Date.now()
+            };
+            localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot));
+        } catch (e) {
+            console.warn('[QuizPersistence] Erro ao salvar:', e);
+        }
+    }
+
+    function carregarProgresso() {
+        try {
+            const raw = localStorage.getItem(SAVE_KEY);
+            if (!raw) return null;
+            const data = JSON.parse(raw);
+            // Valida estrutura mínima
+            if (!data.quizData || !data.userAnswers) return null;
+            return data;
+        } catch (e) {
+            console.warn('[QuizPersistence] Erro ao carregar:', e);
+            return null;
+        }
+    }
+
+    function limparProgresso() {
+        try {
+            localStorage.removeItem(SAVE_KEY);
+        } catch (e) {
+            console.warn('[QuizPersistence] Erro ao limpar:', e);
+        }
+    }
+
+    // ─── Restaura estado salvo no quizData global ─────────────────────────────
+    // Os textos/codes/assertions vêm do quizDataPoo original;
+    // apenas options (ordem embaralhada) e answer (índice reindexado) são restaurados.
+
+    function restaurarQuizData(snapshot) {
+        snapshot.quizData.forEach((savedSubject, sIdx) => {
+            if (!quizData[sIdx]) return;
+            savedSubject.questions.forEach((savedQ, qIdx) => {
+                if (!quizData[sIdx].questions[qIdx]) return;
+                quizData[sIdx].questions[qIdx].options = savedQ.options;
+                quizData[sIdx].questions[qIdx].answer  = savedQ.answer;
+            });
+        });
+    }
+
+    // ─── Hook: intercepta selectOption para salvar após cada resposta ─────────
+
+    const _selectOriginal = window.selectOption;
+    window.selectOption = function (gi, oi) {
+        _selectOriginal(gi, oi);
+        salvarProgresso();
+    };
+
+    // ─── Hook: intercepta revealAnswers para salvar após revelar ─────────────
+
+    const _revealOriginal = window.revealAnswers || revealAnswers;
+    // revealAnswers não está exposta em window por padrão, então também
+    // sobrescrevemos o listener diretamente
+    const revealBtn  = document.getElementById('reveal');
+    const revealBtn2 = document.getElementById('revealButton');
+
+    function revealAndSave() {
+        revealAnswers();
+        salvarProgresso();
+    }
+
+    if (revealBtn)  revealBtn.replaceWith(revealBtn.cloneNode(true));
+    if (revealBtn2) revealBtn2.replaceWith(revealBtn2.cloneNode(true));
+
+    document.getElementById('reveal')?.addEventListener('click', revealAndSave);
+    document.getElementById('revealButton')?.addEventListener('click', revealAndSave);
+
+    // ─── Hook: intercepta restartQuiz para limpar storage ────────────────────
+
+    const _restartOriginal = window.restartQuiz || restartQuiz;
+
+    function restartAndClear() {
+        limparProgresso();
+        restartQuiz();
+    }
+
+    const restartBtn  = document.getElementById('restart');
+    const restartBtn2 = document.getElementById('restartButton');
+
+    if (restartBtn)  restartBtn.replaceWith(restartBtn.cloneNode(true));
+    if (restartBtn2) restartBtn2.replaceWith(restartBtn2.cloneNode(true));
+
+    document.getElementById('restart')?.addEventListener('click', restartAndClear);
+    document.getElementById('restartButton')?.addEventListener('click', restartAndClear);
+
+    // ─── Inicialização: restaura ou inicia normalmente ────────────────────────
+
+    function init() {
+        const saved = carregarProgresso();
+
+        if (saved) {
+            // Reconstrói quizData com as opções na mesma ordem que estavam
+            restaurarQuizData(saved);
+
+            // Reconstrói questionMap
+            questionMap = [];
+            quizData.forEach((subject, sIdx) => {
+                subject.questions.forEach((_, qIdx) => {
+                    questionMap.push({ sIdx, qIdx });
+                });
+            });
+
+            // Restaura respostas do usuário
+            userAnswers = saved.userAnswers;
+
+            // Re-renderiza com estado restaurado
+            showAllQuestions();
+            updateGlobalResults();
+
+            console.log('[QuizPersistence] ✅ Progresso restaurado —',
+                userAnswers.filter(a => a !== null).length, '/' , userAnswers.length, 'respondidas');
+        }
+        // Se não há save, o initializeQuiz() normal já rodou via DOMContentLoaded em qu.js
+    }
+
+    // Espera qu.js terminar de montar tudo, depois restaura
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(init, 0));
+    } else {
+        setTimeout(init, 0);
+    }
+
+})();
