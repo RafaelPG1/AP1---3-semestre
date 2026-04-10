@@ -1,12 +1,21 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   firebase.js — Integração com Firestore  (v4 — inclui flashcards SRS)
-   Responsabilidade única: comunicação com o banco de dados.
-════════════════════════════════════════════════════════════════════════ */
+   firebase.js — Firestore modular v10
+   Estrutura:
+     2026.1 (coleção)
+       └── {usuario} (documento)
+             ├── checklists/{id}
+             ├── anotacoes/notas/itens/{id}
+             └── flashcards/cards/itens/{id}
+═══════════════════════════════════════════════════════════════════════ */
 
 import { initializeApp }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, doc, setDoc, getDoc, deleteDoc, collection, getDocs, onSnapshot }
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import {
+    getFirestore,
+    collection, doc,
+    setDoc, getDoc, getDocs, deleteDoc,
+    onSnapshot
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey:            'AIzaSyC65C1PnBTDM2H3JjVAF4eJpnq-TyLlI-0',
@@ -20,41 +29,43 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-/**
- * Função de diagnóstico — chame no console do navegador:
- *   import('./firebase.js').then(m => m.testarFirebase('Rafael'))
- */
-export async function testarFirebase(nome) {
-    console.group(`[FIREBASE DIAGNÓSTICO] usuário: ${nome}`);
-    try {
-        const refTeste = doc(db, 'anotacoes', nome, 'notas', '_teste_diagnostico');
-        await setDoc(refTeste, { ok: true, ts: Date.now() });
-        console.log('✅ ESCRITA ok — anotacoes/' + nome + '/notas/_teste_diagnostico');
+const COL = '2026.1';
 
-        const snap = await getDoc(refTeste);
-        console.log('✅ LEITURA ok — dados:', snap.data());
+// ─── helpers de referência ────────────────────────────────────────────
 
-        await deleteDoc(refTeste);
-        console.log('✅ DELEÇÃO ok');
+function _checklistDoc(usuario, id) {
+    return doc(db, COL, usuario.toLowerCase(), 'checklists', id);
+}
 
-        console.log('🎉 Firebase funcionando!');
-    } catch (err) {
-        console.error('❌ ERRO Firebase:', err.code, err.message);
-        if (err.code === 'permission-denied') {
-            console.warn('👉 Causa: Regras do Firestore bloqueando. Vá em Firebase Console → Firestore → Regras e libere.');
-        }
-    }
-    console.groupEnd();
+function _checklistsCol(usuario) {
+    return collection(db, COL, usuario.toLowerCase(), 'checklists');
+}
+
+function _notaDoc(usuario, id) {
+    return doc(db, COL, usuario.toLowerCase(), 'anotacoes', 'notas', 'itens', id);
+}
+
+function _notasCol(usuario) {
+    return collection(db, COL, usuario.toLowerCase(), 'anotacoes', 'notas', 'itens');
+}
+
+function _cardDoc(usuario, id) {
+    return doc(db, COL, usuario.toLowerCase(), 'flashcards', 'cards', 'itens', id);
+}
+
+function _cardsCol(usuario) {
+    return collection(db, COL, usuario.toLowerCase(), 'flashcards', 'cards', 'itens');
 }
 
 
 // ═════════════════════════════════════════════════════════════════════
 //  CHECKLIST
+//  Usado por: pessoal.js → salvarNoFirebase / carregarDoFirebase / assinarFirebase
 // ═════════════════════════════════════════════════════════════════════
 
 export async function salvarNoFirebase(nome, checklist, videosAssistidos) {
-    const ref = doc(db, 'checklists', nome.toLowerCase());
-    console.log(`[FIREBASE] ✉ Enviando dados para Firestore — usuário: ${nome}`);
+    const ref = _checklistDoc(nome, nome.toLowerCase());
+    console.log(`[FIREBASE] ✉ Salvando checklist — usuário: ${nome}`);
     try {
         await setDoc(ref, {
             usuario:           nome,
@@ -62,65 +73,84 @@ export async function salvarNoFirebase(nome, checklist, videosAssistidos) {
             checklist:         checklist        ?? {},
             videosAssistidos:  videosAssistidos ?? {}
         }, { merge: true });
-        console.log(`[FIREBASE] ✅ Dados salvos com sucesso — usuário: ${nome}`);
+        console.log(`[FIREBASE] ✅ Checklist salvo — usuário: ${nome}`);
     } catch (err) {
-        console.error(`[FIREBASE] ❌ Erro ao salvar dados — usuário: ${nome}`, err);
+        console.error(`[FIREBASE] ❌ Erro ao salvar checklist — usuário: ${nome}`, err);
         throw err;
     }
 }
 
 export async function carregarDoFirebase(nome) {
-    console.log(`[FIREBASE] 🔍 Carregando dados — usuário: ${nome}`);
-    const ref  = doc(db, 'checklists', nome.toLowerCase());
+    console.log(`[FIREBASE] 🔍 Carregando checklist — usuário: ${nome}`);
+    const ref  = _checklistDoc(nome, nome.toLowerCase());
     const snap = await getDoc(ref);
     if (snap.exists()) {
-        console.log(`[FIREBASE] ✅ Dados encontrados — usuário: ${nome}`);
+        console.log(`[FIREBASE] ✅ Checklist encontrado — usuário: ${nome}`);
         return snap.data();
-    } else {
-        console.log(`[FIREBASE] ℹ️ Nenhum dado encontrado no Firestore — usuário: ${nome}`);
-        return null;
     }
+    console.log(`[FIREBASE] ℹ️ Nenhum checklist encontrado — usuário: ${nome}`);
+    return null;
 }
 
 export function assinarFirebase(nome, callback) {
-    const ref = doc(db, 'checklists', nome.toLowerCase());
+    const ref = _checklistDoc(nome, nome.toLowerCase());
     return onSnapshot(ref, snap => {
         if (snap.exists()) callback(snap.data());
+    });
+}
+
+// Aliases para novos nomes (uso interno / futuro)
+export async function salvarChecklist(usuario, dados) {
+    return salvarNoFirebase(usuario, dados.checklist ?? dados, dados.videosAssistidos ?? {});
+}
+
+export async function listarChecklists(usuario) {
+    const snap = await getDocs(_checklistsCol(usuario));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function carregarChecklist(usuario, id) {
+    const ref  = _checklistDoc(usuario, id ?? usuario.toLowerCase());
+    const snap = await getDoc(ref);
+    return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+}
+
+export async function deletarChecklist(usuario, id) {
+    await deleteDoc(_checklistDoc(usuario, id));
+}
+
+export function assinarChecklist(usuario, id, callback) {
+    return onSnapshot(_checklistDoc(usuario, id ?? usuario.toLowerCase()), snap => {
+        if (snap.exists()) callback({ id: snap.id, ...snap.data() });
     });
 }
 
 
 // ═════════════════════════════════════════════════════════════════════
 //  ANOTAÇÕES
-//  Estrutura Firestore:
-//    anotacoes/{nome}/notas/{notaId}
+//  Usado por: anotacao.js → salvarAnotacaoNoFirebase / deletarAnotacaoNoFirebase
+//                         → carregarAnotacoesDoFirebase
 // ═════════════════════════════════════════════════════════════════════
 
-function _notasRef(nome) {
-    return collection(db, 'anotacoes', nome, 'notas');
-}
-
-function _notaDocRef(nome, notaId) {
-    return doc(db, 'anotacoes', nome, 'notas', notaId);
-}
-
 export async function salvarAnotacaoNoFirebase(nome, nota) {
-    const ref = _notaDocRef(nome, nota.id);
+    const id  = nota.id ?? `nota_${Date.now()}`;
+    const ref = _notaDoc(nome, id);
     console.log(`[FIREBASE] ✉ Salvando anotação "${nota.titulo}" — usuário: ${nome}`);
     try {
         await setDoc(ref, {
             ...nota,
-            ultimaAtualizacao: new Date().toISOString(),
+            id,
+            ultimaAtualizacao: new Date().toISOString()
         }, { merge: true });
-        console.log(`[FIREBASE] ✅ Anotação salva — id: ${nota.id}`);
+        console.log(`[FIREBASE] ✅ Anotação salva — id: ${id}`);
     } catch (err) {
-        console.error(`[FIREBASE] ❌ Erro ao salvar anotação — id: ${nota.id}`, err);
+        console.error(`[FIREBASE] ❌ Erro ao salvar anotação — id: ${id}`, err);
         throw err;
     }
 }
 
 export async function deletarAnotacaoNoFirebase(nome, notaId) {
-    const ref = _notaDocRef(nome, notaId);
+    const ref = _notaDoc(nome, notaId);
     console.log(`[FIREBASE] 🗑 Deletando anotação ${notaId} — usuário: ${nome}`);
     try {
         await deleteDoc(ref);
@@ -134,7 +164,7 @@ export async function deletarAnotacaoNoFirebase(nome, notaId) {
 export async function carregarAnotacoesDoFirebase(nome) {
     console.log(`[FIREBASE] 🔍 Carregando anotações — usuário: ${nome}`);
     try {
-        const snap  = await getDocs(_notasRef(nome));
+        const snap  = await getDocs(_notasCol(nome));
         const dados = {};
         snap.forEach(docSnap => {
             const nota = docSnap.data();
@@ -151,68 +181,42 @@ export async function carregarAnotacoesDoFirebase(nome) {
     }
 }
 
-
-// ═════════════════════════════════════════════════════════════════════
-//  FLASHCARDS — SRS (Spaced Repetition)
-//
-//  Estrutura Firestore:
-//    flashcards/{nome}/cards/{cardId}
-//
-//  Perfil de cada card:
-//  {
-//    intervalo:           number,   // dias até próxima revisão
-//    proximaVez:          number,   // timestamp ms
-//    acertos:             number,   // total de acertos
-//    erros:               number,   // total de erros
-//    diffMarcada:         string,   // última dificuldade: "easy"|"medium"|"hard"
-//    tentativas:          number,   // total de vezes que respondeu (acerto + erro)
-//    acertosConsecutivos: number,   // acertos seguidos sem errar
-//  }
-// ═════════════════════════════════════════════════════════════════════
-
-/**
- * Referência da subcoleção de cards de um usuário.
- * @param {string} nome
- */
-function _cardsRef(nome) {
-    return collection(db, 'flashcards', nome, 'cards');
+// Aliases para novos nomes
+export async function salvarNota(usuario, nota) {
+    return salvarAnotacaoNoFirebase(usuario, nota);
 }
 
-/**
- * Referência de um card específico.
- * @param {string} nome
- * @param {string} cardId  — ex: "d1", "b12", "r7", "p33"
- */
-function _cardDocRef(nome, cardId) {
-    return doc(db, 'flashcards', nome, 'cards', cardId);
+export async function listarNotas(usuario) {
+    const snap = await getDocs(_notasCol(usuario));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-/**
- * Carrega todos os perfis SRS de uma disciplina do Firestore.
- * Retorna um objeto { cardId: perfil } com apenas os cards já respondidos.
- * Cards nunca vistos não existem no Firestore — o card.js trata isso com _srPerfil().
- *
- * @param {string} nome
- * @param {string} discId  — "design" | "banco" | "redes" | "poo"
- * @returns {Object}  ex: { d1: { intervalo:4, acertos:2, ... }, d7: { ... } }
- */
+export async function deletarNota(usuario, id) {
+    return deletarAnotacaoNoFirebase(usuario, id);
+}
+
+
+// ═════════════════════════════════════════════════════════════════════
+//  FLASHCARDS — SRS
+//  Usado por: card.js → carregarPerfisSRS / salvarPerfilSRS
+//             pessoal.js → carregarTodosPerfisSRS
+// ═════════════════════════════════════════════════════════════════════
+
 export async function carregarPerfisSRS(nome, discId) {
-    console.log(`[FIREBASE] 🔍 Carregando SRS — usuário: ${nome} | disciplina: ${discId}`);
+    console.log(`[FIREBASE] 🔍 Carregando SRS — usuário: ${nome} | disc: ${discId}`);
     try {
-        const snap  = await getDocs(_cardsRef(nome));
-        const dados = {};
+        const snap    = await getDocs(_cardsCol(nome));
+        const dados   = {};
+        const prefixo = { design: 'd', banco: 'b', redes: 'r', poo: 'p' }[discId];
 
         snap.forEach(docSnap => {
             const cardId = docSnap.id;
-            // Filtra só os cards da disciplina solicitada
-            // IDs seguem o padrão: d1..d50, b1..b50, r1..r50, p1..p50
-            const prefixo = { design: 'd', banco: 'b', redes: 'r', poo: 'p' }[discId];
             if (prefixo && cardId.startsWith(prefixo)) {
                 dados[cardId] = docSnap.data();
             }
         });
 
-        console.log(`[FIREBASE] ✅ Perfis SRS carregados — ${Object.keys(dados).length} card(s) com histórico`);
+        console.log(`[FIREBASE] ✅ Perfis SRS carregados — ${Object.keys(dados).length} card(s)`);
         return dados;
     } catch (err) {
         console.error(`[FIREBASE] ❌ Erro ao carregar perfis SRS — usuário: ${nome}`, err);
@@ -220,20 +224,12 @@ export async function carregarPerfisSRS(nome, discId) {
     }
 }
 
-/**
- * Salva (cria ou atualiza) o perfil SRS de um card específico.
- * Chamado pelo card.js após cada resposta (Acertei / Errei).
- *
- * @param {string} nome
- * @param {string} cardId   — ex: "d1"
- * @param {Object} perfil   — { intervalo, proximaVez, acertos, erros, diffMarcada, tentativas, acertosConsecutivos }
- */
 export async function salvarPerfilSRS(nome, cardId, perfil) {
-    const ref = _cardDocRef(nome, cardId);
+    const ref = _cardDoc(nome, cardId);
     try {
         await setDoc(ref, {
             ...perfil,
-            ultimaAtualizacao: new Date().toISOString(),
+            ultimaAtualizacao: new Date().toISOString()
         }, { merge: true });
         console.log(`[FIREBASE] ✅ Perfil SRS salvo — usuário: ${nome} | card: ${cardId}`);
     } catch (err) {
@@ -242,17 +238,10 @@ export async function salvarPerfilSRS(nome, cardId, perfil) {
     }
 }
 
-/**
- * Carrega TODOS os perfis SRS do usuário de uma vez (todas as disciplinas).
- * Útil para exibir estatísticas gerais ou montar o deck sem filtro de disciplina.
- *
- * @param {string} nome
- * @returns {Object}  ex: { d1: { ... }, b3: { ... }, r12: { ... } }
- */
 export async function carregarTodosPerfisSRS(nome) {
     console.log(`[FIREBASE] 🔍 Carregando todos os perfis SRS — usuário: ${nome}`);
     try {
-        const snap  = await getDocs(_cardsRef(nome));
+        const snap  = await getDocs(_cardsCol(nome));
         const dados = {};
         snap.forEach(docSnap => { dados[docSnap.id] = docSnap.data(); });
         console.log(`[FIREBASE] ✅ Total de perfis SRS: ${snap.size}`);
@@ -261,4 +250,39 @@ export async function carregarTodosPerfisSRS(nome) {
         console.error(`[FIREBASE] ❌ Erro ao carregar todos os perfis SRS — usuário: ${nome}`, err);
         return {};
     }
+}
+
+// Aliases para novos nomes
+export async function salvarFlashcard(usuario, card) {
+    const id = card.id ?? `card_${Date.now()}`;
+    return salvarPerfilSRS(usuario, id, card);
+}
+
+export async function listarFlashcards(usuario) {
+    const snap = await getDocs(_cardsCol(usuario));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function deletarFlashcard(usuario, id) {
+    await deleteDoc(_cardDoc(usuario, id));
+}
+
+
+// ═════════════════════════════════════════════════════════════════════
+//  DIAGNÓSTICO
+// ═════════════════════════════════════════════════════════════════════
+
+export async function testarFirebase(nome) {
+    console.group(`[FIREBASE] diagnóstico — usuário: ${nome}`);
+    try {
+        const id = '_teste_diagnostico';
+        await salvarAnotacaoNoFirebase(nome, { id, titulo: 'teste', conteudo: 'ok', discId: '_teste' });
+        console.log('✅ ESCRITA ok');
+        await deletarAnotacaoNoFirebase(nome, id);
+        console.log('✅ DELEÇÃO ok');
+        console.log('🎉 Firebase funcionando!');
+    } catch (err) {
+        console.error('❌ ERRO:', err.code, err.message);
+    }
+    console.groupEnd();
 }
