@@ -657,6 +657,7 @@ function _exibirResumos(discId, panelEl) {
                 <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
                 <div style="display:flex;align-items:center;gap:.6rem;">
                     <span class="rh-count">${resumos.length} aula${resumos.length !== 1 ? 's' : ''}</span>
+                    <button class="rh-copy-btn" data-secao="aulas" title="Copiar todos os resumos"><i class="far fa-copy"></i></button>
                     <i class="fas fa-chevron-down rh-chevron"></i>
                 </div>
             </div>
@@ -678,6 +679,7 @@ function _exibirResumos(discId, panelEl) {
                 <span class="rh-label"><i class="fas fa-chalkboard-teacher" style="margin-right:.35rem;"></i>${labelProf}</span>
                 <div style="display:flex;align-items:center;gap:.6rem;">
                     <span class="rh-count">${resumosProf.length} ${unidadeProf}${resumosProf.length !== 1 ? 's' : ''}</span>
+                    <button class="rh-copy-btn" data-secao="prof" title="Copiar todos os resumos"><i class="far fa-copy"></i></button>
                     <i class="fas fa-chevron-down rh-chevron"></i>
                 </div>
             </div>
@@ -693,7 +695,10 @@ function _exibirResumos(discId, panelEl) {
 
     // ── Lógica de colapso das seções ──────────────────────────────────
     wrapper.querySelectorAll('.resumo-secao-toggle').forEach(header => {
-        header.addEventListener('click', () => {
+        header.addEventListener('click', e => {
+            // Não colapsa se clicou no botão de copiar
+            if (e.target.closest('.rh-copy-btn')) return;
+
             const secao   = header.dataset.secao;
             const body    = wrapper.querySelector(`.resumo-secao-body--${secao}`);
             const chevron = header.querySelector('.rh-chevron');
@@ -739,12 +744,44 @@ function _exibirResumos(discId, panelEl) {
         });
     });
 
+    // ── Botões de copiar tudo da seção ────────────────────────────────
+    wrapper.querySelectorAll('.rh-copy-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            const secao = btn.dataset.secao;
+            const lista = secao === 'aulas' ? resumos : resumosProf;
+            const texto = lista.map(r => _resumoParaTexto(r)).join('\n\n' + '═'.repeat(50) + '\n\n');
+            navigator.clipboard.writeText(texto).then(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                _mostrarToast(`${secao === 'aulas' ? 'Resumos das aulas' : 'Resumos simplificados'} copiados!`);
+                setTimeout(() => { btn.innerHTML = '<i class="far fa-copy"></i>'; }, 2000);
+            }).catch(() => _mostrarToast('Não foi possível copiar automaticamente'));
+        });
+    });
+
     // ── Eventos dos cards de resumo ───────────────────────────────────
     wrapper.querySelectorAll('.resumo-card').forEach(card => {
         const rid = card.dataset.resumoId;
 
         card.querySelector('.resumo-card-header').addEventListener('click', () => {
             card.classList.toggle('expanded');
+        });
+
+        card.querySelector('.resumo-header-copy')?.addEventListener('click', e => {
+            e.stopPropagation();
+            const r = getResumoPorId(rid);
+            if (!r) return;
+            const texto = _resumoParaTexto(r);
+            const btn = card.querySelector('.resumo-header-copy');
+            navigator.clipboard.writeText(texto).then(() => {
+                btn.classList.add('copied');
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                _mostrarToast('Resumo copiado para a área de transferência');
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<i class="far fa-copy"></i>';
+                }, 2000);
+            }).catch(() => _mostrarToast('Não foi possível copiar automaticamente'));
         });
 
         card.querySelectorAll('.resumo-bloco-header').forEach(header => {
@@ -856,6 +893,9 @@ function _renderCard(resumo, discId) {
                     <span class="resumo-card-titulo">${resumo.titulo}</span>
                     <span class="resumo-card-sub">${numBlocos} tópico${numBlocos !== 1 ? 's' : ''}</span>
                 </div>
+                <button class="resumo-header-copy" title="Copiar resumo" data-resumo-id="${resumo.id}">
+                    <i class="far fa-copy"></i>
+                </button>
                 <i class="fas fa-chevron-down resumo-chevron"></i>
             </div>
             <div class="resumo-card-body">
@@ -1035,10 +1075,6 @@ if (userSalvo) {
 
 // ═════════════════════════════════════════════════════════════════════
 //  ZOOM DE IMAGENS  (v2)
-//  • Mouse: scroll para zoom, drag para mover
-//  • Touch: pinch para zoom, pan para mover, duplo toque para alternar fit/2×
-//  • Teclado: +/- zoom, 0 reset, Esc fechar
-//  • Toque/clique no fundo escuro fecha o overlay
 // ═════════════════════════════════════════════════════════════════════
 
 const IZ = (() => {

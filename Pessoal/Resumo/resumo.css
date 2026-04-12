@@ -685,3 +685,54 @@
     border-left: 2px solid rgba(255,255,255,.1);
     margin-top: 2px;
 }
+
+/* ── Botão copiar no cabeçalho do card ───────────────────────────────── */
+.resumo-header-copy {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(255,255,255,.03);
+    color: rgba(255,255,255,.3);
+    font-size: .65rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background .18s, border-color .18s, color .18s, transform .12s;
+    margin-right: .25rem;
+}
+.resumo-header-copy:hover {
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.15);
+    color: rgba(255,255,255,.75);
+    transform: scale(1.08);
+}
+.resumo-header-copy:active { transform: scale(.9); }
+.resumo-header-copy.copied {
+    background: rgba(124,90,243,.12);
+    border-color: rgba(124,90,243,.35);
+    color: #a78bfa;
+}
+
+.rh-copy-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.35);
+    font-size: .62rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background .18s, border-color .18s, color .18s;
+}
+.rh-copy-btn:hover {
+    background: rgba(255,255,255,.09);
+    border-color: rgba(255,255,255,.18);
+    color: rgba(255,255,255,.8);
+}
