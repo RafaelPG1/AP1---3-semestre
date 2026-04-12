@@ -4312,10 +4312,8 @@ banco_resumo: {
                 },
                 {
                     subtitulo: '📈 Evolução dos SGBDs',
-                    texto: [
-                        'A partir dos Anos 70 a virada de chave surgiu com a introdução do Modelo Relacional e a criação da Linguagem SQL.',
-                        'Um dos marcos mais importantes da história da Computação foi a publicação do artigo "A Relational Model of Data for Large Shared Data Banks" de Edgar Frank Codd — O ARTIGO QUE MUDOU TUDO!'
-                    ],
+                    texto: 'Um dos marcos mais importantes da história da Computação foi a publicação do artigo "A Relational Model of Data for Large Shared Data Banks" de Edgar Frank Codd — O ARTIGO QUE MUDOU TUDO!',
+                    legenda: 'A partir dos Anos 70 a virada de chave surgiu com a introdução do Modelo Relacional e a criação da Linguagem SQL.',
                     imagem: { src: 'Imagens_resumo/Evolução dos SGBD', alt: 'Linha do tempo da Evolução dos SGBDs' }
                 },
                 {
@@ -4374,7 +4372,7 @@ banco_resumo: {
                 },
                 {
                     subtitulo: '🏛️ Arquitetura de 3 Níveis',
-                    texto: 'Partes separadas para que fiquem flexíveis e mais fáceis de dar manutenção.',
+                    legenda: 'Partes separadas para que fiquem flexíveis e mais fáceis de dar manutenção.',
                     imagem: { src: 'Imagens_resumo/Arquitetura de 3 Níveis', alt: 'Diagrama da Arquitetura de 3 Níveis' }
                 },
                 {
@@ -4411,8 +4409,9 @@ banco_resumo: {
                     texto: [
                         'Esquema (Projeto): define que tipo de informação pode ser guardada — Nome, saldo, tipo de conta.',
                         'Estado (Realidade): são os dados reais, que mudam a cada instante.',
-                        'Transação: uma transação é um pacote de ações. Uma única unidade de trabalho, tendo como objetivo de levar o banco de dados para um estado válido para outro estado válido. É a ponte segura de um estado para outro.'
+                        'Transação: uma transação é um pacote de ações. Uma única unidade de trabalho, tendo como objetivo de levar o banco de dados para um estado válido para outro estado válido.'
                     ],
+                    legenda: 'É a ponte segura de um estado para outro.',
                     imagem: { src: 'Imagens_resumo/Transação', alt: 'Diagrama de Transação entre estados' }
                 },
                 {
@@ -4541,6 +4540,7 @@ banco_resumo: {
                         'É o campo de cada tabela que aponta para a chave primária de outra tabela, funcionando como uma ponte que cria ligações lógicas (de forma segura) entre diferentes conjuntos de dados.',
                         'Integridade Referencial: garante que não existam links quebrados. Não dá para existir uma matrícula de um aluno que não existe, ou um pedido de um cliente que já foi deletado. O valor da chave estrangeira tem que corresponder a um valor existente na tabela principal — é exatamente isso que previne os "dados órfãos" e mantém o sistema consistente e confiável.'
                     ],
+                    legenda: 'É essa conexão que garante que uma matrícula só possa existir para um aluno já cadastrado, evitando um caos no sistema.',
                     imagem: { src: 'Imagens_resumo/Conectando Tabelas', alt: 'Exemplo de Chave Estrangeira conectando tabelas' }
                 },
                 {
@@ -4569,24 +4569,27 @@ banco_resumo: {
                     texto: [
                         'Estamos falando de herança em POO! (conceitos similares)',
                         'Generalização: é o processo de subir na hierarquia, olhando para várias entidades e encontrar o que tem em comum criando uma super-classe.',
-                        'Especialização: é o contrário, ou seja descer na hierarquia. Definindo sub-classes mais específicas que herdam tudo da classe geral, porém, adicionam suas próprias características.',
-                        'Ex: Carro, caminhão ou moto é antes de tudo um Veículo, então todos compartilham atributos como chassi e ano de fabricação, porém, cada um tem suas particularidades. Carro tem sua quantidade de portas, caminhão tem sua capacidade de carga; o EER nos permite modelar essa relação "é um tipo de" de uma forma visual e muito clara.'
+                        'Especialização: é o contrário, ou seja descer na hierarquia. Definindo sub-classes mais específicas que herdam tudo da classe geral, porém, adicionam suas próprias características.'
                     ],
+                    legenda: 'Carro, caminhão ou moto é antes de tudo um Veículo, então todos compartilham atributos como chassi e ano de fabricação, porém, cada um tem suas particularidades. Carro tem sua quantidade de portas, caminhão tem sua capacidade de carga; o EER nos permite modelar essa relação "é um tipo de" de uma forma visual e muito clara.',
                     imagem: { src: 'Imagens_resumo/Especialização', alt: 'Diagrama de Especialização e Generalização no EER' }
                 },
                 {
                     subtitulo: '📦 Agregação',
-                    texto: 'Trata um relacionamento entre duas entidades como uma entidade de alto nível, permitindo que esta se relacione com outra entidade. É útil quando uma relação inteira precisa participar de outra relação. Ex: imagina a relação entre "Funcionário trabalha em Projeto" — o Supervisor não supervisiona o Funcionário e nem o Projeto isoladamente, mas sim a alocação daquele Funcionário naquele Projeto. A Agregação nos permite empacotar a relação "trabalha em" e ligar diretamente a entidade Supervisor.',
+                    texto: 'Trata um relacionamento entre duas entidades como uma entidade de alto nível, permitindo que esta se relacione com outra entidade. É útil quando uma relação inteira precisa participar de outra relação.',
+                    legenda: 'Imagina a relação entre "Funcionário trabalha em Projeto", vamos supor que o Supervisor não supervisiona o Funcionário e nem o Projeto isoladamente, mas sim a alocação daquele Funcionário naquele Projeto, a Agregação nos permite empacotar a relação "trabalha em" e ligar diretamente a entidade Supervisor.',
                     imagem: { src: 'Imagens_resumo/Agregação', alt: 'Diagrama de Agregação no EER' }
                 },
                 {
                     subtitulo: '🔄 Entidades Associativas',
-                    texto: 'Representa uma subclasse que pertence a diferentes superclasses, permitindo que entidades de tipos distintos compartilhem características comuns, útil quando um atributo ou relacionamento pode vir de origens variadas. Ex: o Aluno se inscreve em uma Disciplina, a Inscrição pode ter atributos como "data da inscrição" e "nota final". A Entidade Associativa que podemos chamar de Inscrição serve exatamente para isso: guardar a informação que não pertence nem só ao Aluno e nem só à Disciplina.',
+                    texto: 'Representa uma subclasse que pertence a diferentes superclasses, permitindo que entidades de tipos distintos compartilhem características comuns, útil quando um atributo ou relacionamento pode vir de origens variadas.',
+                    legenda: 'O Aluno se inscreve em uma Disciplina, a Inscrição pode ter atributos como "data da inscrição" e "nota final", a Entidade Associativa que podemos chamar de Inscrição serve exatamente para isso: guardar a informação que não pertence nem só ao Aluno e nem só à Disciplina.',
                     imagem: { src: 'Imagens_resumo/Associação', alt: 'Exemplo de Entidade Associativa no EER' }
                 },
                 {
                     subtitulo: '📊 Sobre o Diagrama Completo',
-                    texto: 'Tudo se materializa no Diagrama Entidade de Relacionamento Estendido (DEER). O objetivo do EER é nos dar as ferramentas para conseguir gerenciar a complexidade do mundo real, fazendo um espelho muito mais fiel da realidade para resultar em sistemas mais robustos, precisos e mais fáceis de manter.',
+                    texto: 'Tudo se materializa no Diagrama Entidade de Relacionamento Estendido (DEER).',
+                    legenda: 'O objetivo do EER é nos dar as ferramentas para conseguir gerenciar a complexidade do mundo real, fazendo um espelho muito mais fiel da realidade para resultar em sistemas mais robustos, precisos e mais fáceis de manter.',
                     imagem: { src: 'Imagens_resumo/Sobre o Diagrama Completo', alt: 'Diagrama EER Completo' }
                 }
             ],
@@ -4605,19 +4608,35 @@ banco_resumo: {
                 {
                     subtitulo: '5️⃣ As Cinco Sublinguagens',
                     texto: [
+                        'Para que o SQL consiga fazer tudo o que é capaz de fazer, ele não está sozinho, ele é acompanhado por 5 sublinguagens que são:',
                         ['DDL (Data Definition Language): mexe na estrutura — cria, altera e remove tabelas. Mudanças permanentes. Comandos: CREATE, DROP, ALTER.', 'DML (Data Manipulation Language): mexe no conteúdo — insere, atualiza e deleta dados. Mudanças podem ser desfeitas. Comandos: INSERT, UPDATE, DELETE, SELECT.', 'DCL (Data Control Language): controla permissões de acesso.', 'TCL (Transaction Control Language): gerencia transações.', 'DQL (Data Query Language): consulta e busca dados.']
                     ],
                     imagem: { src: 'Imagens_resumo/As Cinco Sublinguagens', alt: 'As 5 Sublinguagens do SQL' }
                 },
                 {
                     subtitulo: '🏗️ DDL — Data Definition Language',
-                    texto: 'O DDL com comandos como CREATE ou DROP mexe com a estrutura, nas paredes/cômodos. Uma vez que se mexe na estrutura é de forma permanente.',
+                    texto: [
+                        'De todas as 5 sublinguagens, a DDL e DML são essenciais no dia a dia e entender o que cada uma faz é essencial.',
+                        'O DDL com comandos como CREATE ou DROP mexe com a estrutura, nas paredes/cômodos. Uma vez que se mexe na estrutura é de forma permanente.'
+                    ],
                     imagem: { src: 'Imagens_resumo/DDL (Data Definition Language)', alt: 'Exemplos de comandos DDL' }
                 },
                 {
                     subtitulo: '🎨 DML — Data Manipulation Language',
                     texto: 'O DML com comandos como INSERT ou UPDATE é como se fosse o decorador, movendo os móveis, trocando um quadro; ele mexe com o conteúdo e essas mudanças podem ser desfeitas.',
                     imagem: { src: 'Imagens_resumo/DML (Data Manipulation Language)', alt: 'Exemplos de comandos DML' }
+                },
+                {
+                    subtitulo: '🏷️ Tipos de Dados',
+                    texto: 'Para cada criação é necessário que cada dado tenha um tipo específico. Isso evita que no lugar de um nome seja colocado uma data por exemplo, isso mantém a organização e a integridade de tudo.',
+                    imagem: { src: 'Imagens_resumo/Tipos de Dados', alt: 'Tipos de Dados no SQL' }
+                },
+                {
+                    subtitulo: '🏛️ Estrutura de BD 101',
+                    texto: [
+                        'Como um banco de dados se organiza na prática? A melhor maneira de visualizar isso é pensar em uma planilha: cada tabela é como se fosse uma aba da planilha, cada linha é um registro completo (todos os dados do cliente) e cada coluna é um pedacinho daquela informação (nome, telefone…), mas para manter essa organização é necessária uma Chave Primária (Primary Key).',
+                        'O que é a Chave Primária? É como se fosse o CPF de cada linha, de cada registro. É um código único que garante que aquele cliente ou produto é ele mesmo e não outro — essa é a função vital, garantindo que cada registro seja único, permitindo encontrar um cliente específico no meio de milhões sem nenhuma dúvida.'
+                    ]
                 }
             ],
             lida: false

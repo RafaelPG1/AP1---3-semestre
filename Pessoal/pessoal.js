@@ -820,6 +820,13 @@ function _renderCard(resumo, discId) {
                    <img src="Resumo/${bloco.imagem.src}.png" alt="${bloco.imagem.alt}">
                </div>`
             : '';
+
+        const legendaHTML = bloco.legenda
+            ? `<p class="resumo-bloco-legenda">${bloco.legenda}</p>`
+            : '';
+
+        const textoHTML = bloco.texto ? _renderizarTexto(bloco.texto) : '';
+
         return `
             <div class="resumo-bloco">
                 <div class="resumo-bloco-header">
@@ -831,7 +838,8 @@ function _renderCard(resumo, discId) {
                 </div>
                 <div class="resumo-bloco-conteudo">
                     ${imagemHTML}
-                    ${_renderizarTexto(bloco.texto)}
+                    ${legendaHTML}
+                    ${textoHTML}
                 </div>
             </div>
         `;

@@ -674,3 +674,14 @@
     .iz-bar { bottom: .7rem; }
     .iz-close { top: .6rem; right: .6rem; }
 }
+/* ── Legenda da imagem ──────────────────────────────────────────────── */
+.resumo-bloco-legenda {
+    font-size: .78rem;
+    line-height: 1.6;
+    color: rgba(255,255,255,.45);
+    font-family: 'DM Sans', sans-serif;
+    font-style: italic;
+    padding: 6px 10px;
+    border-left: 2px solid rgba(255,255,255,.1);
+    margin-top: 2px;
+}
