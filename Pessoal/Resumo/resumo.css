@@ -526,3 +526,151 @@
 .resumo-bloco-imagem img:not([src]) {
     display: none;
 }
+
+
+/* ── Cursor nas imagens ─────────────────────────────────────────────── */
+.resumo-bloco-imagem img {
+    cursor: zoom-in;
+    transition: opacity .2s ease, filter .2s ease;
+}
+.resumo-bloco-imagem img:hover {
+    opacity: .88;
+    filter: brightness(1.06);
+}
+
+/* ── Overlay ────────────────────────────────────────────────────────── */
+.iz-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, .92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .22s ease;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.iz-overlay.iz-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ── Imagem ─────────────────────────────────────────────────────────── */
+.iz-img {
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+    border: 1px solid rgba(255, 255, 255, .07);
+    will-change: transform;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    max-width: none;
+    max-height: none;
+    transform-origin: 0 0;
+}
+.iz-overlay.iz-loading .iz-img { opacity: 0; }
+
+/* Spinner de carregamento */
+.iz-spinner {
+    position: absolute;
+    width: 32px; height: 32px;
+    border: 2px solid rgba(255, 255, 255, .1);
+    border-top-color: rgba(255, 255, 255, .65);
+    border-radius: 50%;
+    animation: izSpin .7s linear infinite;
+    display: none;
+}
+.iz-overlay.iz-loading .iz-spinner { display: block; }
+@keyframes izSpin { to { transform: rotate(360deg); } }
+
+/* ── Botão fechar ───────────────────────────────────────────────────── */
+.iz-close {
+    position: fixed;
+    top: .85rem; right: .85rem;
+    z-index: 2;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .13);
+    background: rgba(18, 18, 18, .75);
+    color: rgba(255, 255, 255, .65);
+    font-size: .75rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s, color .15s, transform .12s;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+.iz-close:hover  { background: rgba(255,255,255,.13); color: #fff; transform: scale(1.07); }
+.iz-close:active { transform: scale(.9); }
+
+/* ── Barra de controles ─────────────────────────────────────────────── */
+.iz-bar {
+    position: fixed;
+    bottom: 1.2rem; left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    padding: .3rem .4rem;
+    background: rgba(12, 12, 12, .85);
+    border: 1px solid rgba(255, 255, 255, .09);
+    border-radius: 12px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+.iz-btn {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, .07);
+    background: rgba(255, 255, 255, .04);
+    color: rgba(255, 255, 255, .5);
+    font-size: .7rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .13s, color .13s, transform .1s;
+    flex-shrink: 0;
+}
+.iz-btn:hover  { background: rgba(255,255,255,.1); color: rgba(255,255,255,.9); }
+.iz-btn:active { transform: scale(.87); }
+.iz-btn-reset  {
+    border-color: rgba(124, 90, 243, .22);
+    color: rgba(167, 139, 250, .7);
+}
+.iz-btn-reset:hover {
+    background: rgba(124, 90, 243, .14);
+    border-color: rgba(124, 90, 243, .4);
+    color: #c4b5fd;
+}
+.iz-scale-label {
+    font-size: .7rem; font-weight: 700;
+    color: rgba(255, 255, 255, .5);
+    min-width: 40px; text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    pointer-events: none;
+}
+.iz-sep {
+    width: 1px; height: 18px;
+    background: rgba(255, 255, 255, .08);
+    margin: 0 .1rem;
+    flex-shrink: 0;
+}
+
+/* ── Animação de entrada da imagem ──────────────────────────────────── */
+.iz-overlay.iz-open .iz-img {
+    animation: izPop .28s cubic-bezier(.34, 1.5, .64, 1) both;
+}
+@keyframes izPop {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .iz-bar { bottom: .7rem; }
+    .iz-close { top: .6rem; right: .6rem; }
+}

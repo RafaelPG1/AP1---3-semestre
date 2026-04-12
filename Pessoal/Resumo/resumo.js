@@ -1134,6 +1134,314 @@ export const resumoData = {
     ]
     },
 
+design_resumo: {
+    resumos: [
+        {
+            id: 'design_resumo_aula1',
+            titulo: 'Aula 1 — Design com Foco no Usuário',
+            conteudo: [
+                {
+                    subtitulo: '🎨 O que é Design?',
+                    texto: [
+                        'Design não é só deixar algo bonito. É criar algo com um propósito, que funcione de verdade.',
+                        ['Precisa ser bonito E funcional', 'Precisa cumprir um objetivo claro', 'O designer combina palavras, imagens e sons para criar experiências que fazem sentido']
+                    ]
+                },
+                {
+                    subtitulo: '🖥 Design de Sistemas',
+                    texto: 'Cria produtos que facilitam a interação entre pessoas e computadores. O erro mais comum é o desenvolvedor focar só na tecnologia e esquecer como o usuário vai interagir com o sistema.'
+                },
+                {
+                    subtitulo: '🧠 IHC, Usabilidade e UX',
+                    texto: [
+                        'IHC – Interação Humano-Computador: Surgiu nos anos 70, misturando Ergonomia, Psicologia, Design e Computação. Estuda a relação entre o usuário e o sistema como um todo. A Interface (IU) é só a parte visível — o IHC vai além disso.',
+                        'Usabilidade: É a medida de quão bem um produto pode ser usado com eficácia, eficiência e satisfação. Considera memória, atenção, percepção e tomada de decisão do usuário. Hoje, usabilidade é o mínimo esperado.',
+                        'UX – Experiência do Usuário: Vai além da eficiência. Inclui prazer, emoção, encantamento e desejabilidade. A pergunta que o UX responde é: o usuário quer continuar usando?'
+                    ]
+                },
+                {
+                    subtitulo: '🎮 Disciplinas com Foco no Usuário',
+                    texto: [
+                        'Design de Interação: Estuda como ocorre a interação entre usuário e sistema. Considera consistência, padronização, controle do usuário e compatibilidade com o que ele espera.',
+                        'Design de Interface: Foco no ambiente visual — ícones, botões, textos, feedbacks. A interface precisa ser fluida, intuitiva e adequada ao público. Quatro princípios do bom design:',
+                        ['Visibilidade: O usuário reconhece facilmente as funções', 'Consistência: Elementos mantêm padrão visual', 'Familiaridade: Usa ícones e padrões já conhecidos', 'Affordance: A interface "ensina" a usar sem precisar de manual'],
+                        'Arquitetura da Informação: Organiza o conteúdo do sistema — menus, categorias, estrutura de navegação. Uma boa arquitetura melhora toda a experiência.'
+                    ]
+                },
+                {
+                    subtitulo: '📏 Ergonomia — 8 Critérios de Bastien e Scapin',
+                    texto: [
+                        'A ergonomia organiza a interface de forma metódica para melhorar a usabilidade. A base vem de Bastien e Scapin (1993), que definiram 8 critérios:',
+                        ['Compatibilidade: A interface considera memória, idade e habilidades do usuário?', 'Condução: Ela orienta o usuário com feedback imediato e agrupamento claro de itens?', 'Carga de Trabalho: Evita excesso de informação? O objetivo é reduzir o esforço de quem usa.', 'Homogeneidade: Mantém padrões visuais e de comportamento em situações semelhantes?', 'Significado dos Códigos: Os ícones representam corretamente sua função? Ex: lixeira = excluir.', 'Controle Explícito: O usuário pode interromper, suspender ou confirmar ações?', 'Adaptabilidade: O sistema se adapta ao nível do usuário? Ajuda para iniciantes, atalhos para avançados.', 'Gestão de Erros: O sistema prevê erros, avisa claramente e permite correção? Ex: confirmação antes de excluir.']
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'design_resumo_aula2',
+            titulo: 'Aula 2 — Comunicação e Semiótica',
+            conteudo: [
+                {
+                    subtitulo: '🗣 O que é Comunicabilidade?',
+                    texto: [
+                        'É a capacidade de um sistema se fazer entender pelo usuário. Não é só passar informação, é garantir que o usuário entenda como o sistema funciona e o que pode fazer com ele.',
+                        ['O designer é quem manda a mensagem', 'A interface é a mensagem em si', 'O usuário é quem recebe']
+                    ]
+                },
+                {
+                    subtitulo: '🌐 Evolução da Web',
+                    texto: [
+                        ['Web 1.0: Sites estáticos, só para ler. O usuário não interagia com nada.', 'Web 2.0: Surgem redes sociais, o usuário começa a criar conteúdo.', 'Web 3.0: A web começa a interpretar e organizar informações de forma inteligente.', 'Web 4.0: Inteligência Artificial, mobilidade e sistemas que se adaptam sozinhos.']
+                    ]
+                },
+                {
+                    subtitulo: '📖 Semiótica e Fenomenologia',
+                    texto: [
+                        'Semiótica: Ciência que estuda os signos — como um símbolo representa algo e como as pessoas interpretam esse símbolo. Ex: uma lixeira significa "excluir".',
+                        'Fenomenologia: Estuda como o usuário percebe e sente a interface. Envolve estética, ética e lógica.'
+                    ]
+                },
+                {
+                    subtitulo: '💡 Engenharia Semiótica',
+                    texto: [
+                        'É uma área dentro do IHC que estuda a comunicação entre sistema e usuário.',
+                        'A ideia central é: o sistema comunica as decisões do designer ao usuário, por meio de ícones, navegação, feedback e padrões visuais. Se essa comunicação falha, o usuário se perde.'
+                    ]
+                },
+                {
+                    subtitulo: '🧪 Como avaliar a comunicação?',
+                    texto: [
+                        'Método MAC: Avalia a comunicabilidade em 3 etapas — preparação do teste, coleta de dados e análise. O objetivo é achar onde a comunicação está quebrando.',
+                        'Inspeção Semiótica: Analisa os signos da interface divididos em 3 tipos:',
+                        ['Metalinguísticos: textos de ajuda, tutoriais, instruções', 'Estáticos: ícones, layout, cores, elementos fixos', 'Dinâmicos: animações, feedbacks, mudanças de tela']
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'design_resumo_aula3',
+            titulo: 'Aula 3 — Alfabeto Visual',
+            conteudo: [
+                {
+                    subtitulo: '👁 O que é Alfabetismo Visual?',
+                    texto: [
+                        'Assim como aprendemos letras e palavras para ler um texto, existe também um "alfabeto" para ler imagens. Quem domina esse alfabeto consegue:',
+                        ['Entender o que uma imagem comunica', 'Criar composições com intenção', 'Saber combinar elementos visuais'],
+                        'A diferença do alfabeto verbal é que o visual é menos rígido e depende mais do contexto e da cultura.'
+                    ]
+                },
+                {
+                    subtitulo: '🖼 3 Tipos de Mensagem Visual',
+                    texto: [
+                        ['Representacional: Imagem próxima da realidade. Fácil de reconhecer. Ex: uma fotografia.', 'Abstrato: Simplificação da realidade, com foco em formas e cores. Mais subjetivo.', 'Simbólico: Redução ao mínimo. Ex: ícones de interface. Fácil de memorizar.'],
+                        'Esses três tipos podem se misturar dependendo do contexto.'
+                    ]
+                },
+                {
+                    subtitulo: '⚫ Os 10 Elementos Básicos',
+                    texto: [
+                        ['Ponto: Menor unidade visual. Direciona o olhar. Em conjunto cria textura.', 'Linha: Transmite energia e direção. Linha diagonal passa tensão e instabilidade.', 'Forma: Três formas base: Quadrado → estabilidade; Triângulo → tensão e ação; Círculo → proteção e continuidade.', 'Direção: Horizontal/vertical passam equilíbrio. Diagonal passa instabilidade. Curva passa suavidade.', 'Tom: Variação entre luz e sombra. Cria profundidade.', 'Cor: Grande impacto emocional. Depende de aspectos físicos, culturais e fisiológicos.', 'Textura: Enriquece superfícies e cria contraste.', 'Escala: Define peso visual e hierarquia entre os elementos.', 'Dimensão: Cria ilusão de profundidade em um plano 2D.', 'Movimento: Ilusão de dinamismo por meio de repetição, desfoque ou animação.']
+                    ]
+                },
+                {
+                    subtitulo: '💡 Na prática',
+                    texto: 'Interfaces bem feitas usam esses elementos de forma intencional e coerente. Estética e usabilidade precisam andar juntas — de nada adianta ser bonito se o usuário não entende como usar.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'design_resumo_aula4',
+            titulo: 'Aula 4 — Psicologia Cognitiva e Gestalt',
+            conteudo: [
+                {
+                    subtitulo: '🧠 Psicologia Cognitiva',
+                    texto: [
+                        'Para criar uma boa interface, é preciso entender como o ser humano percebe, memoriza e toma decisões. Dois fundamentos explicam isso: Psicologia Cognitiva — estuda os processos mentais — atenção, memória, percepção, raciocínio e tomada de decisão. Gestalt — estuda como o cérebro organiza o que vê.',
+                        'A atenção define o que o usuário vai processar. Existem 4 tipos:',
+                        ['Seletiva: foca em um estímulo e ignora o resto', 'Vigilância: mantém atenção por longos períodos', 'Sondagem: busca ativa por informações', 'Dividida: realiza mais de uma tarefa ao mesmo tempo'],
+                        'Na prática: excesso de informação na tela reduz o foco do usuário.'
+                    ]
+                },
+                {
+                    subtitulo: '💾 Memória e Fluxo de Ação',
+                    texto: [
+                        'Memória de curta duração: temporária e limitada. Memória de longa duração: armazenamento permanente.',
+                        'A interface deve evitar exigir que o usuário memorize muita coisa. Quanto menos esforço mental, melhor.',
+                        'Como o usuário age ao interagir com um sistema — passa por 3 etapas:',
+                        ['Análise da situação: observa, categoriza e interpreta o que vê', 'Planejamento: avalia as possibilidades e define o que fazer', 'Controle: executa a ação com base nas suas habilidades e conhecimento'],
+                        'A interface precisa facilitar esse fluxo, não atrapalhar.'
+                    ]
+                },
+                {
+                    subtitulo: '👁 Gestalt — O todo é maior que as partes',
+                    texto: [
+                        'O cérebro organiza automaticamente o que vê. Alguns princípios fundamentais: Pregnância — o cérebro prefere formas simples e organizadas. Figura-Fundo — separa automaticamente o elemento principal do plano de fundo. Constância Perceptiva — reconhece objetos mesmo com mudanças visuais.',
+                        'Os 8 pilares da Gestalt aplicados em interfaces:',
+                        ['Unidades: elementos percebidos como partes organizadas', 'Unificação: agrupamento que gera sensação de conjunto', 'Continuidade: o olhar segue linhas e direções naturalmente', 'Proximidade: elementos próximos parecem relacionados', 'Semelhança: elementos parecidos são agrupados mentalmente', 'Segregação: diferenciação clara entre figura e fundo', 'Fechamento: tendência a completar formas incompletas', 'Pregnância da Forma: preferência por formas simples e limpas']
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'design_resumo_aula5',
+            titulo: 'Aula 5 — O Elemento Cor',
+            conteudo: [
+                {
+                    subtitulo: '🔴 A Cor não é escolha aleatória',
+                    texto: [
+                        'A cor comunica antes mesmo do usuário ler qualquer texto. Mas ela precisa ser escolhida com critério, levando em conta:',
+                        ['Fatores fisiológicos — como o olho percebe a cor', 'Fatores psicológicos — o impacto emocional que ela causa', 'Fatores culturais — o mesmo vermelho pode significar coisas diferentes em culturas diferentes', 'Público-alvo e objetivo do projeto']
+                    ]
+                },
+                {
+                    subtitulo: '🧠 Psicologia das Cores',
+                    texto: [
+                        'Cores quentes (vermelho, amarelo): estimulam, agitam, chamam atenção. Cores frias (azul, verde, violeta): acalmam e relaxam.',
+                        'O significado também muda por cultura. Exemplo: o branco representa pureza no ocidente, mas luto em algumas culturas orientais.',
+                        ['Azul → paz, confiança, serenidade', 'Amarelo → alerta, energia, esperança', 'Vermelho → paixão, perigo, ação', 'Verde → saúde, equilíbrio, natureza', 'Laranja → alegria, criatividade, entusiasmo', 'Violeta → calma, dignidade, espiritualidade']
+                    ]
+                },
+                {
+                    subtitulo: '🧩 Como montar um esquema de cores',
+                    texto: [
+                        '1º passo: escolher a cor principal — vem da marca ou do objetivo do projeto.',
+                        '2º passo — Regra 60-30-10:',
+                        ['60% cor dominante (fundo/base)', '30% cor secundária (textos/elementos)', '10% cor de destaque (detalhes)'],
+                        '3º passo — definir o esquema com base no círculo cromático:',
+                        ['Cores análogas → harmonia', 'Cores complementares → contraste', 'Tríade → equilíbrio vibrante', 'Monocromático → variações de uma só cor'],
+                        'RGB → para telas digitais | CMYK → para impressão.'
+                    ]
+                },
+                {
+                    subtitulo: '✅ Boas práticas',
+                    texto: [
+                        ['Nunca escolher cor só pelo visual', 'Pensar no público e na emoção que quer transmitir', 'Usar contraste para destacar e harmonia para conforto', 'Testar combinações antes de aplicar']
+                    ]
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'design_resumo_aula6',
+            titulo: 'Aula 6 — Tipografia',
+            conteudo: [
+                {
+                    subtitulo: '🔤 Tipografia — Muito além da fonte bonita',
+                    texto: 'A tipografia impacta diretamente a experiência do usuário. Uma boa escolha facilita a leitura. Uma escolha errada cansa e confunde.'
+                },
+                {
+                    subtitulo: '🔤 Tipos de fonte',
+                    texto: [
+                        ['Serifadas: têm pequenos traços nas extremidades. Melhores para textos longos. Transmitem tradição e formalidade.', 'Sem serifa (Sans Serif): sem esses traços. Melhores para telas digitais. Transmitem modernidade e simplicidade.']
+                    ]
+                },
+                {
+                    subtitulo: '📐 Alinhamento, Tamanho e Peso',
+                    texto: [
+                        'Alinhamento: À esquerda — mais natural para leitura, é o mais recomendado. Justificado — pode criar espaços irregulares e dificultar a leitura na web. Centralizado — ótimo para títulos e frases curtas, mas evitar em textos longos.',
+                        'Tamanho: Desktop — padrão de 16px. Mobile — pode começar em 12px. O tamanho ideal também depende da faixa etária do público.',
+                        'Caracteres por linha: Desktop — entre 50 e 80 caracteres. Mobile — entre 30 e 35 caracteres. Linhas muito longas cansam. Linhas muito curtas quebram o ritmo de leitura.',
+                        'Peso da fonte: É a espessura dos traços. Vai do Light (fino) ao Black (muito pesado), passando por Regular e Bold. Cada variação transmite uma sensação diferente.'
+                    ]
+                },
+                {
+                    subtitulo: '💡 Na prática',
+                    texto: 'A escolha da tipografia deve sempre considerar o objetivo do projeto, o público-alvo, o dispositivo e o tipo de conteúdo. O mesmo texto pode ter experiências totalmente diferentes dependendo da fonte usada.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'design_resumo_aula7',
+            titulo: 'Aula 7 — A Imagem',
+            conteudo: [
+                {
+                    subtitulo: '🖼 A Imagem como elemento de comunicação',
+                    texto: 'A imagem não é só decoração — ela é um signo visual com poder simbólico e emocional. Ela substitui experiências reais na mente de quem vê e, em conjunto com o texto, reforça o significado da mensagem.'
+                },
+                {
+                    subtitulo: '🔣 Tipos de Signos (Semiótica)',
+                    texto: [
+                        ['Ícone: representa por semelhança. Ex: ícone da Torre Eiffel representa Paris.', 'Índice: representa por causa ou evidência. Ex: fumaça indica fogo.', 'Símbolo: representa por convenção cultural. Ex: pomba branca = paz.']
+                    ]
+                },
+                {
+                    subtitulo: '📐 Como a composição influencia o significado',
+                    texto: [
+                        'A posição da imagem muda o que ela comunica:',
+                        ['Central → sensação neutra', 'Deslocada → sensação dinâmica', 'Pequena → isolamento', 'Cortada → impacto e força']
+                    ]
+                },
+                {
+                    subtitulo: '📷 Tipos e Formatos de Imagem',
+                    texto: [
+                        'Bitmap: baseado em pixels. Usado em fotografias. Vetor: baseado em fórmulas matemáticas. Usado em ilustrações. Pode ser redimensionado sem perda de qualidade.',
+                        'Fotografia: realista, direta, mais credibilidade. Ilustração: criativa, interpretativa, estimula a imaginação.',
+                        ['PNG: alta qualidade, suporta transparência', 'JPEG: boa compressão, mas perde qualidade', 'GIF: compacto, para gráficos simples', 'TIFF: alta qualidade, usado em impressão']
+                    ]
+                },
+                {
+                    subtitulo: '🔗 Relação Imagem + Texto',
+                    texto: [
+                        ['Redundância: texto é principal, imagem complementa', 'Informatividade: imagem é principal, como em infográficos', 'Complexidade: texto e imagem têm o mesmo peso', 'Ancoragem: o texto direciona a interpretação da imagem', 'Relais: texto e imagem se completam mutuamente']
+                    ]
+                },
+                {
+                    subtitulo: '🌐 No meio digital',
+                    texto: 'A imagem precisa ser otimizada — formato certo, tamanho adequado e qualidade suficiente — para não prejudicar o carregamento e a experiência do usuário.'
+                }
+            ],
+            lida: false
+        },
+        {
+            id: 'design_resumo_aula8',
+            titulo: 'Aula 8 — O Layout',
+            conteudo: [
+                {
+                    subtitulo: '📋 O que é Layout?',
+                    texto: 'Layout é a organização hierárquica dos elementos visuais de uma interface. Ele integra cores, tipografia e imagens com um objetivo: garantir legibilidade, usabilidade e comunicação eficiente.'
+                },
+                {
+                    subtitulo: '⚖️ Contraste e Harmonia',
+                    texto: [
+                        'Os dois precisam coexistir com intenção:',
+                        ['Harmonia: gera equilíbrio e estabilidade', 'Contraste: gera destaque e dinamismo', 'Ambiguidade: nem um nem outro — gera confusão visual e deve ser evitada'],
+                        'Tipos de contraste: por tom (claro vs escuro), por cor, por forma e por escala.'
+                    ]
+                },
+                {
+                    subtitulo: '🔀 Técnicas Visuais — Pares Opostos',
+                    texto: [
+                        ['Equilíbrio x Instabilidade: estável vs tensão visual', 'Simetria x Assimetria: espelho vs diferentes mas equilibrados', 'Regularidade x Irregularidade: padrão constante vs surpresa visual', 'Simplicidade x Complexidade: fácil percepção vs muitos elementos', 'Unidade x Fragmentação: percepção do todo vs partes separadas', 'Economia x Profusão: poucos elementos vs riqueza visual', 'Minimalismo x Exagero: menos é mais vs amplificação visual']
+                    ]
+                },
+                {
+                    subtitulo: '🗂 Os 3 Pilares do Layout',
+                    texto: [
+                        ['Navegação: regra dos 3 cliques — o usuário não deve precisar de mais de 3 cliques para encontrar qualquer informação', 'Lógica visual: organização intuitiva com princípios visuais', 'Templates: estrutura padrão que mantém consistência']
+                    ]
+                },
+                {
+                    subtitulo: '📐 Grid',
+                    texto: [
+                        'O grid é uma estrutura de linhas e colunas que organiza os elementos da interface. Não limita a criatividade, serve como guia.',
+                        'Grid mais comum: 12 colunas (permite várias divisões). Para responsividade, usar medidas em porcentagem (%). Fórmula: objeto ÷ largura total = porcentagem. Ex: 300px ÷ 960px = 31,25%.'
+                    ]
+                },
+                {
+                    subtitulo: '👀 Comportamento do Usuário',
+                    texto: 'No padrão ocidental, o olhar segue da esquerda para direita e de cima para baixo. Por isso, os elementos mais importantes devem estar no topo ou à esquerda da tela.'
+                }
+            ],
+            lida: false
+        }
+    ]
+},
+
     // ── PROGRAMAÇÃO ORIENTADA A OBJETOS ─────────────────────────────────
     poo: {
             resumos: [
@@ -3984,7 +4292,338 @@ export const resumoData = {
                     lida: false
                 }
             ]
+        },
+
+// ══════════════════════════════════════════════════════════════
+//  banco_resumo — substitua o objeto banco_resumo no seu resumo.js
+//  Imagens ficam em: Resumo/Imagens_resumo/<nome>.png
+// ══════════════════════════════════════════════════════════════
+
+banco_resumo: {
+    resumos: [
+        // ── AULA 1 ────────────────────────────────────────────────
+        {
+            id: 'banco_resumo_aula1',
+            titulo: 'Aula 1 — Introdução a Banco de Dados',
+            conteudo: [
+                {
+                    subtitulo: '📜 Contexto Histórico',
+                    texto: 'Antes dos sistemas nascerem, as lojas guardavam todas as informações em papéis. Além da baixa praticidade pelo grandioso tempo de procura de alguma informação de um cliente por exemplo, os papéis não tinham nenhuma segurança quando se trata de perder alguma informação importante.'
+                },
+                {
+                    subtitulo: '📈 Evolução dos SGBDs',
+                    texto: [
+                        'A partir dos Anos 70 a virada de chave surgiu com a introdução do Modelo Relacional e a criação da Linguagem SQL.',
+                        'Um dos marcos mais importantes da história da Computação foi a publicação do artigo "A Relational Model of Data for Large Shared Data Banks" de Edgar Frank Codd — O ARTIGO QUE MUDOU TUDO!'
+                    ],
+                    imagem: { src: 'Imagens_resumo/Evolução dos SGBD', alt: 'Linha do tempo da Evolução dos SGBDs' }
+                },
+                {
+                    subtitulo: '🗄️ O que é um Banco de Dados?',
+                    texto: [
+                        'Uma coleção de dados relacionados que representa um aspecto do mundo real para um propósito específico.',
+                        'Não falamos direto com eles, mas usamos um SGBD. Que é basicamente uma ponte entre usuários e aplicações permitindo o acesso ao Banco de Dados. Garantindo que essa comunicação seja segura, organizada e eficiente.'
+                    ],
+                    imagem: { src: 'Imagens_resumo/Escada da Abstração (Hierarquia)', alt: 'Escada da Abstração — Hierarquia do SGBD' }
+                },
+                {
+                    subtitulo: '✨ As 4 Operações CRUD',
+                    texto: [
+                        ['CREATE → INSERT: adicionar dados', 'READ → SELECT: consultar/buscar informações', 'UPDATE → UPDATE: atualizar dados', 'DELETE → DELETE: apagar dados']
+                    ]
+                },
+                {
+                    subtitulo: '🏗️ Os 3 Níveis de Abstração',
+                    texto: [
+                        ['Nível Físico: Sistema Operacional gerenciando algoritmos.', 'Nível Lógico: O programador definindo tabelas, produtos, conexões.', 'Nível de Visão: Cliente que utiliza o APP para comprar, vendo produtos e valores.']
+                    ],
+                    imagem: { src: 'Imagens_resumo/3 Níveis de Abstração', alt: 'Diagrama dos 3 Níveis de Abstração' }
+                }
+            ],
+            lida: false
+        },
+
+        // ── AULA 2 ────────────────────────────────────────────────
+        {
+            id: 'banco_resumo_aula2',
+            titulo: 'Aula 2 — SGBD e Arquitetura de 3 Níveis',
+            conteudo: [
+                {
+                    subtitulo: '🔒 O que é um SGBD?',
+                    texto: [
+                        'Na essência é um Software, e com propósito de ser um guardião dos dados. É um programa que possibilita outros programas e pessoas guardarem informações, definir como são, manipular e compartilhar de forma totalmente segura e eficiente.',
+                        'Um SGBD atua como interface entre o banco de dados, as aplicações e os usuários. Ele é o responsável por gerenciar o que entra, o que sai, o que pode ser pego.'
+                    ]
+                },
+                {
+                    subtitulo: '⚙️ Características de um SGBD',
+                    texto: [
+                        ['Natureza Auto-descritiva: ele não guarda só dados, mas sim as descrições deles. Como se fosse um catálogo.', 'Isolamento entre programas e dados: cria um isolamento entre programas e dados, fazendo com que não seja necessário saber os detalhes de onde e como os dados estão guardados no disco.', 'Suporte a múltiplas visões dos dados: permite que várias pessoas vejam apenas o que é necessário, o que apenas interessa.', 'Compartilhamento de Dados Multiusuário: o que faz milhões de pessoas usarem o mesmo serviço ao mesmo tempo.']
+                    ]
+                },
+                {
+                    subtitulo: '🧩 O SGBD é formado por 4 peças-chave',
+                    texto: 'A mágica acontece na interação deles. O Software usa o Hardware para gerenciar os dados para os usuários, uma peça não funciona sem a outra.',
+                    imagem: { src: 'Imagens_resumo/O SGBD 4 peças chaves', alt: 'As 4 peças-chave do SGBD' }
+                },
+                {
+                    subtitulo: '👥 Tipos de Usuários',
+                    texto: [
+                        ['Desenvolvedores: escrevem os programas que acessam os dados.', 'Usuários Finais: interagem com o sistema através de aplicações.', 'DBAs: garantem a segurança e o bom funcionamento do banco de dados.']
+                    ]
+                },
+                {
+                    subtitulo: '🏛️ Arquitetura de 3 Níveis',
+                    texto: 'Partes separadas para que fiquem flexíveis e mais fáceis de dar manutenção.',
+                    imagem: { src: 'Imagens_resumo/Arquitetura de 3 Níveis', alt: 'Diagrama da Arquitetura de 3 Níveis' }
+                },
+                {
+                    subtitulo: '🔩 Nível Interno (Físico)',
+                    texto: 'É o nível físico. Descreve detalhes mais complexos, como os dados são fisicamente armazenados, em que byte, em que parte do disco. O foco dele é: MÁXIMA EFICIÊNCIA NO ARMAZENAMENTO.',
+                    imagem: { src: 'Imagens_resumo/nivel fisico', alt: 'Exemplo do Nível Físico' }
+                },
+                {
+                    subtitulo: '🗺️ Nível Conceitual',
+                    texto: 'É basicamente o mapa do tesouro. Ele não mostra onde está o detalhe onde cada moeda está guardada, mas descreve o que existe no tesouro. (Visão principal de DBAs e Devs)',
+                    imagem: { src: 'Imagens_resumo/Nível Conceitual', alt: 'Exemplo do Nível Conceitual' }
+                },
+                {
+                    subtitulo: '👁️ Nível Externo / Visão',
+                    texto: 'Nível mais próximo de quem usa no dia-a-dia. É uma janela personalizada que mostra um pedaço do banco de dados, mostrando apenas uma tarefa específica baseado no interesse de cada pessoa.',
+                    imagem: { src: 'Imagens_resumo/Nível Externo', alt: 'Exemplo do Nível Externo' }
+                },
+                {
+                    subtitulo: '🏢 Grandes Empresas de SGBD',
+                    texto: 'Os principais players do mercado de Sistemas de Gerenciamento de Banco de Dados.',
+                    imagem: { src: 'Imagens_resumo/Grandes Empresas de SGBD', alt: 'Grandes Empresas de SGBD' }
+                }
+            ],
+            lida: false
+        },
+
+        // ── AULA 3 ────────────────────────────────────────────────
+        {
+            id: 'banco_resumo_aula3',
+            titulo: 'Aula 3 — Esquema, Estado e Propriedades ACID',
+            conteudo: [
+                {
+                    subtitulo: '📋 Esquema vs. Estado',
+                    texto: [
+                        'Esquema (Projeto): define que tipo de informação pode ser guardada — Nome, saldo, tipo de conta.',
+                        'Estado (Realidade): são os dados reais, que mudam a cada instante.',
+                        'Transação: uma transação é um pacote de ações. Uma única unidade de trabalho, tendo como objetivo de levar o banco de dados para um estado válido para outro estado válido. É a ponte segura de um estado para outro.'
+                    ],
+                    imagem: { src: 'Imagens_resumo/Transação', alt: 'Diagrama de Transação entre estados' }
+                },
+                {
+                    subtitulo: '⚛️ Atomicidade',
+                    texto: 'Uma transação é tudo ou nada. Ou é executada por completo, ou NÃO é executada. Ex: uma transferência Pix está sendo feita e o servidor cai, se a transferência não for concluída, o dinheiro irá retornar para a conta do usuário.',
+                    imagem: { src: 'Imagens_resumo/Atomicidade', alt: 'Ilustração da Atomicidade' }
+                },
+                {
+                    subtitulo: '✅ Consistência',
+                    texto: 'Garante que o resultado de um bloco faz sentido. Uma transação só poderá ser movida de um estado válido para outro estado válido (aquele que obedece todas as regras), preservando todas as regras definidas. Ex: uma regra pode ser que o saldo de uma conta jamais poderá ser negativo. Qualquer transação que quebre essa regra, é automaticamente rejeitada.',
+                    imagem: { src: 'Imagens_resumo/Consistência', alt: 'Ilustração da Consistência' }
+                },
+                {
+                    subtitulo: '🔀 Isolamento',
+                    texto: 'É a propriedade que garante que mesmo com várias transações estejam sendo feitas a todo instante, não haverá interferência. É como se cada transação tivesse o banco de dados só para ela. Ex: no exato segundo que 50,00 sai da conta A mas ainda não caiu na conta B, uma outra transação tenta gerar um relatório do saldo total das duas. Sem isolamento é como se fosse um valor errado, como se 50,00 tivesse sumido — o isolamento impede isso, garantindo que no relatório só apareça o estado de antes da transferência começar e depois que ela terminou.'
+                },
+                {
+                    subtitulo: '💾 Durabilidade',
+                    texto: 'É quem vai responder a pergunta: "Terminou a transação, mas meus dados estão seguros de verdade?" A resposta será: a partir do momento que o sistema confirma a transação, ela será permanente. Ex: o comprovante que aparece pós uma transação Pix é exatamente a durabilidade aparecendo, mostrando que pode confiar que a ação foi concluída.'
+                }
+            ],
+            lida: false
+        },
+
+        // ── AULA 4 ────────────────────────────────────────────────
+        {
+            id: 'banco_resumo_aula4',
+            titulo: 'Aula 4 — Arquiteturas de Banco de Dados',
+            conteudo: [
+                {
+                    subtitulo: '🖥️ Arquitetura Centralizada',
+                    texto: 'A era que a computação era sinônimo de uma única e poderosíssima máquina central. Era utilizado MAINFRAMES para executar TUDO, guardar dados, rodar programas, gerenciar interfaces e controlar o sistema inteiro. Interações feitas pelos Terminais Burros, era basicamente uma tela e um teclado sem poder de processamento. Tudo acontecia pelo MAINFRAME, e se ele parasse, tudo ia junto.'
+                },
+                {
+                    subtitulo: '🤝 Arquitetura Cliente-Servidor',
+                    texto: [
+                        'A máquina do cliente deixa de ser um terminal bobo e passa a ter um papel ativo. Cuida da interface gráfica, interação e quando precisa de algum dado, ela faz um pedido para uma máquina especializada (servidor).',
+                        'Surge um gargalo: a chegada da internet trouxe um problema que era milhões de pessoas acessando sistemas ao mesmo tempo e de qualquer lugar do mundo. E a conexão do cliente e o banco de dados virou um risco de segurança e um problema de escalabilidade.',
+                        'Qual a solução? Adicionar uma nova camada. O Servidor de Aplicação era uma espécie de porteiro entre o cliente e o banco de dados — é ele quem valida pedidos e aplica regras de negócio. A separação de interface, lógica e dados deixou tudo muito seguro, organizado e fácil de crescer.'
+                    ],
+                    imagem: { src: 'Imagens_resumo/Arquitetura Cliente-Servidor', alt: 'Diagrama da Arquitetura Cliente-Servidor' }
+                },
+                {
+                    subtitulo: '🌐 Arquitetura Distribuída',
+                    texto: [
+                        'A necessidade era de resiliência e velocidade em escala global. E a resposta para isso foi: quebrar o banco de dados e espalhar por vários servidores ou nós. Se um servidor falha, os demais continuam funcionando.',
+                        ['Fragmentação: fatiar os dados para distribuir.', 'Replicação: para segurança e acesso rápido.', 'Transparência: para quem ta usando a aplicação tudo é invisível, parece que todos os dados estão em um lugar só, o sistema esconde a complexidade.'],
+                        'Informação EXTRA: O problema prático era manter a infraestrutura inteira, que custaria uma fortuna e seria inflexível. A demanda aumenta e necessita da criação da Cloud — ao invés de comprar o hardware, as empresas começam a alugar o poder de computação como um serviço.'
+                    ]
+                },
+                {
+                    subtitulo: '☁️ DBaaS (Database as a Service)',
+                    texto: 'As empresas não precisam mais instalar e configurar banco de dados, mas simplesmente assinam o serviço e o provedor de nuvem cuida do resto, backup, atualizações e afins. Qualquer empresa agora consegue escalar suas operações com custo baixo.'
+                },
+                {
+                    subtitulo: '📊 Resumo Geral das Arquiteturas',
+                    texto: 'Visão geral comparativa de todas as arquiteturas de banco de dados estudadas.',
+                    imagem: { src: 'Imagens_resumo/RESUMO GERAL', alt: 'Resumo Geral das Arquiteturas de Banco de Dados' }
+                }
+            ],
+            lida: false
+        },
+
+        // ── AULA 5 ────────────────────────────────────────────────
+        {
+            id: 'banco_resumo_aula5',
+            titulo: 'Aula 5 — Modelagem de Dados e Diagramas',
+            conteudo: [
+                {
+                    subtitulo: '📐 O que é Modelagem de Dados?',
+                    texto: 'Como o financeiro de uma faculdade iria enviar as cobranças corretamente para os alunos? Sem um plano definido o sistema vira um caos, mas a modelagem de dados vai te salvar! É a fase de planejamento, acontece antes de qualquer linha de código, é comparada a uma planta de uma obra para um arquiteto.'
+                },
+                {
+                    subtitulo: '🏷️ Entidade',
+                    texto: 'É como se fosse o substantivo principal do nosso sistema. É qualquer coisa do mundo real que queremos guardar uma informação, pode ser algo concreto ou até mesmo abstrato.',
+                    imagem: { src: 'Imagens_resumo/Entidade', alt: 'Exemplo de Entidade no Diagrama ER' }
+                },
+                {
+                    subtitulo: '🔖 Atributos',
+                    texto: [
+                        'São os adjetivos que descrevem as entidades. São informações específicas sobre cada uma delas. Ex: ALUNO → Pode conter: Nome, matrícula, idade.',
+                        'Tipos de atributos:',
+                        ['Simples: nome de uma pessoa, informação única.', 'Composto: endereço, pois pode quebrar contendo cidade, número e afins.', 'Multivalorado: são entidades com vários valores para o mesmo atributo.']
+                    ]
+                },
+                {
+                    subtitulo: '🔗 Relacionamentos',
+                    texto: 'São os verbos que conectam tudo. Mostram como as coisas se associam no mundo real.',
+                    imagem: { src: 'Imagens_resumo/Relacionamentos', alt: 'Exemplo de Relacionamentos no Diagrama ER' }
+                },
+                {
+                    subtitulo: '📏 Cardinalidade',
+                    texto: 'Define as regras, o mínimo e o máximo de ocorrências de uma entidade que podem se conectar a outra.',
+                    imagem: { src: 'Imagens_resumo/Cardinalidade', alt: 'Exemplos de Cardinalidade' }
+                }
+            ],
+            lida: false
+        },
+
+        // ── AULA 6 ────────────────────────────────────────────────
+        {
+            id: 'banco_resumo_aula6',
+            titulo: 'Aula 6 — Modelo Relacional',
+            conteudo: [
+                {
+                    subtitulo: '🗂️ O que é o Modelo Relacional?',
+                    texto: 'Para que um aplicativo consiga achar seus dados entre milhões e milhões de dados, existe um grande motivo: O MODELO RELACIONAL. É um conjunto de regras que funciona como a espinha dorsal da grande maioria das tecnologias que usamos hoje. O Modelo Relacional é basicamente uma planta baixa de uma casa, pois antes de construir alguma coisa, temos que ter algo bem planejado, detalhado e bem estruturado. O banco de dados é visto como uma coleção de relações.'
+                },
+                {
+                    subtitulo: '📊 3 Componentes Fundamentais',
+                    texto: [
+                        ['Relação (Tabela): é a estrutura principal que organiza tudo em linhas e colunas como uma planilha.', 'Atributos (Colunas): como os cabeçalhos das colunas da planilha — cada atributo descreve uma característica do dado que está sendo guardado (Nome, CPF, idade e afins).', 'Tupla (Linha/Registro): conjunto completo de informações de um cliente, por exemplo — Nome, CPF, idade, todos juntos em uma única tupla/linha.']
+                    ],
+                    imagem: { src: 'Imagens_resumo/Teoria', alt: 'Teoria do Modelo Relacional — Tabela, Atributos e Tuplas' }
+                },
+                {
+                    subtitulo: '🔑 Chave Primária (Primary Key)',
+                    texto: [
+                        'É como se fosse um RG de cada linha, tem um valor único para cada registro, obviamente não permitindo ter dois iguais, pois cada dado tem uma identidade digital.',
+                        'Integridade de Identidade: o valor da chave primária NUNCA pode ser nulo/vazio. Sem uma identidade clara, a confiabilidade é inexistente.'
+                    ]
+                },
+                {
+                    subtitulo: '🔗 Chave Estrangeira (Foreign Key)',
+                    texto: [
+                        'É o campo de cada tabela que aponta para a chave primária de outra tabela, funcionando como uma ponte que cria ligações lógicas (de forma segura) entre diferentes conjuntos de dados.',
+                        'Integridade Referencial: garante que não existam links quebrados. Não dá para existir uma matrícula de um aluno que não existe, ou um pedido de um cliente que já foi deletado. O valor da chave estrangeira tem que corresponder a um valor existente na tabela principal — é exatamente isso que previne os "dados órfãos" e mantém o sistema consistente e confiável.'
+                    ],
+                    imagem: { src: 'Imagens_resumo/Conectando Tabelas', alt: 'Exemplo de Chave Estrangeira conectando tabelas' }
+                },
+                {
+                    subtitulo: '📜 As 12 Regras de Edgar Codd',
+                    texto: [
+                        'São os 12 princípios que funcionam como uma base teórica, seria uma constituição de tudo que vimos até agora; foram estabelecidos no intuito de definir o que um sistema de BD precisa cumprir para ser Relacional.',
+                        ['Regra 1: toda informação tem que está em tabela.', 'Regra 2: cada pedaço de dados tem que ser encontrado sem dúvidas.', 'Regra 3: exige um jeito padrão para lidar com cada informação que está faltando.', 'Regra 10: regras de integridade tem que ser garantidas pelo próprio BD e não pelo app que o acessa.'],
+                        'O ponto central não é sobre jogar dados em tabela, mas sim uma combinação de uma estrutura lógica com um conjunto rigoroso de regras. Transformando um amontoado de dados em uma fortaleza segura!'
+                    ]
+                }
+            ],
+            lida: false
+        },
+
+        // ── AULA 7 ────────────────────────────────────────────────
+        {
+            id: 'banco_resumo_aula7',
+            titulo: 'Aula 7 — Diagrama EER',
+            conteudo: [
+                {
+                    subtitulo: '🔬 O que é o EER?',
+                    texto: 'É uma evolução para quem quer criar modelo de dados mais ricos, mais detalhados e o mais importante que é ser fiel a realidade do negócio.'
+                },
+                {
+                    subtitulo: '🌳 Especialização e Generalização',
+                    texto: [
+                        'Estamos falando de herança em POO! (conceitos similares)',
+                        'Generalização: é o processo de subir na hierarquia, olhando para várias entidades e encontrar o que tem em comum criando uma super-classe.',
+                        'Especialização: é o contrário, ou seja descer na hierarquia. Definindo sub-classes mais específicas que herdam tudo da classe geral, porém, adicionam suas próprias características.',
+                        'Ex: Carro, caminhão ou moto é antes de tudo um Veículo, então todos compartilham atributos como chassi e ano de fabricação, porém, cada um tem suas particularidades. Carro tem sua quantidade de portas, caminhão tem sua capacidade de carga; o EER nos permite modelar essa relação "é um tipo de" de uma forma visual e muito clara.'
+                    ],
+                    imagem: { src: 'Imagens_resumo/Especialização', alt: 'Diagrama de Especialização e Generalização no EER' }
+                },
+                {
+                    subtitulo: '📦 Agregação',
+                    texto: 'Trata um relacionamento entre duas entidades como uma entidade de alto nível, permitindo que esta se relacione com outra entidade. É útil quando uma relação inteira precisa participar de outra relação. Ex: imagina a relação entre "Funcionário trabalha em Projeto" — o Supervisor não supervisiona o Funcionário e nem o Projeto isoladamente, mas sim a alocação daquele Funcionário naquele Projeto. A Agregação nos permite empacotar a relação "trabalha em" e ligar diretamente a entidade Supervisor.',
+                    imagem: { src: 'Imagens_resumo/Agregação', alt: 'Diagrama de Agregação no EER' }
+                },
+                {
+                    subtitulo: '🔄 Entidades Associativas',
+                    texto: 'Representa uma subclasse que pertence a diferentes superclasses, permitindo que entidades de tipos distintos compartilhem características comuns, útil quando um atributo ou relacionamento pode vir de origens variadas. Ex: o Aluno se inscreve em uma Disciplina, a Inscrição pode ter atributos como "data da inscrição" e "nota final". A Entidade Associativa que podemos chamar de Inscrição serve exatamente para isso: guardar a informação que não pertence nem só ao Aluno e nem só à Disciplina.',
+                    imagem: { src: 'Imagens_resumo/Associação', alt: 'Exemplo de Entidade Associativa no EER' }
+                },
+                {
+                    subtitulo: '📊 Sobre o Diagrama Completo',
+                    texto: 'Tudo se materializa no Diagrama Entidade de Relacionamento Estendido (DEER). O objetivo do EER é nos dar as ferramentas para conseguir gerenciar a complexidade do mundo real, fazendo um espelho muito mais fiel da realidade para resultar em sistemas mais robustos, precisos e mais fáceis de manter.',
+                    imagem: { src: 'Imagens_resumo/Sobre o Diagrama Completo', alt: 'Diagrama EER Completo' }
+                }
+            ],
+            lida: false
+        },
+
+        // ── AULA 8 ────────────────────────────────────────────────
+        {
+            id: 'banco_resumo_aula8',
+            titulo: 'Aula 8 — Introdução ao SQL',
+            conteudo: [
+                {
+                    subtitulo: '💬 O que é SQL?',
+                    texto: 'O SQL é como se fosse um tradutor universal super fluente na linguagem dos Bancos de Dados Relacionais, é com o SQL que damos ordens, fazemos as perguntas e colocamos ordem na casa. O SQL é uma linguagem declarativa, ao invés de dar um grande passo a passo, simplesmente dizemos o que queremos (declaramos nosso objetivo) e ele se vira para encontrar o resultado que queremos.'
+                },
+                {
+                    subtitulo: '5️⃣ As Cinco Sublinguagens',
+                    texto: [
+                        ['DDL (Data Definition Language): mexe na estrutura — cria, altera e remove tabelas. Mudanças permanentes. Comandos: CREATE, DROP, ALTER.', 'DML (Data Manipulation Language): mexe no conteúdo — insere, atualiza e deleta dados. Mudanças podem ser desfeitas. Comandos: INSERT, UPDATE, DELETE, SELECT.', 'DCL (Data Control Language): controla permissões de acesso.', 'TCL (Transaction Control Language): gerencia transações.', 'DQL (Data Query Language): consulta e busca dados.']
+                    ],
+                    imagem: { src: 'Imagens_resumo/As Cinco Sublinguagens', alt: 'As 5 Sublinguagens do SQL' }
+                },
+                {
+                    subtitulo: '🏗️ DDL — Data Definition Language',
+                    texto: 'O DDL com comandos como CREATE ou DROP mexe com a estrutura, nas paredes/cômodos. Uma vez que se mexe na estrutura é de forma permanente.',
+                    imagem: { src: 'Imagens_resumo/DDL (Data Definition Language)', alt: 'Exemplos de comandos DDL' }
+                },
+                {
+                    subtitulo: '🎨 DML — Data Manipulation Language',
+                    texto: 'O DML com comandos como INSERT ou UPDATE é como se fosse o decorador, movendo os móveis, trocando um quadro; ele mexe com o conteúdo e essas mudanças podem ser desfeitas.',
+                    imagem: { src: 'Imagens_resumo/DML (Data Manipulation Language)', alt: 'Exemplos de comandos DML' }
+                }
+            ],
+            lida: false
         }
+    ]
+}
 };
 
 

@@ -94,17 +94,9 @@ function _limparEstadoNav() {
 //  BADGE DE CARDS PENDENTES NAS TABS
 // ═════════════════════════════════════════════════════════════════════
 
-// Prefixo de ID por disciplina — mesmo padrão do firebase.js
 const _DISC_PREFIXO = { design: 'd', banco: 'b', redes: 'r', poo: 'p' };
-
-// Quantidade de cards por disciplina (50 fixos no cards_data.js)
 const CARDS_DATA_COUNTS = { design: 50, banco: 50, redes: 50, poo: 50 };
 
-/**
- * Carrega todos os perfis SRS do usuário e calcula quantos cards
- * estão vencidos (precisam de revisão hoje) por disciplina.
- * Retorna { design: 3, banco: 0, redes: 7, poo: 2 }
- */
 async function _calcularPendentesPorDisc(nomeUsuario) {
     try {
         const todos  = await carregarTodosPerfisSRS(nomeUsuario);
@@ -119,17 +111,13 @@ async function _calcularPendentesPorDisc(nomeUsuario) {
             }
         });
 
-        return result;   // ← sem o bloco de "novos"
+        return result;
     } catch (err) {
         console.warn('[Pessoal] Falha ao calcular pendentes SRS:', err);
         return {};
     }
 }
 
-/**
- * Atualiza o badge de cards pendentes numa tab específica.
- * Se pendentes === 0, remove o badge.
- */
 function _atualizarBadgeTab(discId, pendentes) {
     const tab = discTabsEl.querySelector(`.disc-tab[data-disc="${discId}"]`);
     if (!tab) return;
@@ -142,16 +130,11 @@ function _atualizarBadgeTab(discId, pendentes) {
     badge.textContent = pendentes > 99 ? '99+' : pendentes;
     badge.title       = `${pendentes} card${pendentes !== 1 ? 's' : ''} para revisar hoje`;
 
-    // Insere depois do tab-icon
     const icon = tab.querySelector('.tab-icon');
     if (icon) icon.after(badge);
     else tab.appendChild(badge);
 }
 
-/**
- * Carrega os pendentes e atualiza todos os badges de uma vez.
- * Chamado logo após o login e sempre que um deck é concluído.
- */
 async function atualizarBadgesSRS() {
     const pendentes = await _calcularPendentesPorDisc(usuarioAtual);
     Object.entries(pendentes).forEach(([disc, n]) => _atualizarBadgeTab(disc, n));
@@ -198,17 +181,14 @@ async function entrarNoDashboard() {
     dashScreen.classList.add('active');
     dashNome.textContent = usuarioAtual;
 
-    // ── Restaura modo e disciplina salvos (F5) ────────────────────────
     _restaurarEstadoNav();
     const discInicial = discAtual ?? Object.keys(DISCIPLINAS_DATA)[0];
 
-    // ── Renderiza a UI imediatamente sem esperar o Firebase ───────────
     construirTabs();
     _criarToast();
     _criarFABs();
     selecionarDisc(discInicial);
 
-    // ── Carrega Firebase em paralelo no fundo ─────────────────────────
     try {
         await Promise.all([
             carregarDados(),
@@ -218,11 +198,9 @@ async function entrarNoDashboard() {
         console.warn('[Pessoal] Falha ao carregar dados.', err);
     }
 
-    // ── Atualiza a UI com os dados carregados ─────────────────────────
     atualizarTodasAsTabs(checklistCompleto);
     selecionarDisc(discAtual ?? Object.keys(DISCIPLINAS_DATA)[0]);
 
-    // ── Badges SRS nas tabs (assíncrono, não bloqueia) ────────────────
     atualizarBadgesSRS();
 }
 
@@ -300,7 +278,7 @@ function construirTabs() {
 
 
 // ═════════════════════════════════════════════════════════════════════
-//  PILL DE REDES — atualiza a partir do checklistCompleto em memória
+//  PILL DE REDES
 // ═════════════════════════════════════════════════════════════════════
 
 function _atualizarPillRedes(panelEl) {
@@ -377,7 +355,6 @@ function _renderizarChecklistCompleto(discId, panelEl) {
     const { marcados, total } = atualizarProgressoPainel(discId, panelEl);
     atualizarProgressoTab(discId, marcados, total);
 
-    // ── Para Redes: dividir em dois blocos colapsáveis ────────────────
     if (discId === 'redes') {
         const modulesEl = panelEl.querySelector('.panel-modules');
         if (modulesEl) {
@@ -658,11 +635,11 @@ function _injetarModeToggle(discId, panelEl) {
 
             if (modoAtual === 'resumos') {
                 removerAnotacao(panelEl);
-                removerCards(panelEl);              // ← FIX: remove cards ao ir para resumos
+                removerCards(panelEl);
                 _exibirResumos(discId, panelEl);
                 mostrarFABs(true);
             } else if (modoAtual === 'anotacao') {
-                removerCards(panelEl);              // ← FIX: remove cards ao ir para anotações
+                removerCards(panelEl);
                 _exibirAnotacaoWrapper(discId, panelEl);
                 mostrarFABs(false);
             } else if (modoAtual === 'cards') {
@@ -671,7 +648,7 @@ function _injetarModeToggle(discId, panelEl) {
                 mostrarFABs(false);
             } else {
                 removerAnotacao(panelEl);
-                removerCards(panelEl);              // ← FIX: remove cards ao ir para checklist
+                removerCards(panelEl);
                 _exibirChecklist(discId, panelEl);
             }
         });
@@ -697,7 +674,13 @@ function _exibirAnotacaoWrapper(discId, panelEl) {
 
 function _exibirResumos(discId, panelEl) {
     const resumos     = listarResumos(discId);
-    const resumosProf = discId === 'redes' ? listarResumos('redes_professor') : [];
+    const resumosProf = discId === 'redes'
+        ? listarResumos('redes_professor')
+        : discId === 'design'
+            ? listarResumos('design_resumo')
+            : discId === 'banco'
+                ? listarResumos('banco_resumo')
+                : [];
 
     panelEl.querySelector('.panel-videos')?.remove();
     panelEl.querySelector('.panel-modules')?.remove();
@@ -719,51 +702,49 @@ function _exibirResumos(discId, panelEl) {
     const wrapper = document.createElement('div');
     wrapper.className = 'panel-resumos';
 
+    // ── Seção "Resumos das Aulas" ─────────────────────────────────────
     let htmlAulas = '';
     if (resumos.length > 0) {
-        if (discId === 'redes') {
-            htmlAulas = `
-                <div class="resumo-header-bar resumo-secao-toggle" data-secao="aulas" style="cursor:pointer;">
-                    <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
-                    <div style="display:flex;align-items:center;gap:.6rem;">
-                        <span class="rh-count">${resumos.length} aula${resumos.length !== 1 ? 's' : ''}</span>
-                        <i class="fas fa-chevron-down rh-chevron"></i>
-                    </div>
-                </div>
-                <div class="resumo-secao-body resumo-secao-body--aulas" style="display:none;">
-                    ${resumos.map(r => _renderCard(r, discId)).join('')}
-                </div>
-            `;
-        } else {
-            htmlAulas = `
-                <div class="resumo-header-bar">
-                    <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
+        htmlAulas = `
+            <div class="resumo-header-bar resumo-secao-toggle" data-secao="aulas" style="cursor:pointer;">
+                <span class="rh-label"><i class="fas fa-book-open" style="margin-right:.35rem;"></i>Resumos das Aulas</span>
+                <div style="display:flex;align-items:center;gap:.6rem;">
                     <span class="rh-count">${resumos.length} aula${resumos.length !== 1 ? 's' : ''}</span>
+                    <i class="fas fa-chevron-down rh-chevron"></i>
                 </div>
+            </div>
+            <div class="resumo-secao-body resumo-secao-body--aulas" style="display:none;">
                 ${resumos.map(r => _renderCard(r, discId)).join('')}
-            `;
-        }
+            </div>
+        `;
     }
 
+    // ── Seção secundária (Resumo Simplificado / Resumo do Professor) ──
     let htmlProf = '';
-    if (discId === 'redes' && resumosProf.length > 0) {
+    if ((discId === 'redes' || discId === 'design' || discId === 'banco') && resumosProf.length > 0) {
+        const labelProf   = discId === 'redes' ? 'Resumo do Professor' : 'Resumo Simplificado';
+        const unidadeProf = discId === 'redes' ? 'tópico' : 'aula';
+        const discProf    = discId === 'redes' ? 'redes_professor' : discId;
+
         htmlProf = `
             <div class="resumo-header-bar resumo-secao-toggle" data-secao="prof" style="margin-top:1rem;cursor:pointer;">
-                <span class="rh-label"><i class="fas fa-chalkboard-teacher" style="margin-right:.35rem;"></i>Resumo do Professor</span>
+                <span class="rh-label"><i class="fas fa-chalkboard-teacher" style="margin-right:.35rem;"></i>${labelProf}</span>
                 <div style="display:flex;align-items:center;gap:.6rem;">
-                    <span class="rh-count">${resumosProf.length} tópico${resumosProf.length !== 1 ? 's' : ''}</span>
+                    <span class="rh-count">${resumosProf.length} ${unidadeProf}${resumosProf.length !== 1 ? 's' : ''}</span>
                     <i class="fas fa-chevron-down rh-chevron"></i>
                 </div>
             </div>
             <div class="resumo-secao-body resumo-secao-body--prof" style="display:none;">
-                ${resumosProf.map(r => _renderCard(r, 'redes_professor')).join('')}
+                ${resumosProf.map(r => _renderCard(r, discProf)).join('')}
             </div>
         `;
     }
 
     wrapper.innerHTML = htmlAulas + htmlProf;
     panelEl.appendChild(wrapper);
+    _initZoom(panelEl);
 
+    // ── Lógica de colapso das seções ──────────────────────────────────
     wrapper.querySelectorAll('.resumo-secao-toggle').forEach(header => {
         header.addEventListener('click', () => {
             const secao   = header.dataset.secao;
@@ -811,6 +792,7 @@ function _exibirResumos(discId, panelEl) {
         });
     });
 
+    // ── Eventos dos cards de resumo ───────────────────────────────────
     wrapper.querySelectorAll('.resumo-card').forEach(card => {
         const rid = card.dataset.resumoId;
 
@@ -866,7 +848,6 @@ function _exibirCardsWrapper(discId, panelEl) {
 
     _injetarModeToggle(discId, panelEl);
 
-    // Após concluir o deck, atualiza os badges (cards foram revisados)
     const observer = new MutationObserver(() => {
         if (panelEl.querySelector('.cards-finish-scene')) {
             observer.disconnect();
@@ -1013,9 +994,9 @@ function _criarFABs() {
             _scrollAnim = null;
         }
 
-        const el     = discPanel.scrollHeight > discPanel.clientHeight ? discPanel : document.documentElement;
-        const inicio = el.scrollTop;
-        const alvo   = direcao === 'up' ? 0 : el.scrollHeight - el.clientHeight;
+        const el      = discPanel.scrollHeight > discPanel.clientHeight ? discPanel : document.documentElement;
+        const inicio  = el.scrollTop;
+        const alvo    = direcao === 'up' ? 0 : el.scrollHeight - el.clientHeight;
         const duracao = 1000;
         let cancelado = false;
 
@@ -1102,4 +1083,307 @@ if (userSalvo) {
 } else {
     loginScreen.classList.add('active');
     inputNome.focus();
+}
+
+
+// ═════════════════════════════════════════════════════════════════════
+//  ZOOM DE IMAGENS  (v2)
+//  • Mouse: scroll para zoom, drag para mover
+//  • Touch: pinch para zoom, pan para mover, duplo toque para alternar fit/2×
+//  • Teclado: +/- zoom, 0 reset, Esc fechar
+//  • Toque/clique no fundo escuro fecha o overlay
+// ═════════════════════════════════════════════════════════════════════
+
+const IZ = (() => {
+    let overlay, imgEl, spinner, scaleLabelEl;
+    let naturalW = 0, naturalH = 0;
+    let scale = 1, tx = 0, ty = 0;
+    let fitScale = 1;          // mínimo dinâmico = scale de fit da imagem atual
+    let isDragging = false, dragMoved = false;
+    let mouseStartX = 0, mouseStartY = 0;
+    let pinchStartDist = null, pinchStartScale = 1;
+    let pinchStartTx = 0, pinchStartTy = 0;
+    let lastTapTime = 0;
+
+    const MAX_SCALE = 2;
+    const STEP      = 0.15;
+
+    function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+    function pinchDist(t1, t2) {
+        return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+    }
+
+    function pinchMid(t1, t2) {
+        return {
+            x: (t1.clientX + t2.clientX) / 2,
+            y: (t1.clientY + t2.clientY) / 2,
+        };
+    }
+
+    // Impede que a imagem saia dos limites da viewport durante pan/zoom
+    function clampPan() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const iw = naturalW * scale;
+        const ih = naturalH * scale;
+
+        if (iw <= vw) {
+            tx = (vw - iw) / 2;                   // centraliza se couber
+        } else {
+            tx = clamp(tx, vw - iw, 0);            // limita às bordas
+        }
+
+        if (ih <= vh) {
+            ty = (vh - ih) / 2;
+        } else {
+            ty = clamp(ty, vh - ih, 0);
+        }
+    }
+
+    function applyTransform(animated = false) {
+        if (!imgEl) return;
+        imgEl.style.transition = animated ? 'transform .22s cubic-bezier(.4,0,.2,1)' : 'none';
+        imgEl.style.transform  = `translate(${tx}px,${ty}px) scale(${scale})`;
+        if (scaleLabelEl) scaleLabelEl.textContent = Math.round(scale * 100) + '%';
+    }
+
+    function fitValues() {
+        const maxW = window.innerWidth  * 0.97;
+        const maxH = window.innerHeight * 0.94;
+        const sByW = maxW / naturalW;
+        const sByH = maxH / naturalH;
+        const isPanoramica = naturalW / naturalH > 2.2;
+        const s    = isPanoramica
+            ? Math.min(sByW, MAX_SCALE)
+            : Math.min(1, sByW, sByH);
+        const cx   = (window.innerWidth  - naturalW * s) / 2;
+        const cy   = (window.innerHeight - naturalH * s) / 2;
+        return { s, cx, cy };
+    }
+
+    function zoomAt(newScale, pivotX, pivotY) {
+        newScale = clamp(newScale, fitScale, MAX_SCALE);
+        const ratio = newScale / scale;
+        tx    = pivotX + (tx - pivotX) * ratio;
+        ty    = pivotY + (ty - pivotY) * ratio;
+        scale = newScale;
+        clampPan();
+        applyTransform(false);
+    }
+
+    function build() {
+        if (document.getElementById('iz-overlay')) {
+            overlay      = document.getElementById('iz-overlay');
+            imgEl        = overlay.querySelector('.iz-img');
+            spinner      = overlay.querySelector('.iz-spinner');
+            scaleLabelEl = overlay.querySelector('.iz-scale-label');
+            return;
+        }
+
+        overlay = document.createElement('div');
+        overlay.id        = 'iz-overlay';
+        overlay.className = 'iz-overlay';
+        overlay.innerHTML = `
+            <span class="iz-spinner"></span>
+            <img class="iz-img" src="" alt="" draggable="false" />
+            <button class="iz-close" aria-label="Fechar"><i class="fas fa-xmark"></i></button>
+            <div class="iz-bar">
+                <button class="iz-btn iz-btn-minus"  aria-label="Diminuir zoom"><i class="fas fa-minus"></i></button>
+                <span  class="iz-scale-label">100%</span>
+                <button class="iz-btn iz-btn-plus"   aria-label="Aumentar zoom"><i class="fas fa-plus"></i></button>
+                <div class="iz-sep"></div>
+                <button class="iz-btn iz-btn-reset"  aria-label="Ajustar à tela"><i class="fas fa-expand"></i></button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        imgEl        = overlay.querySelector('.iz-img');
+        spinner      = overlay.querySelector('.iz-spinner');
+        scaleLabelEl = overlay.querySelector('.iz-scale-label');
+
+        imgEl.style.cssText = 'position:absolute;left:0;top:0;transform-origin:0 0;';
+
+        overlay.querySelector('.iz-btn-minus').addEventListener('click', e => {
+            e.stopPropagation();
+            zoomAt(scale - STEP, window.innerWidth / 2, window.innerHeight / 2);
+            applyTransform(true);
+        });
+        overlay.querySelector('.iz-btn-plus').addEventListener('click', e => {
+            e.stopPropagation();
+            zoomAt(scale + STEP, window.innerWidth / 2, window.innerHeight / 2);
+            applyTransform(true);
+        });
+        overlay.querySelector('.iz-btn-reset').addEventListener('click', e => {
+            e.stopPropagation();
+            resetFit(true);
+        });
+        overlay.querySelector('.iz-close').addEventListener('click', e => {
+            e.stopPropagation();
+            close();
+        });
+
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay || e.target === imgEl) {
+                if (!dragMoved) close();
+            }
+        });
+
+        overlay.addEventListener('wheel', e => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? STEP : -STEP;
+            zoomAt(scale + delta, e.clientX, e.clientY);
+        }, { passive: false });
+
+        overlay.addEventListener('mousedown', e => {
+            if (e.button !== 0) return;
+            if (e.target.closest('.iz-bar') || e.target.closest('.iz-close')) return;
+            isDragging  = true;
+            dragMoved   = false;
+            mouseStartX = e.clientX - tx;
+            mouseStartY = e.clientY - ty;
+            overlay.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            dragMoved = true;
+            tx = e.clientX - mouseStartX;
+            ty = e.clientY - mouseStartY;
+            clampPan();
+            applyTransform(false);
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (!isDragging) return;
+            isDragging           = false;
+            overlay.style.cursor = '';
+        });
+
+        overlay.addEventListener('touchstart', e => {
+            if (e.target.closest('.iz-bar') || e.target.closest('.iz-close')) return;
+
+            if (e.touches.length === 2) {
+                pinchStartDist  = pinchDist(e.touches[0], e.touches[1]);
+                pinchStartScale = scale;
+                pinchStartTx    = tx;
+                pinchStartTy    = ty;
+                isDragging      = false;
+                e.preventDefault();
+            } else if (e.touches.length === 1) {
+                isDragging  = true;
+                dragMoved   = false;
+                mouseStartX = e.touches[0].clientX - tx;
+                mouseStartY = e.touches[0].clientY - ty;
+            }
+        }, { passive: false });
+
+        overlay.addEventListener('touchmove', e => {
+            if (e.touches.length === 2 && pinchStartDist !== null) {
+                e.preventDefault();
+                const dist     = pinchDist(e.touches[0], e.touches[1]);
+                const mid      = pinchMid(e.touches[0], e.touches[1]);
+                const ratio    = dist / pinchStartDist;
+                const newScale = clamp(pinchStartScale * ratio, fitScale, MAX_SCALE);
+                tx    = mid.x + (pinchStartTx - mid.x) * (newScale / pinchStartScale);
+                ty    = mid.y + (pinchStartTy - mid.y) * (newScale / pinchStartScale);
+                scale = newScale;
+                clampPan();
+                applyTransform(false);
+            } else if (e.touches.length === 1 && isDragging) {
+                dragMoved = true;
+                tx = e.touches[0].clientX - mouseStartX;
+                ty = e.touches[0].clientY - mouseStartY;
+                clampPan();
+                applyTransform(false);
+            }
+        }, { passive: false });
+
+        overlay.addEventListener('touchend', e => {
+            pinchStartDist = null;
+            isDragging     = false;
+
+            if (e.changedTouches.length === 1 && !dragMoved) {
+                const now = Date.now();
+                if (now - lastTapTime < 300) {
+                    if (scale > 1.05) {
+                        resetFit(true);
+                    } else {
+                        const t = e.changedTouches[0];
+                        zoomAt(MAX_SCALE, t.clientX, t.clientY);
+                        applyTransform(true);
+                    }
+                    lastTapTime = 0;
+                } else {
+                    lastTapTime = now;
+                }
+            }
+        }, { passive: true });
+
+        document.addEventListener('keydown', e => {
+            if (!overlay.classList.contains('iz-open')) return;
+            if (e.key === 'Escape') close();
+            if (e.key === '+' || e.key === '=') { zoomAt(scale + STEP, window.innerWidth / 2, window.innerHeight / 2); applyTransform(true); }
+            if (e.key === '-')                   { zoomAt(scale - STEP, window.innerWidth / 2, window.innerHeight / 2); applyTransform(true); }
+            if (e.key === '0')                   resetFit(true);
+        });
+
+        window.addEventListener('resize', () => {
+            if (overlay.classList.contains('iz-open')) resetFit(false);
+        });
+    }
+
+    function resetFit(animated) {
+        const { s, cx, cy } = fitValues();
+        fitScale = s;          // atualiza o mínimo dinâmico
+        scale = s;
+        tx    = cx;
+        ty    = cy;
+        applyTransform(animated);
+    }
+
+    function open(src, alt) {
+        build();
+        imgEl.src          = '';
+        imgEl.style.width  = '';
+        imgEl.style.height = '';
+        overlay.classList.add('iz-loading', 'iz-open');
+        document.body.style.overflow    = 'hidden';
+        document.body.style.touchAction = 'none';
+
+        imgEl.onload = () => {
+            naturalW = imgEl.naturalWidth;
+            naturalH = imgEl.naturalHeight;
+            imgEl.style.width  = naturalW + 'px';
+            imgEl.style.height = naturalH + 'px';
+            resetFit(false);
+            overlay.classList.remove('iz-loading');
+        };
+        imgEl.onerror = () => {
+            overlay.classList.remove('iz-loading');
+        };
+        imgEl.alt = alt || '';
+        imgEl.src = src;
+    }
+
+    function close() {
+        if (!overlay) return;
+        overlay.classList.remove('iz-open');
+        document.body.style.overflow    = '';
+        document.body.style.touchAction = '';
+    }
+
+    return { open, close };
+})();
+
+function _initZoom(rootEl) {
+    if (rootEl._izBound) return;
+    rootEl._izBound = true;
+    rootEl.addEventListener('click', e => {
+        const img = e.target.closest('.resumo-bloco-imagem img');
+        if (!img || !img.src) return;
+        e.stopPropagation();
+        IZ.open(img.src, img.alt);
+    });
 }
