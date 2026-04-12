@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   pessoal.js — Área Pessoal  (v19 — badge de cards pendentes nas tabs)
+   pessoal.js — Área Pessoal  (v20 — sem badge de cards pendentes)
 ════════════════════════════════════════════════════════════════════════ */
 
 import {
@@ -26,7 +26,7 @@ import {
     removerAnotacao
 } from './Anotacao/anotacao.js';
 
-import { salvarNoFirebase, carregarDoFirebase, carregarTodosPerfisSRS } from './firebase.js';
+import { salvarNoFirebase, carregarDoFirebase } from './firebase.js';
 import { exibirCards, removerCards } from './Card/card.js';
 
 // ── CREDENCIAIS ───────────────────────────────────────────────────────
@@ -91,57 +91,6 @@ function _limparEstadoNav() {
 
 
 // ═════════════════════════════════════════════════════════════════════
-//  BADGE DE CARDS PENDENTES NAS TABS
-// ═════════════════════════════════════════════════════════════════════
-
-const _DISC_PREFIXO = { design: 'd', banco: 'b', redes: 'r', poo: 'p' };
-const CARDS_DATA_COUNTS = { design: 50, banco: 50, redes: 50, poo: 50 };
-
-async function _calcularPendentesPorDisc(nomeUsuario) {
-    try {
-        const todos  = await carregarTodosPerfisSRS(nomeUsuario);
-        const agora  = Date.now();
-        const result = { design: 0, banco: 0, redes: 0, poo: 0 };
-
-        Object.entries(todos).forEach(([cardId, perfil]) => {
-            const disc = Object.entries(_DISC_PREFIXO).find(([, p]) => cardId.startsWith(p))?.[0];
-            if (!disc) return;
-            if (!perfil.dominado && perfil.tentativas > 0 && perfil.proximaVez <= agora) {
-                result[disc]++;
-            }
-        });
-
-        return result;
-    } catch (err) {
-        console.warn('[Pessoal] Falha ao calcular pendentes SRS:', err);
-        return {};
-    }
-}
-
-function _atualizarBadgeTab(discId, pendentes) {
-    const tab = discTabsEl.querySelector(`.disc-tab[data-disc="${discId}"]`);
-    if (!tab) return;
-
-    tab.querySelector('.tab-srs-badge')?.remove();
-    if (!pendentes || pendentes <= 0) return;
-
-    const badge = document.createElement('span');
-    badge.className   = 'tab-srs-badge';
-    badge.textContent = pendentes > 99 ? '99+' : pendentes;
-    badge.title       = `${pendentes} card${pendentes !== 1 ? 's' : ''} para revisar hoje`;
-
-    const icon = tab.querySelector('.tab-icon');
-    if (icon) icon.after(badge);
-    else tab.appendChild(badge);
-}
-
-async function atualizarBadgesSRS() {
-    const pendentes = await _calcularPendentesPorDisc(usuarioAtual);
-    Object.entries(pendentes).forEach(([disc, n]) => _atualizarBadgeTab(disc, n));
-}
-
-
-// ═════════════════════════════════════════════════════════════════════
 //  LOGIN
 // ═════════════════════════════════════════════════════════════════════
 
@@ -200,8 +149,6 @@ async function entrarNoDashboard() {
 
     atualizarTodasAsTabs(checklistCompleto);
     selecionarDisc(discAtual ?? Object.keys(DISCIPLINAS_DATA)[0]);
-
-    atualizarBadgesSRS();
 }
 
 btnSair.addEventListener('click', () => {
@@ -848,14 +795,6 @@ function _exibirCardsWrapper(discId, panelEl) {
 
     _injetarModeToggle(discId, panelEl);
 
-    const observer = new MutationObserver(() => {
-        if (panelEl.querySelector('.cards-finish-scene')) {
-            observer.disconnect();
-            atualizarBadgesSRS();
-        }
-    });
-    observer.observe(panelEl, { childList: true, subtree: true });
-
     exibirCards(discId, panelEl, usuarioAtual);
 }
 
@@ -1098,7 +1037,7 @@ const IZ = (() => {
     let overlay, imgEl, spinner, scaleLabelEl;
     let naturalW = 0, naturalH = 0;
     let scale = 1, tx = 0, ty = 0;
-    let fitScale = 1;          // mínimo dinâmico = scale de fit da imagem atual
+    let fitScale = 1;
     let isDragging = false, dragMoved = false;
     let mouseStartX = 0, mouseStartY = 0;
     let pinchStartDist = null, pinchStartScale = 1;
@@ -1121,7 +1060,6 @@ const IZ = (() => {
         };
     }
 
-    // Impede que a imagem saia dos limites da viewport durante pan/zoom
     function clampPan() {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
@@ -1129,9 +1067,9 @@ const IZ = (() => {
         const ih = naturalH * scale;
 
         if (iw <= vw) {
-            tx = (vw - iw) / 2;                   // centraliza se couber
+            tx = (vw - iw) / 2;
         } else {
-            tx = clamp(tx, vw - iw, 0);            // limita às bordas
+            tx = clamp(tx, vw - iw, 0);
         }
 
         if (ih <= vh) {
@@ -1336,7 +1274,7 @@ const IZ = (() => {
 
     function resetFit(animated) {
         const { s, cx, cy } = fitValues();
-        fitScale = s;          // atualiza o mínimo dinâmico
+        fitScale = s;
         scale = s;
         tx    = cx;
         ty    = cy;
